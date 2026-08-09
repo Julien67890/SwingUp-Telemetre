@@ -60,12 +60,13 @@
 
   #mtools{position:absolute;right:10px;top:10px;z-index:800;display:flex;flex-direction:column;gap:6px}
   .tool{width:44px;height:44px;border-radius:12px;border:1px solid rgba(143,192,161,.3);
-    background:rgba(15,51,37,.82);color:var(--mint);cursor:pointer;font:600 8px/1.2 var(--sans)}
-  .tool:active{background:rgba(45,106,79,.85)}
+    background:rgba(15,51,37,.85);color:var(--mint);cursor:pointer;font:600 8px/1.2 var(--sans);
+    display:grid;place-items:center}
+  .tool:active{background:rgba(45,106,79,.9)}
   .tool.armed{border-color:var(--gold);color:var(--gold)}
   .tool.hide{display:none}
+  .tool.busy{opacity:.5}
 
-  /* pile basse : plus aucun recouvrement avec la colonne d'outils */
   #stack{position:absolute;left:10px;right:10px;bottom:10px;z-index:800;
     display:flex;flex-direction:column;gap:8px;pointer-events:none}
   #stack > *{pointer-events:auto}
@@ -85,7 +86,6 @@
   #banner.on{display:block}
   #banner b{font-weight:600}
 
-  /* ---------- bandeau bas ---------- */
   #strip{flex:none;background:var(--cream);color:var(--ink);
     padding:9px 11px calc(9px + env(safe-area-inset-bottom));box-shadow:0 -6px 18px rgba(0,0,0,.22)}
   #sHead{display:flex;align-items:center;gap:8px}
@@ -95,19 +95,20 @@
     font:600 8px/1 var(--sans);letter-spacing:.09em;text-transform:uppercase;white-space:nowrap;display:none}
   #blind.on{display:block}
 
-  #clubRow{display:flex;align-items:center;gap:9px;margin-top:8px;
-    background:var(--ink);border-radius:12px;padding:9px 10px}
-  #clubBox{flex:1;min-width:0}
-  #clubBox .eyebrow{color:var(--mint)}
-  #clubName{display:block;margin-top:3px;font:600 21px/1 var(--serif);color:var(--cream);
+  #clubRow{display:flex;gap:11px;margin-top:8px;background:var(--ink);border-radius:12px;padding:9px 11px}
+  #clubIcon{flex:none;width:44px;display:grid;place-items:center}
+  #clubIcon svg{width:44px;height:56px;display:block}
+  #clubMain{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+  #line1{display:flex;align-items:center;gap:7px}
+  #clubName{flex:1;min-width:0;font:600 21px/1.05 var(--serif);color:var(--cream);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  #clubMeta{display:block;margin-top:3px;font-size:10.5px;color:rgba(241,237,226,.62)}
   #seg{display:flex;background:rgba(241,237,226,.1);border-radius:9px;padding:2px;flex:none}
-  #seg button{appearance:none;border:0;background:none;color:rgba(241,237,226,.62);cursor:pointer;
-    font:500 10.5px/1 var(--sans);padding:8px 9px;border-radius:7px}
-  #seg button.on{background:var(--gold);color:#3A2C00;font-weight:600}
+  #seg button{appearance:none;border:0;background:none;color:rgba(241,237,226,.6);cursor:pointer;
+    font:600 9.5px/1 var(--sans);letter-spacing:.06em;padding:8px 7px;border-radius:7px}
+  #seg button.on{background:var(--gold);color:#3A2C00}
   #bBag{flex:none;appearance:none;border:1px solid rgba(201,162,39,.55);background:transparent;color:var(--gold);
-    border-radius:9px;padding:10px 11px;font:600 9.5px/1 var(--sans);letter-spacing:.1em;cursor:pointer}
+    border-radius:9px;padding:9px 9px;font:600 9px/1 var(--sans);letter-spacing:.08em;cursor:pointer}
+  #clubMeta{margin-top:5px;font-size:10.5px;line-height:1.4;color:rgba(241,237,226,.6)}
 
   #cells{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:7px}
   .c{background:var(--cream-2);border-radius:10px;padding:7px 5px 8px;text-align:center;min-width:0}
@@ -117,9 +118,7 @@
   .c b i{font:500 9px/1 var(--sans);font-style:normal;color:rgba(18,58,41,.42);margin-left:1px}
   .c.up b{color:var(--alert)} .c.down b{color:var(--moss)}
 
-  /* ---------- sac ---------- */
-  #bag{position:fixed;inset:0;z-index:1500;background:var(--cream);color:var(--ink);
-    display:none;flex-direction:column}
+  #bag{position:fixed;inset:0;z-index:1500;background:var(--cream);color:var(--ink);display:none;flex-direction:column}
   #bag.on{display:flex}
   #bagTop{flex:none;display:flex;align-items:center;gap:10px;background:var(--deep);color:var(--cream);
     padding:calc(11px + env(safe-area-inset-top)) 14px 11px}
@@ -129,13 +128,14 @@
   #presets button{flex:1;appearance:none;border:1px solid rgba(18,58,41,.2);background:#fff;color:var(--ink);
     border-radius:10px;padding:11px 6px;font:500 11px/1.3 var(--sans);cursor:pointer}
   #presets button:active{background:var(--gold-soft)}
-  .club{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid rgba(18,58,41,.09)}
+  .club{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(18,58,41,.09)}
+  .club .ic{flex:none;width:30px;height:38px}
+  .club .ic svg{width:30px;height:38px;display:block}
   .club .nm{flex:1;font-size:14px;font-weight:500}
-  .club input[type=number]{width:82px;background:#fff;border:1px solid rgba(18,58,41,.18);color:var(--ink);
-    font:600 15px/1 var(--sans);padding:11px;border-radius:10px;text-align:right;font-variant-numeric:tabular-nums}
-  .club .u{font-size:11px;color:rgba(18,58,41,.45);width:14px}
-  .club.off .nm{opacity:.35}
-  .club.off input{opacity:.35}
+  .club input[type=number]{width:78px;background:#fff;border:1px solid rgba(18,58,41,.18);color:var(--ink);
+    font:600 15px/1 var(--sans);padding:10px;border-radius:10px;text-align:right;font-variant-numeric:tabular-nums}
+  .club .u{font-size:11px;color:rgba(18,58,41,.45);width:12px}
+  .club.off{opacity:.38}
   .tg{position:relative;width:42px;height:25px;flex:none}
   .tg input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:2}
   .tg i{position:absolute;inset:0;border-radius:999px;background:rgba(18,58,41,.18);transition:background .18s}
@@ -144,12 +144,10 @@
   .tg input:checked + i::after{transform:translateX(17px)}
   #bagNote{margin:16px 0 0;font-size:12px;line-height:1.6;color:rgba(18,58,41,.55)}
   .cta{appearance:none;border:0;width:100%;padding:17px 20px;border-radius:14px;background:var(--moss);
-    color:var(--cream-2);cursor:pointer;font:500 15px/1 var(--sans);
-    display:flex;align-items:center;justify-content:center;gap:9px}
+    color:var(--cream-2);cursor:pointer;font:500 15px/1 var(--sans);display:flex;align-items:center;justify-content:center;gap:9px}
   .cta:active{background:#255840}
   .cta:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 
-  /* ---------- accueil ---------- */
   #intro{position:fixed;inset:0;z-index:2000;overflow-y:auto;
     background:radial-gradient(130% 90% at 50% -10%,#1B5238 0%,var(--forest) 55%,var(--deep) 100%);
     padding:calc(24px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));
@@ -182,11 +180,13 @@
 
 <main id="map">
   <div id="mtools">
-    <button class="tool" id="bMe">MOI</button>
-    <button class="tool" id="bDetect">DÉTECT</button>
-    <button class="tool" id="bDraw">TRACER</button>
-    <button class="tool" id="bLoad">OSM</button>
-    <button class="tool hide" id="bPos">POS.</button>
+    <button class="tool" id="bMe" title="Me recentrer">MOI</button>
+    <button class="tool" id="bDetect" title="Détecter un green">DÉTECT</button>
+    <button class="tool" id="bDraw" title="Tracer un green">TRACER</button>
+    <button class="tool" id="bLoad" title="Recharger les greens du parcours" aria-label="Recharger les greens">
+      <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>
+    </button>
+    <button class="tool hide" id="bPos" title="Placer ma position">POS.</button>
   </div>
   <div id="stack">
     <div id="banner"></div>
@@ -210,17 +210,20 @@
   </div>
 
   <div id="clubRow">
-    <div id="clubBox">
-      <span class="eyebrow">Club conseillé</span>
-      <b id="clubName">—</b>
-      <span id="clubMeta">Choisissez un green</span>
+    <div id="clubIcon" aria-hidden="true"></div>
+    <div id="clubMain">
+      <span class="eyebrow" style="color:var(--mint)">Club conseillé</span>
+      <div id="line1">
+        <span id="clubName">—</span>
+        <div id="seg" role="group" aria-label="Cible visée">
+          <button data-t="front">AV</button>
+          <button data-t="centre" class="on">CEN</button>
+          <button data-t="back">ARR</button>
+        </div>
+        <button id="bBag" aria-label="Mon sac">SAC</button>
+      </div>
+      <p id="clubMeta">Choisissez un green</p>
     </div>
-    <div id="seg" role="group" aria-label="Cible visée">
-      <button data-t="front">Av.</button>
-      <button data-t="centre" class="on">Centre</button>
-      <button data-t="back">Arr.</button>
-    </div>
-    <button id="bBag" aria-label="Mon sac">SAC</button>
   </div>
 
   <div id="cells">
@@ -232,7 +235,6 @@
   </div>
 </footer>
 
-<!-- ================= sac ================= -->
 <div id="bag" role="dialog" aria-label="Mon sac">
   <div id="bagTop">
     <div class="mk" style="width:30px;height:30px;border-radius:9px" aria-hidden="true">
@@ -280,7 +282,6 @@ const $ = id => document.getElementById(id);
 const R_E = 6371008.8, D2R = Math.PI/180, R2D = 180/Math.PI;
 const KEY = "greens.custom.v2", LAST = "greens.last.v1", BAG = "greens.bag.v1";
 
-/* Distances totales indicatives d'un amateur, en mètres. */
 const BASE = [
   ["Driver",200],["Bois 3",185],["Bois 5",170],["Hybride",160],
   ["Fer 4",152],["Fer 5",143],["Fer 6",134],["Fer 7",125],["Fer 8",115],["Fer 9",105],
@@ -288,6 +289,38 @@ const BASE = [
 ];
 const FACTOR = { men:1, women:0.80, senior:0.88 };
 const preset = k => BASE.map(([n,d]) => ({ n, d:Math.round(d*FACTOR[k]), on:true }));
+
+/* Silhouette dessinée : la forme de tête et l'ouverture de face
+   varient avec le club, ce qui le rend reconnaissable d'un coup d'œil. */
+function clubShape(name){
+  const n = (name||"").toLowerCase();
+  if (n.startsWith("driver"))  return { kind:"wood", loft:10, scale:1.12 };
+  if (n.startsWith("bois"))    return { kind:"wood", loft:n.indexOf("3")>=0?15:19, scale:.98 };
+  if (n.startsWith("hybride")) return { kind:"hyb",  loft:23, scale:.92 };
+  if (n.startsWith("fer")){ const k = parseInt(n.replace(/\D/g,""),10) || 7; return { kind:"iron", loft:24+(k-4)*4, scale:1 }; }
+  if (n.startsWith("pitching")) return { kind:"wedge", loft:46, scale:1 };
+  if (n.startsWith("approche")) return { kind:"wedge", loft:51, scale:1 };
+  if (n.startsWith("sand"))     return { kind:"wedge", loft:56, scale:1 };
+  if (n.startsWith("lob"))      return { kind:"wedge", loft:60, scale:1 };
+  return { kind:"iron", loft:34, scale:1 };
+}
+function clubSvg(name, gold, mint){
+  const s = clubShape(name);
+  const head = s.kind === "wood"
+    ? '<path d="M25 40 C25 54 14 61 7 55 C0 49 4 39 14 39 Z"/>'
+    : s.kind === "hyb"
+    ? '<path d="M25 40 C25 51 16 57 10 52 C4 47 7 39 15 39 Z"/>'
+    : '<path d="M25 39 L25 57 L7 57 L11 40 Z"/>';
+  const grooves = (s.kind === "iron" || s.kind === "wedge")
+    ? [45,48.5,52].map(y => '<line x1="11" y1="'+y+'" x2="23" y2="'+y+'" stroke="#3A2C00" stroke-width="1.1" opacity=".55"/>').join("")
+    : '<path d="M12 44 C16 42 20 42 23 44" stroke="#3A2C00" stroke-width="1.1" fill="none" opacity=".4"/>';
+  const tilt = (s.loft*0.55 - 12).toFixed(1);
+  return '<svg viewBox="0 0 44 64" role="img" aria-label="' + name + '">'
+    + '<path d="M38 5 L34 16" stroke="' + mint + '" stroke-width="5.4" stroke-linecap="round" opacity=".45"/>'
+    + '<path d="M37 8 L25.5 40" stroke="' + mint + '" stroke-width="2.5" stroke-linecap="round"/>'
+    + '<g transform="rotate(' + tilt + ' 25 40) translate(25 40) scale(' + s.scale + ') translate(-25 -40)" fill="' + gold + '">'
+    + head + grooves + '</g></svg>';
+}
 
 const S = { pos:null, acc:null, heading:null, greens:[], sel:null,
             mode:null, draft:[], detect:null, alti:null, altiKey:"", altiBusy:false,
@@ -334,16 +367,13 @@ function measure(g, pos){
            width:Math.hypot(left.x-right.x, left.y-right.y),
            ll:p => unloc(p.x,p.y,pos.lat,pos.lon) };
 }
-
-/* ---------- choix du club ---------- */
 function pickClub(target){
   const list = S.bag.filter(c => c.on && c.d > 0).sort((a,b) => b.d - a.d);
   if (!list.length || !Number.isFinite(target)) return null;
   let i = -1;
   for (let k = list.length - 1; k >= 0; k--) if (list[k].d >= target){ i = k; break; }
   if (i < 0) return { club:list[0], gap:target - list[0].d, short:true, alt:null };
-  const club = list[i], under = list[i+1] || null;
-  return { club, gap:club.d - target, short:false, alt:under };
+  return { club:list[i], gap:list[i].d - target, short:false, alt:list[i+1] || null };
 }
 
 /* ---------- fonds ---------- */
@@ -383,6 +413,15 @@ function initMap(){
   let start = [46.6, 2.4], z = 5;
   try{ const l = JSON.parse(localStorage.getItem(LAST)); if (l){ start = [l.lat, l.lon]; z = 18; } }catch(e){}
   map = L.map("map", { zoomControl:false }).setView(start, z);
+
+  /* Sans ça, un appui sur un bouton posé au-dessus de la carte remonte
+     jusqu'à Leaflet et déclenche un clic carte à l'endroit du bouton. */
+  ["mtools","stack"].forEach(id => {
+    const el = $(id);
+    L.DomEvent.disableClickPropagation(el);
+    L.DomEvent.disableScrollPropagation(el);
+  });
+
   setBase(inFR({ lat:start[0], lon:start[1] }));
   gLayer = L.layerGroup().addTo(map); tagLayer = L.layerGroup().addTo(map);
   spokes = L.layerGroup().addTo(map); tmpLayer = L.layerGroup().addTo(map);
@@ -456,6 +495,7 @@ const hideWarn = () => $("banner").classList.remove("on");
 /* ---------- parcours ---------- */
 async function loadCourse(){
   if (!S.pos) return;
+  $("bLoad").classList.add("busy");
   $("courseName").textContent = "Recherche du parcours…";
   const q = `[out:json][timeout:30];
     (way["golf"="green"](around:2500,${S.pos.lat},${S.pos.lon});
@@ -493,6 +533,7 @@ async function loadCourse(){
       if (best && bd < 80 && best.ref) g.name = "Trou " + best.ref;
     }
   }catch(e){}
+  $("bLoad").classList.remove("busy");
   S.greens = greens.concat(readCustom());
   $("courseName").textContent = name || (S.greens.length ? "Parcours non nommé" : "Parcours inconnu");
   if (!greens.length) warn("Parcours absent d'OpenStreetMap. Utilisez <b>DÉTECT</b> au centre d'un green, ou <b>TRACER</b>.");
@@ -505,7 +546,7 @@ function drawGreens(){
     const sel = S.sel && S.sel.id === g.id;
     g.layer = L.polygon(g.coords, { color: sel?"#C9A227":"#8FC0A1", weight: sel?2.5:1.5, opacity:.9,
       fillColor: sel?"#C9A227":"#8FC0A1", fillOpacity: sel?.22:.12 }).addTo(gLayer);
-    g.layer.on("click", () => { S.sel = g; refresh(); });
+    g.layer.on("click", () => { if (!S.mode){ S.sel = g; refresh(); } });
     L.marker(ctr(g.coords), { icon:L.divIcon({ className:"gtag"+(sel?" sel":""), html:"<span>"+g.name+"</span>" }), interactive:false }).addTo(tagLayer);
   });
 }
@@ -549,15 +590,13 @@ function grow(px, tol){
   }
   return { mask, n, lim };
 }
-/* Rayons lissés par médiane circulaire : supprime les pointes du masque brut. */
 function contour(px, reg, ll){
   const { size, m } = px, { mask, lim } = reg;
   let sx=0, sy=0, n=0;
   for (let i=0;i<mask.length;i++) if (mask[i]){ sx+=i%size; sy+=(i/size)|0; n++; }
   if (n < 60) return null;
   sx/=n; sy/=n;
-  const N = 72, rad = new Float32Array(N);
-  let leak = 0;
+  const N = 72, rad = new Float32Array(N); let leak = 0;
   for (let k=0;k<N;k++){
     const t = k*(360/N)*D2R, ux = Math.sin(t), uy = -Math.cos(t);
     let r=0, miss=0;
@@ -593,8 +632,7 @@ function runDetect(ll){
 }
 function applyDetect(){
   const { px, ll } = S.detect, c = contour(px, grow(px, +$("tol").value), ll);
-  tmpLayer.clearLayers();
-  $("tolWrap").classList.add("on");
+  tmpLayer.clearLayers(); $("tolWrap").classList.add("on");
   if (!c){ msg("Rien de cohérent ici. Visez le centre du green ou montez l'étendue."); return; }
   S.detect.ring = c.ring;
   L.polygon(c.ring, { color:"#C9A227", weight:2.5, fillColor:"#C9A227", fillOpacity:.28 }).addTo(tmpLayer);
@@ -611,7 +649,7 @@ function pushDraft(ll){
   tmpLayer.clearLayers();
   if (S.draft.length > 1) L.polygon(S.draft, { color:"#C9A227", weight:2, fillColor:"#C9A227", fillOpacity:.2 }).addTo(tmpLayer);
   S.draft.forEach(p => L.circleMarker(p, { radius:4, color:"#C9A227", fillOpacity:1 }).addTo(tmpLayer));
-  msg(S.draft.length + " point" + (S.draft.length>1?"s":"") + " — 3 minimum.");
+  msg(S.draft.length + " point" + (S.draft.length>1?"s":"") + " — 3 minimum, puis Garder.");
 }
 function readCustom(){ try{ return (JSON.parse(localStorage.getItem(KEY))||[]).map(g=>({...g, src:"draw"})); }catch(e){ return []; } }
 function writeCustom(l){ try{ localStorage.setItem(KEY, JSON.stringify(l.map(g=>({id:g.id,name:g.name,coords:g.coords})))); }catch(e){} }
@@ -667,7 +705,6 @@ function refresh(){
   }
   render(m);
 }
-
 function render(m){
   const nb = (v,n=0) => Number.isFinite(v) ? v.toFixed(n).replace(".",",") : "—";
   const set = (id,v) => $(id).innerHTML = v === "—" ? "—" : v + "<i>m</i>";
@@ -680,6 +717,7 @@ function render(m){
     $("blind").classList.remove("on"); $("cElev").className = "c";
     $("clubName").textContent = "—";
     $("clubMeta").textContent = "Choisissez un green";
+    $("clubIcon").innerHTML = "";
     return;
   }
   $("gName").textContent = S.sel.name;
@@ -695,26 +733,27 @@ function render(m){
   } else { $("dElev").innerHTML = "—"; $("cElev").className = "c"; }
   $("blind").classList.toggle("on", !!(a && a.blind && !compet));
 
-  /* ---- club ---- */
   const raw = S.target === "front" ? m.front.d : S.target === "back" ? m.back.d : (m.front.d + m.back.d)/2;
   const target = raw + dz;
   const p = pickClub(target);
   const where = S.target === "front" ? "au bord avant" : S.target === "back" ? "au bord arrière" : "au centre";
   if (!p){
+    $("clubIcon").innerHTML = "";
     $("clubName").textContent = "Sac vide";
     $("clubMeta").textContent = "Réglez vos distances dans SAC";
-  } else if (p.short){
-    $("clubName").textContent = p.club.n;
+    return;
+  }
+  $("clubIcon").innerHTML = clubSvg(p.club.n, "#C9A227", "#8FC0A1");
+  $("clubName").textContent = p.club.n;
+  if (p.short){
     $("clubMeta").textContent = "Hors de portée : " + Math.round(target) + " m " + where
-      + ", il vous manque " + Math.round(p.gap) + " m";
+      + ", il manque " + Math.round(p.gap) + " m";
   } else {
-    $("clubName").textContent = p.club.n;
-    const base = Math.round(target) + " m " + where
-      + (dz ? " (dénivelé compris)" : "")
-      + " · " + p.club.n.toLowerCase() + " à " + p.club.d + " m";
+    const head = Math.round(target) + " m " + where + (dz ? " (dénivelé compris)" : "")
+      + " · porte " + p.club.d + " m";
     $("clubMeta").textContent = p.gap <= 4 && p.alt
-      ? base + " — limite, " + p.alt.n.toLowerCase() + " si vous frappez long"
-      : base + " — " + (p.gap >= 1 ? "marge de " + Math.round(p.gap) + " m" : "pile la distance");
+      ? head + " — limite, " + p.alt.n.toLowerCase() + " si vous frappez long"
+      : head + " — " + (p.gap >= 1 ? "marge de " + Math.round(p.gap) + " m" : "pile la distance");
   }
 }
 
@@ -724,10 +763,10 @@ function renderBag(){
   S.bag.forEach((c,i) => {
     const row = document.createElement("div");
     row.className = "club" + (c.on ? "" : " off");
-    row.innerHTML = '<span class="nm"></span>'
+    row.innerHTML = '<span class="ic"></span><span class="nm"></span>'
       + '<input type="number" min="0" max="400" step="1" inputmode="numeric">'
-      + '<span class="u">m</span>'
-      + '<span class="tg"><input type="checkbox"><i></i></span>';
+      + '<span class="u">m</span><span class="tg"><input type="checkbox"><i></i></span>';
+    row.querySelector(".ic").innerHTML = clubSvg(c.n, "#2D6A4F", "#123A29");
     row.querySelector(".nm").textContent = c.n;
     const num = row.querySelector('input[type=number]');
     num.value = c.d;
@@ -761,7 +800,10 @@ armTool("bPos","pos","Touchez la carte à l'endroit où vous vous trouvez.");
 $("bLoad").addEventListener("click", loadCourse);
 $("bMe").addEventListener("click", () => { follow = true; if (S.pos) map.setView([S.pos.lat,S.pos.lon], 18); });
 $("bCancel").addEventListener("click", closeBar);
-$("bAgain").addEventListener("click", () => { tmpLayer.clearLayers(); S.detect = null; S.draft = []; $("tolWrap").classList.remove("on"); msg("Touchez à nouveau."); });
+$("bAgain").addEventListener("click", () => {
+  tmpLayer.clearLayers(); S.detect = null; S.draft = []; $("tolWrap").classList.remove("on");
+  msg(S.mode === "draw" ? "Points effacés. Touchez la carte pour recommencer." : "Touchez à nouveau le centre du green.");
+});
 $("bKeep").addEventListener("click", () => {
   if (S.mode === "draw"){ if (S.draft.length < 3){ msg("Il faut au moins trois points."); return; } saveGreen(S.draft.slice()); }
   else if (S.detect && S.detect.ring){ saveGreen(S.detect.ring); }
