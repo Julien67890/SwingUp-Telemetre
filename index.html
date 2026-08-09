@@ -17,6 +17,7 @@
     --gold:#C9A227; --gold-soft:rgba(201,162,39,.16); --alert:#D2643C;
     --serif:"Playfair Display",Georgia,serif;
     --sans:"Poppins",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --cr:0deg;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html{height:100%}
@@ -37,10 +38,15 @@
   button.chip{cursor:pointer}
   button.chip.on{border-color:var(--gold);color:var(--gold);background:var(--gold-soft)}
 
-  #map{flex:1;min-height:0;position:relative;background:#0B1F16}
+  /* ---------- carte rotative ---------- */
+  #map{flex:1;min-height:0;position:relative;overflow:hidden;background:#0B1F16;touch-action:none}
+  #mapInner{position:absolute;transform-origin:50% 50%;will-change:transform}
   .leaflet-container{background:#0B1F16;font-family:var(--sans)}
-  .leaflet-control-attribution{background:rgba(15,51,37,.82)!important;color:var(--mint)!important;font-size:9px!important}
-  .leaflet-control-attribution a{color:var(--mint)!important}
+  #attrib{position:absolute;left:0;bottom:0;z-index:700;padding:3px 7px;
+    background:rgba(15,51,37,.82);color:var(--mint);font-size:9px;line-height:1.3;
+    border-radius:0 7px 0 0;max-width:78%}
+  #attrib a{color:var(--mint)}
+
   .me-icon{background:none!important;border:0!important}
   .beam{position:absolute;inset:0;transform-origin:50% 50%;transition:transform .12s linear;opacity:0}
   .beam.on{opacity:1}
@@ -53,19 +59,23 @@
   .dot{position:absolute;left:50%;top:50%;width:17px;height:17px;margin:-8.5px 0 0 -8.5px;
     border-radius:50%;background:var(--gold);border:3px solid var(--deep);box-shadow:0 1px 4px rgba(0,0,0,.5)}
   .gtag{background:none!important;border:0!important}
-  .gtag span{display:block;transform:translate(-50%,-50%);padding:3px 8px;border-radius:999px;
-    background:rgba(15,51,37,.8);border:1px solid rgba(143,192,161,.35);color:var(--cream);
+  .gtag span{display:block;transform:translate(-50%,-50%) rotate(var(--cr));
+    padding:3px 8px;border-radius:999px;background:rgba(15,51,37,.8);
+    border:1px solid rgba(143,192,161,.35);color:var(--cream);
     font:500 10px/1.2 var(--sans);white-space:nowrap}
   .gtag.sel span{border-color:var(--gold);color:var(--gold);background:rgba(15,51,37,.92)}
 
   #mtools{position:absolute;right:10px;top:10px;z-index:800;display:flex;flex-direction:column;gap:6px}
   .tool{width:44px;height:44px;border-radius:12px;border:1px solid rgba(143,192,161,.3);
     background:rgba(15,51,37,.85);color:var(--mint);cursor:pointer;font:600 8px/1.2 var(--sans);
-    display:grid;place-items:center}
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0}
   .tool:active{background:rgba(45,106,79,.9)}
   .tool.armed{border-color:var(--gold);color:var(--gold)}
   .tool.hide{display:none}
   .tool.busy{opacity:.5}
+  #bRot svg{transform-origin:50% 50%}
+  #rotLab{font:600 6.5px/1 var(--sans);letter-spacing:.08em}
+  #bRot.follow{border-color:var(--gold);color:var(--gold)}
 
   #stack{position:absolute;left:10px;right:10px;bottom:10px;z-index:800;
     display:flex;flex-direction:column;gap:8px;pointer-events:none}
@@ -107,7 +117,7 @@
     font:600 9.5px/1 var(--sans);letter-spacing:.06em;padding:8px 7px;border-radius:7px}
   #seg button.on{background:var(--gold);color:#3A2C00}
   #bBag{flex:none;appearance:none;border:1px solid rgba(201,162,39,.55);background:transparent;color:var(--gold);
-    border-radius:9px;padding:9px 9px;font:600 9px/1 var(--sans);letter-spacing:.08em;cursor:pointer}
+    border-radius:9px;padding:9px;font:600 9px/1 var(--sans);letter-spacing:.08em;cursor:pointer}
   #clubMeta{margin-top:5px;font-size:10.5px;line-height:1.4;color:rgba(241,237,226,.6)}
 
   #cells{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:7px}
@@ -179,15 +189,25 @@
 </header>
 
 <main id="map">
+  <div id="mapInner"></div>
+  <div id="attrib"></div>
+
   <div id="mtools">
+    <button class="tool" id="bRot" title="Orientation de la carte">
+      <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+        <path d="M12 3 L16 20 L12 16.5 L8 20 Z" fill="currentColor"/>
+      </svg>
+      <span id="rotLab">NORD</span>
+    </button>
     <button class="tool" id="bMe" title="Me recentrer">MOI</button>
     <button class="tool" id="bDetect" title="Détecter un green">DÉTECT</button>
     <button class="tool" id="bDraw" title="Tracer un green">TRACER</button>
-    <button class="tool" id="bLoad" title="Recharger les greens du parcours" aria-label="Recharger les greens">
-      <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>
+    <button class="tool" id="bLoad" title="Recharger les greens" aria-label="Recharger les greens">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>
     </button>
     <button class="tool hide" id="bPos" title="Placer ma position">POS.</button>
   </div>
+
   <div id="stack">
     <div id="banner"></div>
     <div id="bar">
@@ -208,7 +228,6 @@
     <span id="blind">Coup aveugle</span>
     <span id="gSub"></span>
   </div>
-
   <div id="clubRow">
     <div id="clubIcon" aria-hidden="true"></div>
     <div id="clubMain">
@@ -225,7 +244,6 @@
       <p id="clubMeta">Choisissez un green</p>
     </div>
   </div>
-
   <div id="cells">
     <div class="c front"><span class="eyebrow">Avant</span><b id="dFront">—</b></div>
     <div class="c"><span class="eyebrow">Arrière</span><b id="dBack">—</b></div>
@@ -269,7 +287,7 @@
   <div id="iCard">
     <p class="eyebrow">Sur n'importe quel parcours</p>
     <p>La vue satellite se centre sur vous, le faisceau montre où pointe le téléphone. Touchez un green : distances à ses quatre bords, dénivelé, et le club conseillé.</p>
-    <p>Réglez vos distances dans <b>SAC</b> — les valeurs de départ sont des moyennes, les vôtres seront plus justes.</p>
+    <p>Tournez la carte à deux doigts, ou touchez la boussole pour qu'elle suive votre regard.</p>
   </div>
   <button class="cta" id="go">Ouvrir la carte <span aria-hidden="true">→</span></button>
 </div>
@@ -290,8 +308,6 @@ const BASE = [
 const FACTOR = { men:1, women:0.80, senior:0.88 };
 const preset = k => BASE.map(([n,d]) => ({ n, d:Math.round(d*FACTOR[k]), on:true }));
 
-/* Silhouette dessinée : la forme de tête et l'ouverture de face
-   varient avec le club, ce qui le rend reconnaissable d'un coup d'œil. */
 function clubShape(name){
   const n = (name||"").toLowerCase();
   if (n.startsWith("driver"))  return { kind:"wood", loft:10, scale:1.12 };
@@ -326,6 +342,7 @@ const S = { pos:null, acc:null, heading:null, greens:[], sel:null,
             mode:null, draft:[], detect:null, alti:null, altiKey:"", altiBusy:false,
             france:null, target:"centre", bag:loadBag() };
 let map, base, meMarker, accRing, spokes, gLayer, tagLayer, tmpLayer, follow = true;
+let rot = 0, rotMode = "north", rotAnim = null;
 
 function loadBag(){
   try{ const b = JSON.parse(localStorage.getItem(BAG)); if (Array.isArray(b) && b.length) return b; }catch(e){}
@@ -386,11 +403,11 @@ function setBase(fr){
   if (S.france === fr) return;
   S.france = fr;
   if (base) map.removeLayer(base);
-  base = L.tileLayer(fr ? IGN : ESRI, { maxNativeZoom:19, maxZoom:21, crossOrigin:"anonymous",
-    attribution: fr ? "Ortho &amp; RGE ALTI &copy; IGN &mdash; greens &copy; OpenStreetMap"
-                    : "Imagerie &copy; Esri &mdash; altitudes Copernicus &mdash; greens &copy; OpenStreetMap"
-  }).addTo(map);
+  base = L.tileLayer(fr ? IGN : ESRI, { maxNativeZoom:19, maxZoom:21, crossOrigin:"anonymous" }).addTo(map);
   base.bringToBack();
+  $("attrib").innerHTML = fr
+    ? "Ortho &amp; RGE ALTI © IGN · greens © OpenStreetMap · Leaflet"
+    : "Imagerie © Esri · altitudes Copernicus · greens © OpenStreetMap · Leaflet";
 }
 async function elevations(pts){
   if (!pts.length) return [];
@@ -408,36 +425,154 @@ async function elevations(pts){
   return (await r.json()).elevation || [];
 }
 
-/* ---------- carte ---------- */
-function initMap(){
-  let start = [46.6, 2.4], z = 5;
-  try{ const l = JSON.parse(localStorage.getItem(LAST)); if (l){ start = [l.lat, l.lon]; z = 18; } }catch(e){}
-  map = L.map("map", { zoomControl:false }).setView(start, z);
+/* =========================================================
+   Rotation : le conteneur Leaflet est carré et surdimensionné
+   (diagonale du cadre visible) puis tourné en CSS. Tous les
+   gestes sont réécrits pour compenser l'angle.
+   ========================================================= */
+function sizeMap(){
+  const w = $("map").clientWidth, h = $("map").clientHeight;
+  const D = Math.ceil(Math.hypot(w, h)) + 2;
+  const inner = $("mapInner");
+  inner.style.width = D + "px"; inner.style.height = D + "px";
+  inner.style.left = ((w - D)/2) + "px"; inner.style.top = ((h - D)/2) + "px";
+  if (map) map.invalidateSize({ animate:false });
+}
+function applyRot(){
+  $("mapInner").style.transform = "rotate(" + rot.toFixed(2) + "deg)";
+  document.documentElement.style.setProperty("--cr", (-rot).toFixed(2) + "deg");
+  const nd = $("bRot").querySelector("svg");
+  if (nd) nd.style.transform = "rotate(" + rot.toFixed(2) + "deg)";
+}
+function setRot(deg){ rot = wrap(deg); applyRot(); }
+function animRotTo(target, done){
+  if (rotAnim) cancelAnimationFrame(rotAnim);
+  const step = () => {
+    const d = wrap(target - rot);
+    if (Math.abs(d) < 0.4){ setRot(target); rotAnim = null; if (done) done(); return; }
+    setRot(rot + d*0.22);
+    rotAnim = requestAnimationFrame(step);
+  };
+  step();
+}
+function setRotMode(m, quiet){
+  rotMode = m;
+  $("rotLab").textContent = m === "north" ? "NORD" : m === "free" ? "LIBRE" : "CAP";
+  $("bRot").classList.toggle("follow", m === "compass");
+  if (m === "north") animRotTo(0);
+  if (m === "compass" && S.heading === null && !quiet)
+    msg("Boussole indisponible sur cet appareil ou ce navigateur.");
+}
 
-  /* Sans ça, un appui sur un bouton posé au-dessus de la carte remonte
-     jusqu'à Leaflet et déclenche un clic carte à l'endroit du bouton. */
-  ["mtools","stack"].forEach(id => {
-    const el = $(id);
-    L.DomEvent.disableClickPropagation(el);
-    L.DomEvent.disableScrollPropagation(el);
+/* conversions écran ↔ carte, en tenant compte de la rotation */
+function screenToLatLng(x, y){
+  const r = $("map").getBoundingClientRect();
+  const dx = x - r.width/2, dy = y - r.height/2, a = rot*D2R;
+  const ux =  dx*Math.cos(a) + dy*Math.sin(a);
+  const uy = -dx*Math.sin(a) + dy*Math.cos(a);
+  const s = map.getSize();
+  return map.containerPointToLatLng(L.point(s.x/2 + ux, s.y/2 + uy));
+}
+function unrotate(dx, dy){
+  const a = rot*D2R;
+  return [ dx*Math.cos(a) + dy*Math.sin(a), -dx*Math.sin(a) + dy*Math.cos(a) ];
+}
+
+/* ---------- gestes ---------- */
+function bindGestures(){
+  const el = $("map"), pts = new Map();
+  let g = null;
+  const rel = ev => { const r = el.getBoundingClientRect(); return { x:ev.clientX - r.left, y:ev.clientY - r.top }; };
+  const two = () => { const v = [...pts.values()]; return [v[0], v[1]]; };
+
+  el.addEventListener("pointerdown", ev => {
+    if (ev.target.closest("#mtools, #stack, #attrib")) return;
+    el.setPointerCapture(ev.pointerId);
+    pts.set(ev.pointerId, rel(ev));
+    if (pts.size === 1){
+      g = { kind:"pan", last:rel(ev), moved:0, t:Date.now() };
+    } else if (pts.size === 2){
+      const [a,b] = two();
+      const c = { x:(a.x+b.x)/2, y:(a.y+b.y)/2 };
+      g = { kind:"pinch", d0:Math.hypot(b.x-a.x,b.y-a.y) || 1,
+            a0:Math.atan2(b.y-a.y, b.x-a.x)*R2D, z0:map.getZoom(), rot0:rot,
+            anchor:screenToLatLng(c.x, c.y), twisted:false };
+    }
   });
 
+  el.addEventListener("pointermove", ev => {
+    if (!pts.has(ev.pointerId)) return;
+    pts.set(ev.pointerId, rel(ev));
+    if (!g) return;
+    if (g.kind === "pan" && pts.size === 1){
+      const p = rel(ev), dx = p.x - g.last.x, dy = p.y - g.last.y;
+      g.moved += Math.hypot(dx, dy); g.last = p;
+      const [rx, ry] = unrotate(dx, dy);
+      map.panBy([-rx, -ry], { animate:false });
+      follow = false;
+    } else if (g.kind === "pinch" && pts.size === 2){
+      const [a,b] = two();
+      const d = Math.hypot(b.x-a.x, b.y-a.y) || 1;
+      const ang = Math.atan2(b.y-a.y, b.x-a.x)*R2D;
+      const twist = wrap(ang - g.a0);
+      if (!g.twisted && Math.abs(twist) > 10) g.twisted = true;
+      if (g.twisted && rotMode !== "compass"){
+        if (rotMode === "north") setRotMode("free", true);
+        setRot(g.rot0 + twist);
+      }
+      const z = Math.max(3, Math.min(21, g.z0 + Math.log2(d / g.d0)));
+      map.setZoomAround(g.anchor, z, { animate:false });
+      follow = false;
+    }
+  });
+
+  const up = ev => {
+    if (!pts.has(ev.pointerId)) return;
+    const p = pts.get(ev.pointerId);
+    pts.delete(ev.pointerId);
+    if (g && g.kind === "pan" && g.moved < 9 && Date.now() - g.t < 450) tap(screenToLatLng(p.x, p.y));
+    g = pts.size === 1 ? { kind:"pan", last:[...pts.values()][0], moved:99, t:Date.now() } : null;
+  };
+  el.addEventListener("pointerup", up);
+  el.addEventListener("pointercancel", up);
+
+  el.addEventListener("wheel", ev => {
+    if (ev.target.closest("#mtools, #stack")) return;
+    ev.preventDefault();
+    const r = el.getBoundingClientRect();
+    const ll = screenToLatLng(ev.clientX - r.left, ev.clientY - r.top);
+    map.setZoomAround(ll, Math.max(3, Math.min(21, map.getZoom() - Math.sign(ev.deltaY)*0.5)), { animate:false });
+    follow = false;
+  }, { passive:false });
+}
+
+function tap(ll){
+  if (S.mode === "pos"){ setPos(ll.lat, ll.lng, 5, true); closeBar(); return; }
+  if (S.mode === "draw"){ pushDraft(ll); return; }
+  if (S.mode === "detect"){ runDetect(ll); return; }
+  const hit = hitTest(ll);
+  if (hit){ S.sel = hit; refresh(); }
+}
+
+/* ---------- carte ---------- */
+function initMap(){
+  sizeMap();
+  let start = [46.6, 2.4], z = 5;
+  try{ const l = JSON.parse(localStorage.getItem(LAST)); if (l){ start = [l.lat, l.lon]; z = 18; } }catch(e){}
+  map = L.map("mapInner", { zoomControl:false, attributionControl:false,
+    zoomSnap:0, zoomDelta:0.5, dragging:false, touchZoom:false, scrollWheelZoom:false,
+    doubleClickZoom:false, boxZoom:false, keyboard:false, tap:false, inertia:false }).setView(start, z);
   setBase(inFR({ lat:start[0], lon:start[1] }));
   gLayer = L.layerGroup().addTo(map); tagLayer = L.layerGroup().addTo(map);
   spokes = L.layerGroup().addTo(map); tmpLayer = L.layerGroup().addTo(map);
   meMarker = L.marker(start, { icon:L.divIcon({ className:"me-icon", iconSize:[100,100], iconAnchor:[50,50],
     html:'<div class="beam"></div><div class="dot"></div>' }), interactive:false, zIndexOffset:1000 });
   accRing = L.circle(start, { radius:0, color:"#C9A227", weight:1, opacity:.3, fill:false, interactive:false });
-  map.on("dragstart", () => { follow = false; });
-  map.on("click", e => {
-    if (S.mode === "pos"){ setPos(e.latlng.lat, e.latlng.lng, 5, true); closeBar(); return; }
-    if (S.mode === "draw"){ pushDraft(e.latlng); return; }
-    if (S.mode === "detect"){ runDetect(e.latlng); return; }
-    const hit = hitTest(e.latlng);
-    if (hit){ S.sel = hit; refresh(); }
-  });
-  setTimeout(() => map.invalidateSize(), 120);
-  addEventListener("resize", () => map.invalidateSize());
+  bindGestures();
+  applyRot();
+  setTimeout(sizeMap, 120);
+  addEventListener("resize", sizeMap);
+  addEventListener("orientationchange", () => setTimeout(sizeMap, 250));
 }
 function hitTest(ll){
   let best=null, bd=Infinity;
@@ -483,8 +618,15 @@ async function startCompass(){
     else if (e.absolute && typeof e.alpha === "number") h = (360 - e.alpha) % 360;
     if (h === null) return;
     S.heading = S.heading === null ? h : (S.heading + 0.25*wrap(h - S.heading) + 360) % 360;
-    const el = meMarker.getElement && meMarker.getElement(), beam = el && el.querySelector(".beam");
+    const el = meMarker && meMarker.getElement && meMarker.getElement();
+    const beam = el && el.querySelector(".beam");
     if (beam){ beam.classList.add("on"); beam.style.transform = "rotate(" + S.heading.toFixed(1) + "deg)"; }
+    /* En mode cap, la carte tourne pour que la visée pointe vers le haut.
+       Lissage volontairement lourd : le magnétomètre est bruité. */
+    if (rotMode === "compass"){
+      if (rotAnim){ cancelAnimationFrame(rotAnim); rotAnim = null; }
+      setRot(rot + 0.10*wrap(-S.heading - rot));
+    }
   };
   addEventListener("deviceorientationabsolute", on);
   addEventListener("deviceorientation", on);
@@ -545,8 +687,7 @@ function drawGreens(){
     if (!g.name) g.name = "Green " + (i+1);
     const sel = S.sel && S.sel.id === g.id;
     g.layer = L.polygon(g.coords, { color: sel?"#C9A227":"#8FC0A1", weight: sel?2.5:1.5, opacity:.9,
-      fillColor: sel?"#C9A227":"#8FC0A1", fillOpacity: sel?.22:.12 }).addTo(gLayer);
-    g.layer.on("click", () => { if (!S.mode){ S.sel = g; refresh(); } });
+      fillColor: sel?"#C9A227":"#8FC0A1", fillOpacity: sel?.22:.12, interactive:false }).addTo(gLayer);
     L.marker(ctr(g.coords), { icon:L.divIcon({ className:"gtag"+(sel?" sel":""), html:"<span>"+g.name+"</span>" }), interactive:false }).addTo(tagLayer);
   });
 }
@@ -635,7 +776,7 @@ function applyDetect(){
   tmpLayer.clearLayers(); $("tolWrap").classList.add("on");
   if (!c){ msg("Rien de cohérent ici. Visez le centre du green ou montez l'étendue."); return; }
   S.detect.ring = c.ring;
-  L.polygon(c.ring, { color:"#C9A227", weight:2.5, fillColor:"#C9A227", fillOpacity:.28 }).addTo(tmpLayer);
+  L.polygon(c.ring, { color:"#C9A227", weight:2.5, fillColor:"#C9A227", fillOpacity:.28, interactive:false }).addTo(tmpLayer);
   const dia = Math.round(Math.sqrt(c.area/Math.PI)*2), a = Math.round(c.area);
   msg(c.leak ? "Le contour déborde — baissez l'étendue."
      : a < 200 ? a + " m², " + dia + " m — un peu petit pour un green, montez l'étendue."
@@ -647,8 +788,8 @@ const msg = t => { $("barMsg").innerHTML = t; $("bar").classList.add("on"); };
 function pushDraft(ll){
   S.draft.push([ll.lat, ll.lng]);
   tmpLayer.clearLayers();
-  if (S.draft.length > 1) L.polygon(S.draft, { color:"#C9A227", weight:2, fillColor:"#C9A227", fillOpacity:.2 }).addTo(tmpLayer);
-  S.draft.forEach(p => L.circleMarker(p, { radius:4, color:"#C9A227", fillOpacity:1 }).addTo(tmpLayer));
+  if (S.draft.length > 1) L.polygon(S.draft, { color:"#C9A227", weight:2, fillColor:"#C9A227", fillOpacity:.2, interactive:false }).addTo(tmpLayer);
+  S.draft.forEach(p => L.circleMarker(p, { radius:4, color:"#C9A227", fillOpacity:1, interactive:false }).addTo(tmpLayer));
   msg(S.draft.length + " point" + (S.draft.length>1?"s":"") + " — 3 minimum, puis Garder.");
 }
 function readCustom(){ try{ return (JSON.parse(localStorage.getItem(KEY))||[]).map(g=>({...g, src:"draw"})); }catch(e){ return []; } }
@@ -709,16 +850,13 @@ function render(m){
   const nb = (v,n=0) => Number.isFinite(v) ? v.toFixed(n).replace(".",",") : "—";
   const set = (id,v) => $(id).innerHTML = v === "—" ? "—" : v + "<i>m</i>";
   const compet = $("compet").classList.contains("on");
-
   if (!m || !S.sel){
     $("gName").textContent = S.greens.length ? "Touchez un green" : (S.pos ? "Aucun green trouvé" : "En attente de position");
     $("gSub").textContent = "";
     ["dFront","dBack","dLeft","dRight","dElev"].forEach(i => set(i,"—"));
     $("blind").classList.remove("on"); $("cElev").className = "c";
-    $("clubName").textContent = "—";
-    $("clubMeta").textContent = "Choisissez un green";
-    $("clubIcon").innerHTML = "";
-    return;
+    $("clubName").textContent = "—"; $("clubMeta").textContent = "Choisissez un green";
+    $("clubIcon").innerHTML = ""; return;
   }
   $("gName").textContent = S.sel.name;
   $("gSub").textContent = Math.round(m.width) + " m large"
@@ -734,14 +872,11 @@ function render(m){
   $("blind").classList.toggle("on", !!(a && a.blind && !compet));
 
   const raw = S.target === "front" ? m.front.d : S.target === "back" ? m.back.d : (m.front.d + m.back.d)/2;
-  const target = raw + dz;
-  const p = pickClub(target);
+  const target = raw + dz, p = pickClub(target);
   const where = S.target === "front" ? "au bord avant" : S.target === "back" ? "au bord arrière" : "au centre";
   if (!p){
-    $("clubIcon").innerHTML = "";
-    $("clubName").textContent = "Sac vide";
-    $("clubMeta").textContent = "Réglez vos distances dans SAC";
-    return;
+    $("clubIcon").innerHTML = ""; $("clubName").textContent = "Sac vide";
+    $("clubMeta").textContent = "Réglez vos distances dans SAC"; return;
   }
   $("clubIcon").innerHTML = clubSvg(p.club.n, "#C9A227", "#8FC0A1");
   $("clubName").textContent = p.club.n;
@@ -749,8 +884,7 @@ function render(m){
     $("clubMeta").textContent = "Hors de portée : " + Math.round(target) + " m " + where
       + ", il manque " + Math.round(p.gap) + " m";
   } else {
-    const head = Math.round(target) + " m " + where + (dz ? " (dénivelé compris)" : "")
-      + " · porte " + p.club.d + " m";
+    const head = Math.round(target) + " m " + where + (dz ? " (dénivelé compris)" : "") + " · porte " + p.club.d + " m";
     $("clubMeta").textContent = p.gap <= 4 && p.alt
       ? head + " — limite, " + p.alt.n.toLowerCase() + " si vous frappez long"
       : head + " — " + (p.gap >= 1 ? "marge de " + Math.round(p.gap) + " m" : "pile la distance");
@@ -792,11 +926,21 @@ document.querySelectorAll("#presets button").forEach(b => b.addEventListener("cl
 /* ---------- outils ---------- */
 const armTool = (id, mode, text) => $(id).addEventListener("click", () => {
   const on = S.mode !== mode; closeBar();
-  if (on){ S.mode = mode; $(id).classList.add("armed"); msg(text); }
+  if (!on) return;
+  S.mode = mode; $(id).classList.add("armed");
+  /* La lecture des pixels et le placement des points supposent une carte
+     au nord : on y revient avant de cartographier. */
+  if (Math.abs(rot) > 0.5 || rotMode !== "north"){
+    setRotMode("north");
+    msg("Carte remise au nord pour cartographier. " + text);
+  } else msg(text);
 });
 armTool("bDetect","detect","Touchez le centre du green à détecter.");
 armTool("bDraw","draw","Touchez la carte pour poser les points du contour.");
 armTool("bPos","pos","Touchez la carte à l'endroit où vous vous trouvez.");
+$("bRot").addEventListener("click", () => {
+  setRotMode(rotMode === "north" ? "free" : rotMode === "free" ? "compass" : "north");
+});
 $("bLoad").addEventListener("click", loadCourse);
 $("bMe").addEventListener("click", () => { follow = true; if (S.pos) map.setView([S.pos.lat,S.pos.lon], 18); });
 $("bCancel").addEventListener("click", closeBar);
