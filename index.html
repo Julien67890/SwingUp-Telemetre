@@ -27,7 +27,10 @@
 
   #top{flex:none;display:flex;align-items:center;gap:10px;background:var(--deep);
     padding:calc(9px + env(safe-area-inset-top)) 13px 9px}
-  .mk{width:34px;height:34px;border-radius:10px;background:var(--moss);display:grid;place-items:center;flex:none}
+  /* ---- LOGO : remplacer le contenu de .mk par <img src="…"> le moment venu ---- */
+  .mk{width:34px;height:34px;border-radius:10px;background:var(--moss);display:grid;place-items:center;
+    flex:none;overflow:hidden}
+  .mk img{width:100%;height:100%;object-fit:cover;display:block}
   #ttl{min-width:0}
   #ttl h1{margin:0;font:500 15px/1.1 var(--serif)}
   #ttl p{margin:2px 0 0;font:600 8.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--mint);
@@ -38,14 +41,11 @@
   button.chip{cursor:pointer}
   button.chip.on{border-color:var(--gold);color:var(--gold);background:var(--gold-soft)}
 
-  /* ---------- carte rotative ---------- */
   #map{flex:1;min-height:0;position:relative;overflow:hidden;background:#0B1F16;touch-action:none}
   #mapInner{position:absolute;transform-origin:50% 50%;will-change:transform}
   .leaflet-container{background:#0B1F16;font-family:var(--sans)}
   #attrib{position:absolute;left:0;bottom:0;z-index:700;padding:3px 7px;
-    background:rgba(15,51,37,.82);color:var(--mint);font-size:9px;line-height:1.3;
-    border-radius:0 7px 0 0;max-width:78%}
-  #attrib a{color:var(--mint)}
+    background:rgba(15,51,37,.82);color:var(--mint);font-size:9px;line-height:1.3;border-radius:0 7px 0 0;max-width:78%}
 
   .me-icon{background:none!important;border:0!important}
   .beam{position:absolute;inset:0;transform-origin:50% 50%;transition:transform .12s linear;opacity:0}
@@ -61,8 +61,7 @@
   .gtag{background:none!important;border:0!important}
   .gtag span{display:block;transform:translate(-50%,-50%) rotate(var(--cr));
     padding:3px 8px;border-radius:999px;background:rgba(15,51,37,.8);
-    border:1px solid rgba(143,192,161,.35);color:var(--cream);
-    font:500 10px/1.2 var(--sans);white-space:nowrap}
+    border:1px solid rgba(143,192,161,.35);color:var(--cream);font:500 10px/1.2 var(--sans);white-space:nowrap}
   .gtag.sel span{border-color:var(--gold);color:var(--gold);background:rgba(15,51,37,.92)}
 
   #mtools{position:absolute;right:10px;top:10px;z-index:800;display:flex;flex-direction:column;gap:6px}
@@ -128,6 +127,48 @@
   .c b i{font:500 9px/1 var(--sans);font-style:normal;color:rgba(18,58,41,.42);margin-left:1px}
   .c.up b{color:var(--alert)} .c.down b{color:var(--moss)}
 
+  /* ---------- boîtes de dialogue maison ---------- */
+  .modal{position:fixed;inset:0;z-index:1800;display:none;justify-content:center;
+    background:rgba(9,24,17,.74);padding:16px}
+  .modal.on{display:flex}
+  .modal.bottom{align-items:flex-end}
+  .modal.mid{align-items:center}
+  .mcard{width:100%;max-width:430px;background:var(--cream);color:var(--ink);
+    border-radius:20px;padding:19px 18px calc(18px + env(safe-area-inset-bottom));
+    box-shadow:0 14px 40px rgba(0,0,0,.4)}
+  .mcard h3{margin:7px 0 0;font:600 21px/1.18 var(--serif)}
+  .mcard h3 em{font-style:italic;color:var(--moss)}
+  .msub{margin:6px 0 0;font-size:12.5px;line-height:1.5;color:rgba(18,58,41,.55)}
+  #askInput{width:100%;margin-top:15px;background:#fff;border:1.5px solid rgba(18,58,41,.16);
+    color:var(--ink);font:600 17px/1 var(--serif);padding:15px 14px;border-radius:13px}
+  #askInput:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
+  #askChips{display:flex;gap:6px;margin-top:11px;overflow-x:auto;padding-bottom:3px;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  #askChips::-webkit-scrollbar{display:none}
+  #askChips button{flex:none;appearance:none;border:1px solid rgba(18,58,41,.16);background:var(--cream-2);
+    color:var(--ink);border-radius:999px;padding:9px 13px;font:500 12px/1 var(--sans);cursor:pointer;white-space:nowrap}
+  #askChips button:active{background:var(--gold-soft);border-color:var(--gold)}
+  .mrow{display:flex;gap:8px;margin-top:16px}
+  .mbtn{flex:1;appearance:none;border:0;border-radius:13px;padding:15px 12px;cursor:pointer;
+    font:500 14px/1 var(--sans);display:flex;align-items:center;justify-content:center;gap:8px}
+  .mbtn.pri{background:var(--moss);color:var(--cream-2)}
+  .mbtn.pri:active{background:#255840}
+  .mbtn.sec{background:transparent;color:rgba(18,58,41,.62);border:1px solid rgba(18,58,41,.18)}
+  .mbtn.dgr{background:transparent;color:var(--alert);border:1px solid rgba(210,100,60,.45)}
+  .mbtn.dgr.armed{background:var(--alert);color:#fff;border-color:var(--alert)}
+  .mbtn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  .mlist{margin-top:15px;display:flex;flex-direction:column;gap:7px}
+  .mlist button{appearance:none;display:flex;align-items:center;gap:12px;width:100%;
+    background:var(--cream-2);border:1px solid rgba(18,58,41,.1);border-radius:13px;
+    padding:14px 14px;cursor:pointer;color:var(--ink);font:500 14px/1.25 var(--sans);text-align:left}
+  .mlist button:active{background:var(--gold-soft)}
+  .mlist button .gl{flex:none;width:32px;height:32px;border-radius:9px;background:var(--moss);
+    display:grid;place-items:center;color:var(--cream-2)}
+  .mlist button small{display:block;margin-top:2px;font:400 11px/1.35 var(--sans);color:rgba(18,58,41,.5)}
+  .mlist button.dgr{border-color:rgba(210,100,60,.3);color:var(--alert)}
+  .mlist button.dgr .gl{background:var(--alert)}
+  .mlist button.dgr small{color:rgba(210,100,60,.75)}
+
   #bag{position:fixed;inset:0;z-index:1500;background:var(--cream);color:var(--ink);display:none;flex-direction:column}
   #bag.on{display:flex}
   #bagTop{flex:none;display:flex;align-items:center;gap:10px;background:var(--deep);color:var(--cream);
@@ -178,7 +219,7 @@
 <body>
 
 <header id="top">
-  <div class="mk" aria-hidden="true">
+  <div class="mk" id="logo" aria-hidden="true">
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M6 21V3.5l11 4.2L6 12" stroke="#F1EDE2" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="17" cy="16" r="2" fill="#C9A227"/></svg>
   </div>
   <div id="ttl"><h1>Greens</h1><p id="courseName">Carte de score</p></div>
@@ -191,12 +232,9 @@
 <main id="map">
   <div id="mapInner"></div>
   <div id="attrib"></div>
-
   <div id="mtools">
     <button class="tool" id="bRot" title="Orientation de la carte">
-      <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
-        <path d="M12 3 L16 20 L12 16.5 L8 20 Z" fill="currentColor"/>
-      </svg>
+      <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M12 3 L16 20 L12 16.5 L8 20 Z" fill="currentColor"/></svg>
       <span id="rotLab">NORD</span>
     </button>
     <button class="tool" id="bMe" title="Me recentrer">MOI</button>
@@ -207,7 +245,6 @@
     </button>
     <button class="tool hide" id="bPos" title="Placer ma position">POS.</button>
   </div>
-
   <div id="stack">
     <div id="banner"></div>
     <div id="bar">
@@ -235,9 +272,7 @@
       <div id="line1">
         <span id="clubName">—</span>
         <div id="seg" role="group" aria-label="Cible visée">
-          <button data-t="front">AV</button>
-          <button data-t="centre" class="on">CEN</button>
-          <button data-t="back">ARR</button>
+          <button data-t="front">AV</button><button data-t="centre" class="on">CEN</button><button data-t="back">ARR</button>
         </div>
         <button id="bBag" aria-label="Mon sac">SAC</button>
       </div>
@@ -252,6 +287,42 @@
     <div class="c" id="cElev"><span class="eyebrow">Déniv.</span><b id="dElev">—</b></div>
   </div>
 </footer>
+
+<!-- ============ nommer ============ -->
+<div class="modal mid" id="ask" role="dialog" aria-modal="true" aria-labelledby="askTitle">
+  <div class="mcard">
+    <p class="eyebrow">Green</p>
+    <h3 id="askTitle">Comment s'appelle <em>ce green ?</em></h3>
+    <p class="msub" id="askSub">Un nom court se lit mieux sur la carte.</p>
+    <input id="askInput" type="text" maxlength="28" autocomplete="off" spellcheck="false" placeholder="Trou 7">
+    <div id="askChips"></div>
+    <div class="mrow">
+      <button class="mbtn sec" id="askNo">Annuler</button>
+      <button class="mbtn pri" id="askYes">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ appui long ============ -->
+<div class="modal bottom" id="ctx" role="dialog" aria-modal="true" aria-labelledby="ctxName">
+  <div class="mcard">
+    <p class="eyebrow" id="ctxKind">Green tracé</p>
+    <h3 id="ctxName">—</h3>
+    <p class="msub" id="ctxSub"></p>
+    <div class="mlist">
+      <button id="ctxRename"><span class="gl">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      </span><span>Renommer<small>Changer le nom affiché sur la carte</small></span></button>
+      <button id="ctxRedraw"><span class="gl">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
+      </span><span>Retracer le contour<small>Reposer les points à la main</small></span></button>
+      <button id="ctxDel" class="dgr"><span class="gl">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg>
+      </span><span id="ctxDelLbl">Supprimer<small>Retirer ce green de la carte</small></span></button>
+    </div>
+    <div class="mrow"><button class="mbtn sec" id="ctxClose">Fermer</button></div>
+  </div>
+</div>
 
 <div id="bag" role="dialog" aria-label="Mon sac">
   <div id="bagTop">
@@ -286,8 +357,8 @@
   <h2>Touchez le green,<br><em>prenez le bon club.</em></h2>
   <div id="iCard">
     <p class="eyebrow">Sur n'importe quel parcours</p>
-    <p>La vue satellite se centre sur vous, le faisceau montre où pointe le téléphone. Touchez un green : distances à ses quatre bords, dénivelé, et le club conseillé.</p>
-    <p>Tournez la carte à deux doigts, ou touchez la boussole pour qu'elle suive votre regard.</p>
+    <p>Touchez un green : distances à ses quatre bords, dénivelé, et le club conseillé. Tournez la carte à deux doigts.</p>
+    <p><b>Appui long</b> sur un green pour le renommer, le retracer ou le supprimer.</p>
   </div>
   <button class="cta" id="go">Ouvrir la carte <span aria-hidden="true">→</span></button>
 </div>
@@ -298,7 +369,7 @@
 "use strict";
 const $ = id => document.getElementById(id);
 const R_E = 6371008.8, D2R = Math.PI/180, R2D = 180/Math.PI;
-const KEY = "greens.custom.v2", LAST = "greens.last.v1", BAG = "greens.bag.v1";
+const KEY = "greens.custom.v2", LAST = "greens.last.v1", BAG = "greens.bag.v1", OVER = "greens.over.v1";
 
 const BASE = [
   ["Driver",200],["Bois 3",185],["Bois 5",170],["Hybride",160],
@@ -322,10 +393,8 @@ function clubShape(name){
 }
 function clubSvg(name, gold, mint){
   const s = clubShape(name);
-  const head = s.kind === "wood"
-    ? '<path d="M25 40 C25 54 14 61 7 55 C0 49 4 39 14 39 Z"/>'
-    : s.kind === "hyb"
-    ? '<path d="M25 40 C25 51 16 57 10 52 C4 47 7 39 15 39 Z"/>'
+  const head = s.kind === "wood" ? '<path d="M25 40 C25 54 14 61 7 55 C0 49 4 39 14 39 Z"/>'
+    : s.kind === "hyb" ? '<path d="M25 40 C25 51 16 57 10 52 C4 47 7 39 15 39 Z"/>'
     : '<path d="M25 39 L25 57 L7 57 L11 40 Z"/>';
   const grooves = (s.kind === "iron" || s.kind === "wedge")
     ? [45,48.5,52].map(y => '<line x1="11" y1="'+y+'" x2="23" y2="'+y+'" stroke="#3A2C00" stroke-width="1.1" opacity=".55"/>').join("")
@@ -338,17 +407,19 @@ function clubSvg(name, gold, mint){
     + head + grooves + '</g></svg>';
 }
 
-const S = { pos:null, acc:null, heading:null, greens:[], sel:null,
+const S = { pos:null, acc:null, heading:null, greens:[], sel:null, ctx:null, replaceId:null,
             mode:null, draft:[], detect:null, alti:null, altiKey:"", altiBusy:false,
-            france:null, target:"centre", bag:loadBag() };
+            france:null, target:"centre", bag:loadBag(), over:loadOver() };
 let map, base, meMarker, accRing, spokes, gLayer, tagLayer, tmpLayer, follow = true;
-let rot = 0, rotMode = "north", rotAnim = null;
+let rot = 0, rotMode = "north", rotAnim = null, askResolve = null;
 
 function loadBag(){
   try{ const b = JSON.parse(localStorage.getItem(BAG)); if (Array.isArray(b) && b.length) return b; }catch(e){}
   return preset("men");
 }
 const saveBag = () => { try{ localStorage.setItem(BAG, JSON.stringify(S.bag)); }catch(e){} };
+function loadOver(){ try{ const o = JSON.parse(localStorage.getItem(OVER)); if (o && o.names) return o; }catch(e){} return { names:{}, hidden:[] }; }
+const saveOver = () => { try{ localStorage.setItem(OVER, JSON.stringify(S.over)); }catch(e){} };
 
 /* ---------- géométrie ---------- */
 const loc   = (la,lo,la0,lo0) => [ (lo-lo0)*D2R*R_E*Math.cos(la0*D2R), (la-la0)*D2R*R_E ];
@@ -381,8 +452,13 @@ function measure(g, pos){
     if (rel > right.rel) right = { rel, d:Math.hypot(p[0],p[1]), x:p[0], y:p[1] };
   }
   return { axis, front, back, left, right, centre:{ d:Math.hypot(cx,cy), x:cx, y:cy },
-           width:Math.hypot(left.x-right.x, left.y-right.y),
+           width:Math.hypot(left.x-right.x, left.y-right.y), area:polyArea(P),
            ll:p => unloc(p.x,p.y,pos.lat,pos.lon) };
+}
+function polyArea(P){
+  let a = 0;
+  for (let i=0;i<P.length;i++){ const b=P[(i+1)%P.length]; a += P[i][0]*b[1] - b[0]*P[i][1]; }
+  return Math.abs(a/2);
 }
 function pickClub(target){
   const list = S.bag.filter(c => c.on && c.d > 0).sort((a,b) => b.d - a.d);
@@ -405,9 +481,8 @@ function setBase(fr){
   if (base) map.removeLayer(base);
   base = L.tileLayer(fr ? IGN : ESRI, { maxNativeZoom:19, maxZoom:21, crossOrigin:"anonymous" }).addTo(map);
   base.bringToBack();
-  $("attrib").innerHTML = fr
-    ? "Ortho &amp; RGE ALTI © IGN · greens © OpenStreetMap · Leaflet"
-    : "Imagerie © Esri · altitudes Copernicus · greens © OpenStreetMap · Leaflet";
+  $("attrib").innerHTML = fr ? "Ortho &amp; RGE ALTI © IGN · greens © OpenStreetMap · Leaflet"
+                             : "Imagerie © Esri · altitudes Copernicus · greens © OpenStreetMap · Leaflet";
 }
 async function elevations(pts){
   if (!pts.length) return [];
@@ -425,15 +500,10 @@ async function elevations(pts){
   return (await r.json()).elevation || [];
 }
 
-/* =========================================================
-   Rotation : le conteneur Leaflet est carré et surdimensionné
-   (diagonale du cadre visible) puis tourné en CSS. Tous les
-   gestes sont réécrits pour compenser l'angle.
-   ========================================================= */
+/* ---------- rotation ---------- */
 function sizeMap(){
   const w = $("map").clientWidth, h = $("map").clientHeight;
-  const D = Math.ceil(Math.hypot(w, h)) + 2;
-  const inner = $("mapInner");
+  const D = Math.ceil(Math.hypot(w, h)) + 2, inner = $("mapInner");
   inner.style.width = D + "px"; inner.style.height = D + "px";
   inner.style.left = ((w - D)/2) + "px"; inner.style.top = ((h - D)/2) + "px";
   if (map) map.invalidateSize({ animate:false });
@@ -444,14 +514,13 @@ function applyRot(){
   const nd = $("bRot").querySelector("svg");
   if (nd) nd.style.transform = "rotate(" + rot.toFixed(2) + "deg)";
 }
-function setRot(deg){ rot = wrap(deg); applyRot(); }
-function animRotTo(target, done){
+function setRot(d){ rot = wrap(d); applyRot(); }
+function animRotTo(t){
   if (rotAnim) cancelAnimationFrame(rotAnim);
   const step = () => {
-    const d = wrap(target - rot);
-    if (Math.abs(d) < 0.4){ setRot(target); rotAnim = null; if (done) done(); return; }
-    setRot(rot + d*0.22);
-    rotAnim = requestAnimationFrame(step);
+    const d = wrap(t - rot);
+    if (Math.abs(d) < 0.4){ setRot(t); rotAnim = null; return; }
+    setRot(rot + d*0.22); rotAnim = requestAnimationFrame(step);
   };
   step();
 }
@@ -460,11 +529,8 @@ function setRotMode(m, quiet){
   $("rotLab").textContent = m === "north" ? "NORD" : m === "free" ? "LIBRE" : "CAP";
   $("bRot").classList.toggle("follow", m === "compass");
   if (m === "north") animRotTo(0);
-  if (m === "compass" && S.heading === null && !quiet)
-    msg("Boussole indisponible sur cet appareil ou ce navigateur.");
+  if (m === "compass" && S.heading === null && !quiet) msg("Boussole indisponible sur cet appareil.");
 }
-
-/* conversions écran ↔ carte, en tenant compte de la rotation */
 function screenToLatLng(x, y){
   const r = $("map").getBoundingClientRect();
   const dx = x - r.width/2, dy = y - r.height/2, a = rot*D2R;
@@ -484,19 +550,25 @@ function bindGestures(){
   let g = null;
   const rel = ev => { const r = el.getBoundingClientRect(); return { x:ev.clientX - r.left, y:ev.clientY - r.top }; };
   const two = () => { const v = [...pts.values()]; return [v[0], v[1]]; };
+  const killLP = () => { if (g && g.lp){ clearTimeout(g.lp); g.lp = null; } };
 
   el.addEventListener("pointerdown", ev => {
     if (ev.target.closest("#mtools, #stack, #attrib")) return;
     el.setPointerCapture(ev.pointerId);
     pts.set(ev.pointerId, rel(ev));
     if (pts.size === 1){
-      g = { kind:"pan", last:rel(ev), moved:0, t:Date.now() };
+      g = { kind:"pan", last:rel(ev), moved:0, t:Date.now(), lpFired:false };
+      const p = g.last;
+      g.lp = setTimeout(() => {
+        g.lpFired = true; g.lp = null;
+        if (navigator.vibrate) navigator.vibrate(14);
+        longPress(screenToLatLng(p.x, p.y));
+      }, 520);
     } else if (pts.size === 2){
-      const [a,b] = two();
-      const c = { x:(a.x+b.x)/2, y:(a.y+b.y)/2 };
-      g = { kind:"pinch", d0:Math.hypot(b.x-a.x,b.y-a.y) || 1,
-            a0:Math.atan2(b.y-a.y, b.x-a.x)*R2D, z0:map.getZoom(), rot0:rot,
-            anchor:screenToLatLng(c.x, c.y), twisted:false };
+      killLP();
+      const [a,b] = two(), c = { x:(a.x+b.x)/2, y:(a.y+b.y)/2 };
+      g = { kind:"pinch", d0:Math.hypot(b.x-a.x,b.y-a.y) || 1, a0:Math.atan2(b.y-a.y, b.x-a.x)*R2D,
+            z0:map.getZoom(), rot0:rot, anchor:screenToLatLng(c.x, c.y), twisted:false };
     }
   });
 
@@ -507,21 +579,21 @@ function bindGestures(){
     if (g.kind === "pan" && pts.size === 1){
       const p = rel(ev), dx = p.x - g.last.x, dy = p.y - g.last.y;
       g.moved += Math.hypot(dx, dy); g.last = p;
+      if (g.moved > 10) killLP();
+      if (g.lpFired) return;
       const [rx, ry] = unrotate(dx, dy);
       map.panBy([-rx, -ry], { animate:false });
       follow = false;
     } else if (g.kind === "pinch" && pts.size === 2){
       const [a,b] = two();
       const d = Math.hypot(b.x-a.x, b.y-a.y) || 1;
-      const ang = Math.atan2(b.y-a.y, b.x-a.x)*R2D;
-      const twist = wrap(ang - g.a0);
+      const twist = wrap(Math.atan2(b.y-a.y, b.x-a.x)*R2D - g.a0);
       if (!g.twisted && Math.abs(twist) > 10) g.twisted = true;
       if (g.twisted && rotMode !== "compass"){
         if (rotMode === "north") setRotMode("free", true);
         setRot(g.rot0 + twist);
       }
-      const z = Math.max(3, Math.min(21, g.z0 + Math.log2(d / g.d0)));
-      map.setZoomAround(g.anchor, z, { animate:false });
+      map.setZoomAround(g.anchor, Math.max(3, Math.min(21, g.z0 + Math.log2(d / g.d0))), { animate:false });
       follow = false;
     }
   });
@@ -530,8 +602,10 @@ function bindGestures(){
     if (!pts.has(ev.pointerId)) return;
     const p = pts.get(ev.pointerId);
     pts.delete(ev.pointerId);
-    if (g && g.kind === "pan" && g.moved < 9 && Date.now() - g.t < 450) tap(screenToLatLng(p.x, p.y));
-    g = pts.size === 1 ? { kind:"pan", last:[...pts.values()][0], moved:99, t:Date.now() } : null;
+    killLP();
+    if (g && g.kind === "pan" && !g.lpFired && g.moved < 9 && Date.now() - g.t < 450)
+      tap(screenToLatLng(p.x, p.y));
+    g = pts.size === 1 ? { kind:"pan", last:[...pts.values()][0], moved:99, t:Date.now(), lpFired:true } : null;
   };
   el.addEventListener("pointerup", up);
   el.addEventListener("pointercancel", up);
@@ -553,23 +627,27 @@ function tap(ll){
   const hit = hitTest(ll);
   if (hit){ S.sel = hit; refresh(); }
 }
+function longPress(ll){
+  if (S.mode) return;
+  const hit = hitTest(ll);
+  if (hit){ S.sel = hit; refresh(); openCtx(hit); }
+}
 
 /* ---------- carte ---------- */
 function initMap(){
   sizeMap();
   let start = [46.6, 2.4], z = 5;
   try{ const l = JSON.parse(localStorage.getItem(LAST)); if (l){ start = [l.lat, l.lon]; z = 18; } }catch(e){}
-  map = L.map("mapInner", { zoomControl:false, attributionControl:false,
-    zoomSnap:0, zoomDelta:0.5, dragging:false, touchZoom:false, scrollWheelZoom:false,
-    doubleClickZoom:false, boxZoom:false, keyboard:false, tap:false, inertia:false }).setView(start, z);
+  map = L.map("mapInner", { zoomControl:false, attributionControl:false, zoomSnap:0, zoomDelta:0.5,
+    dragging:false, touchZoom:false, scrollWheelZoom:false, doubleClickZoom:false,
+    boxZoom:false, keyboard:false, tap:false, inertia:false }).setView(start, z);
   setBase(inFR({ lat:start[0], lon:start[1] }));
   gLayer = L.layerGroup().addTo(map); tagLayer = L.layerGroup().addTo(map);
   spokes = L.layerGroup().addTo(map); tmpLayer = L.layerGroup().addTo(map);
   meMarker = L.marker(start, { icon:L.divIcon({ className:"me-icon", iconSize:[100,100], iconAnchor:[50,50],
     html:'<div class="beam"></div><div class="dot"></div>' }), interactive:false, zIndexOffset:1000 });
   accRing = L.circle(start, { radius:0, color:"#C9A227", weight:1, opacity:.3, fill:false, interactive:false });
-  bindGestures();
-  applyRot();
+  bindGestures(); applyRot();
   setTimeout(sizeMap, 120);
   addEventListener("resize", sizeMap);
   addEventListener("orientationchange", () => setTimeout(sizeMap, 250));
@@ -621,8 +699,6 @@ async function startCompass(){
     const el = meMarker && meMarker.getElement && meMarker.getElement();
     const beam = el && el.querySelector(".beam");
     if (beam){ beam.classList.add("on"); beam.style.transform = "rotate(" + S.heading.toFixed(1) + "deg)"; }
-    /* En mode cap, la carte tourne pour que la visée pointe vers le haut.
-       Lissage volontairement lourd : le magnétomètre est bruité. */
     if (rotMode === "compass"){
       if (rotAnim){ cancelAnimationFrame(rotAnim); rotAnim = null; }
       setRot(rot + 0.10*wrap(-S.heading - rot));
@@ -676,7 +752,8 @@ async function loadCourse(){
     }
   }catch(e){}
   $("bLoad").classList.remove("busy");
-  S.greens = greens.concat(readCustom());
+  S.greens = greens.filter(g => S.over.hidden.indexOf(g.id) < 0).concat(readCustom());
+  for (const g of S.greens) if (S.over.names[g.id]) g.name = S.over.names[g.id];
   $("courseName").textContent = name || (S.greens.length ? "Parcours non nommé" : "Parcours inconnu");
   if (!greens.length) warn("Parcours absent d'OpenStreetMap. Utilisez <b>DÉTECT</b> au centre d'un green, ou <b>TRACER</b>.");
   drawGreens(); refresh();
@@ -688,9 +765,10 @@ function drawGreens(){
     const sel = S.sel && S.sel.id === g.id;
     g.layer = L.polygon(g.coords, { color: sel?"#C9A227":"#8FC0A1", weight: sel?2.5:1.5, opacity:.9,
       fillColor: sel?"#C9A227":"#8FC0A1", fillOpacity: sel?.22:.12, interactive:false }).addTo(gLayer);
-    L.marker(ctr(g.coords), { icon:L.divIcon({ className:"gtag"+(sel?" sel":""), html:"<span>"+g.name+"</span>" }), interactive:false }).addTo(tagLayer);
+    L.marker(ctr(g.coords), { icon:L.divIcon({ className:"gtag"+(sel?" sel":""), html:"<span>"+esc(g.name)+"</span>" }), interactive:false }).addTo(tagLayer);
   });
 }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
 
 /* ---------- détection ---------- */
 const mpp = (lat,z) => 156543.03392 * Math.cos(lat*D2R) / Math.pow(2,z);
@@ -793,19 +871,111 @@ function pushDraft(ll){
   msg(S.draft.length + " point" + (S.draft.length>1?"s":"") + " — 3 minimum, puis Garder.");
 }
 function readCustom(){ try{ return (JSON.parse(localStorage.getItem(KEY))||[]).map(g=>({...g, src:"draw"})); }catch(e){ return []; } }
-function writeCustom(l){ try{ localStorage.setItem(KEY, JSON.stringify(l.map(g=>({id:g.id,name:g.name,coords:g.coords})))); }catch(e){} }
-function saveGreen(coords){
-  const name = prompt("Nom du green (par exemple « Trou 7 »)") || ("Green " + (S.greens.length+1));
+function writeCustom(){ try{ localStorage.setItem(KEY, JSON.stringify(S.greens.filter(g=>g.src==="draw").map(g=>({id:g.id,name:g.name,coords:g.coords})))); }catch(e){} }
+
+async function saveGreen(coords){
+  const replacing = S.replaceId ? S.greens.find(g => g.id === S.replaceId) : null;
+  const name = await askName(replacing ? replacing.name : "", replacing ? "Nouveau contour pour <em>ce green</em>" : null);
+  if (name === null) return false;
+  if (replacing) removeGreen(replacing, true);
   const g = { id:"c"+Date.now(), name, coords, src:"draw" };
-  S.greens.push(g); S.sel = g; writeCustom(S.greens.filter(x => x.src === "draw"));
+  S.greens.push(g); S.sel = g; writeCustom();
+  drawGreens(); refresh();
+  return true;
+}
+function removeGreen(g, silent){
+  S.greens = S.greens.filter(x => x.id !== g.id);
+  if (g.src === "draw") writeCustom();
+  else { if (S.over.hidden.indexOf(g.id) < 0) S.over.hidden.push(g.id); saveOver(); }
+  if (S.sel && S.sel.id === g.id) S.sel = null;
+  if (!silent){ drawGreens(); refresh(); }
+}
+function renameGreen(g, name){
+  g.name = name;
+  if (g.src === "draw") writeCustom();
+  else { S.over.names[g.id] = name; saveOver(); }
   drawGreens(); refresh();
 }
 function closeBar(){
-  S.mode = null; S.detect = null; S.draft = [];
+  S.mode = null; S.detect = null; S.draft = []; S.replaceId = null;
   tmpLayer.clearLayers();
   $("bar").classList.remove("on"); $("tolWrap").classList.remove("on");
   ["bDetect","bDraw","bPos"].forEach(i => $(i).classList.remove("armed"));
 }
+
+/* ---------- dialogue : nommer ---------- */
+function buildChips(){
+  const box = $("askChips"); box.innerHTML = "";
+  for (let i=1;i<=18;i++){
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = "Trou " + i;
+    b.addEventListener("click", () => { $("askInput").value = b.textContent; $("askInput").focus(); });
+    box.appendChild(b);
+  }
+}
+function askName(current, title){
+  return new Promise(res => {
+    askResolve = res;
+    $("askTitle").innerHTML = title || "Comment s'appelle <em>ce green ?</em>";
+    $("askInput").value = current || "";
+    $("ask").classList.add("on");
+    setTimeout(() => { $("askInput").focus(); $("askInput").select(); }, 90);
+  });
+}
+function closeAsk(val){
+  $("ask").classList.remove("on");
+  const r = askResolve; askResolve = null;
+  if (r) r(val);
+}
+$("askYes").addEventListener("click", () => {
+  const v = $("askInput").value.trim();
+  closeAsk(v || "Green " + (S.greens.length + 1));
+});
+$("askNo").addEventListener("click", () => closeAsk(null));
+$("askInput").addEventListener("keydown", e => { if (e.key === "Enter") $("askYes").click(); });
+$("ask").addEventListener("click", e => { if (e.target === $("ask")) closeAsk(null); });
+
+/* ---------- dialogue : appui long ---------- */
+let delArmed = false;
+function openCtx(g){
+  S.ctx = g; delArmed = false;
+  $("ctxKind").textContent = g.src === "osm" ? "Green OpenStreetMap"
+    : g.src === "approx" ? "Green estimé" : "Green tracé";
+  $("ctxName").textContent = g.name;
+  const m = S.pos ? measure(g, S.pos) : null;
+  $("ctxSub").textContent = m
+    ? Math.round(m.area) + " m² · " + Math.round(m.width) + " m de large · bord avant à " + Math.round(m.front.d) + " m"
+    : "";
+  $("ctxDelLbl").innerHTML = "Supprimer<small>" + (g.src === "draw"
+    ? "Efface définitivement ce tracé"
+    : "Masque ce green sur cet appareil") + "</small>";
+  $("ctxDel").classList.remove("armed");
+  $("ctx").classList.add("on");
+}
+const closeCtx = () => { $("ctx").classList.remove("on"); S.ctx = null; };
+$("ctxClose").addEventListener("click", closeCtx);
+$("ctx").addEventListener("click", e => { if (e.target === $("ctx")) closeCtx(); });
+$("ctxRename").addEventListener("click", async () => {
+  const g = S.ctx; closeCtx();
+  const n = await askName(g.name, "Renommer <em>" + esc(g.name) + "</em>");
+  if (n !== null) renameGreen(g, n);
+});
+$("ctxRedraw").addEventListener("click", () => {
+  const g = S.ctx; closeCtx();
+  closeBar();
+  S.mode = "draw"; S.replaceId = g.id; $("bDraw").classList.add("armed");
+  if (Math.abs(rot) > 0.5 || rotMode !== "north") setRotMode("north");
+  msg("Reposez le contour de <b>" + esc(g.name) + "</b>. L'ancien sera remplacé.");
+});
+$("ctxDel").addEventListener("click", () => {
+  if (!delArmed){
+    delArmed = true;
+    $("ctxDel").classList.add("armed");
+    $("ctxDelLbl").innerHTML = "Confirmer la suppression<small>Touchez à nouveau pour valider</small>";
+    return;
+  }
+  const g = S.ctx; closeCtx(); removeGreen(g);
+});
 
 /* ---------- altimétrie ---------- */
 async function updateAlti(m){
@@ -881,8 +1051,7 @@ function render(m){
   $("clubIcon").innerHTML = clubSvg(p.club.n, "#C9A227", "#8FC0A1");
   $("clubName").textContent = p.club.n;
   if (p.short){
-    $("clubMeta").textContent = "Hors de portée : " + Math.round(target) + " m " + where
-      + ", il manque " + Math.round(p.gap) + " m";
+    $("clubMeta").textContent = "Hors de portée : " + Math.round(target) + " m " + where + ", il manque " + Math.round(p.gap) + " m";
   } else {
     const head = Math.round(target) + " m " + where + (dz ? " (dénivelé compris)" : "") + " · porte " + p.club.d + " m";
     $("clubMeta").textContent = p.gap <= 4 && p.alt
@@ -928,19 +1097,13 @@ const armTool = (id, mode, text) => $(id).addEventListener("click", () => {
   const on = S.mode !== mode; closeBar();
   if (!on) return;
   S.mode = mode; $(id).classList.add("armed");
-  /* La lecture des pixels et le placement des points supposent une carte
-     au nord : on y revient avant de cartographier. */
-  if (Math.abs(rot) > 0.5 || rotMode !== "north"){
-    setRotMode("north");
-    msg("Carte remise au nord pour cartographier. " + text);
-  } else msg(text);
+  if (Math.abs(rot) > 0.5 || rotMode !== "north"){ setRotMode("north"); msg("Carte remise au nord pour cartographier. " + text); }
+  else msg(text);
 });
 armTool("bDetect","detect","Touchez le centre du green à détecter.");
 armTool("bDraw","draw","Touchez la carte pour poser les points du contour.");
 armTool("bPos","pos","Touchez la carte à l'endroit où vous vous trouvez.");
-$("bRot").addEventListener("click", () => {
-  setRotMode(rotMode === "north" ? "free" : rotMode === "free" ? "compass" : "north");
-});
+$("bRot").addEventListener("click", () => setRotMode(rotMode === "north" ? "free" : rotMode === "free" ? "compass" : "north"));
 $("bLoad").addEventListener("click", loadCourse);
 $("bMe").addEventListener("click", () => { follow = true; if (S.pos) map.setView([S.pos.lat,S.pos.lon], 18); });
 $("bCancel").addEventListener("click", closeBar);
@@ -948,11 +1111,15 @@ $("bAgain").addEventListener("click", () => {
   tmpLayer.clearLayers(); S.detect = null; S.draft = []; $("tolWrap").classList.remove("on");
   msg(S.mode === "draw" ? "Points effacés. Touchez la carte pour recommencer." : "Touchez à nouveau le centre du green.");
 });
-$("bKeep").addEventListener("click", () => {
-  if (S.mode === "draw"){ if (S.draft.length < 3){ msg("Il faut au moins trois points."); return; } saveGreen(S.draft.slice()); }
-  else if (S.detect && S.detect.ring){ saveGreen(S.detect.ring); }
-  else { msg("Rien à garder pour l'instant."); return; }
-  closeBar();
+$("bKeep").addEventListener("click", async () => {
+  let ok = false;
+  if (S.mode === "draw"){
+    if (S.draft.length < 3){ msg("Il faut au moins trois points."); return; }
+    ok = await saveGreen(S.draft.slice());
+  } else if (S.detect && S.detect.ring){
+    ok = await saveGreen(S.detect.ring);
+  } else { msg("Rien à garder pour l'instant."); return; }
+  if (ok) closeBar();
 });
 $("tol").addEventListener("input", () => { if (S.detect && S.detect.px) applyDetect(); });
 $("compet").addEventListener("click", () => {
@@ -965,6 +1132,7 @@ document.querySelectorAll("#seg button").forEach(b => b.addEventListener("click"
 }));
 setInterval(() => { if (S.pos && S.sel) refresh(); }, 2000);
 
+buildChips();
 $("go").addEventListener("click", async () => {
   $("intro").remove(); initMap(); await startCompass(); startGeo();
 });
