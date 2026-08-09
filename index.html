@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0F3325">
-<title>Télémètre — Carte de score</title>
+<title>Télémètre — Test libre</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -39,7 +39,6 @@
   }
   .eyebrow.on-cream{color:var(--moss)}
 
-  /* ============ écran d'accueil ============ */
   #intro{
     position:fixed;inset:0;z-index:60;overflow:auto;
     background:radial-gradient(130% 90% at 50% -10%,#1B5238 0%,var(--forest) 55%,var(--deep) 100%);
@@ -82,7 +81,6 @@
   #err{margin:0;min-height:1.2em;font-size:13px;line-height:1.55;color:#F0A88C}
   #legal{margin:0;font-size:12px;line-height:1.6;color:var(--mint-dim);text-align:center}
 
-  /* ============ viseur ============ */
   #stage{position:relative;flex:1;min-height:0;overflow:hidden;background:#000;touch-action:none;cursor:crosshair}
   #v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
   #ovl{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
@@ -124,13 +122,12 @@
   #zoom{flex:1;accent-color:var(--gold);height:20px}
   #zlab{font:600 11px/1 var(--sans);color:var(--gold);min-width:34px;text-align:right;letter-spacing:.04em}
 
-  /* ============ lecture ============ */
   #panel{
     background:var(--cream);color:var(--ink);
     border-radius:var(--r-card) var(--r-card) 0 0;margin-top:-20px;position:relative;z-index:5;
     padding:17px 18px calc(16px + env(safe-area-inset-bottom));
   }
-  #hero{display:flex;align-items:baseline;gap:9px;margin-top:7px}
+  #hero{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-top:7px}
   #main{
     font:600 62px/.86 var(--serif);letter-spacing:-.03em;font-variant-numeric:tabular-nums;
     color:var(--ink);transition:color .2s;
@@ -140,6 +137,14 @@
   #tol{
     margin-left:auto;padding:6px 12px;border-radius:999px;background:var(--gold-soft);
     font:500 12px/1 var(--sans);color:#7A6112;font-variant-numeric:tabular-nums;
+  }
+  #realDist{
+    font:500 14px/1 var(--sans);color:rgba(18,58,41,.6);
+    background:var(--cream-2);padding:6px 14px;border-radius:999px;
+  }
+  #errorPct{
+    font:500 13px/1 var(--sans);color:var(--alert);padding:4px 10px;border-radius:999px;
+    background:rgba(210,100,60,.1);display:none;
   }
   #warn{
     margin:11px 0 0;padding:11px 13px;border-radius:var(--r-field);
@@ -155,7 +160,6 @@
   #grid .val.neg{color:var(--alert)}
   #grid .eyebrow{font-size:9px;letter-spacing:.14em}
 
-  /* ============ réglages ============ */
   #sheet{
     position:absolute;inset:0;z-index:40;background:var(--cream);color:var(--ink);
     padding:20px 18px calc(20px + env(safe-area-inset-bottom));overflow:auto;display:none;
@@ -202,25 +206,26 @@
     </div>
     <div>
       <h2>Télémètre</h2>
-      <p class="eyebrow">Carte de score</p>
+      <p class="eyebrow">Test libre</p>
     </div>
     <span class="pill" style="margin-left:auto">Bêta</span>
   </div>
 
-  <h1>À quelle distance<br><em>est le drapeau ?</em></h1>
+  <h1>Mesurez n’importe<br><em>quel objet</em></h1>
 
   <div id="steps">
     <p class="eyebrow on-cream">Trois gestes</p>
     <ol>
-      <li><span class="num">1</span><span>Zoomez jusqu'à voir nettement le mât. <b>Le zoom optique est ce qui fait la précision.</b></span></li>
-      <li><span class="num">2</span><span>Touchez le drapeau une fois. L'app s'accroche au mât et le suit toute seule.</span></li>
-      <li><span class="num">3</span><span>Tenez le téléphone immobile pendant que l'anneau se remplit.</span></li>
+      <li><span class="num">1</span><span>Visez un objet vertical (poteau, arbre, personne). <b>Zoomez pour qu’il fasse au moins 30 px</b>.</span></li>
+      <li><span class="num">2</span><span>Touchez l’objet. L’app s’accroche et le suit.</span></li>
+      <li><span class="num">3</span><span>Immobilisez le téléphone, l’anneau se remplit. <b>La distance s’affiche.</b></span></li>
     </ol>
+    <p style="font-size:13px;color:rgba(18,58,41,.6);margin:12px 0 0">Pour tester, entrez sa hauteur réelle et sa distance réelle dans les réglages (⚙️) et validez la calibration.</p>
   </div>
 
   <button class="cta" id="go">Activer la caméra <span aria-hidden="true">→</span></button>
   <p id="err" role="alert"></p>
-  <p id="legal">La mesure reste sur cet appareil. Mode compétition actif par défaut : le dénivelé est masqué.</p>
+  <p id="legal">Mesure sans limite d’objet. Mode compétition disponible. Calibration persistante.</p>
 </div>
 
 <!-- ============================ viseur ============================ -->
@@ -233,7 +238,7 @@
     <span class="chip" id="pxread">— px</span>
   </div>
 
-  <p id="hint">Touchez le drapeau</p>
+  <p id="hint">Touchez l'objet</p>
 
   <div id="zoomwrap" class="off">
     <span class="eyebrow" style="letter-spacing:.14em">Zoom</span>
@@ -251,55 +256,57 @@
     <h3>Mesure</h3>
     <div class="row">
       <label for="compet">Mode compétition
-        <span class="sub">Affiche la distance horizontale seule, conforme à la règle 4.3a(1).</span></label>
+        <span class="sub">Affiche la distance horizontale seule.</span></label>
       <span class="sw"><input type="checkbox" id="compet" checked><i></i></span>
     </div>
     <div class="row">
-      <label for="H">Hauteur du mât
-        <span class="sub">2,13 m est la norme. Certains clubs utilisent 2,10 m.</span></label>
-      <input id="H" type="number" step="0.01" min="0.3" max="10" value="2.13">
+      <label for="H">Hauteur réelle de l'objet
+        <span class="sub">En mètres (ex. 2,00 pour une porte, 1,75 pour une personne).</span></label>
+      <input id="H" type="number" step="0.01" min="0.3" max="10" value="2.00">
+    </div>
+    <div class="row">
+      <label for="realD">Distance réelle (pour test)
+        <span class="sub">Mesurée au mètre ruban ou au GPS. Laissez 0 pour ignorer.</span></label>
+      <input id="realD" type="number" step="0.1" min="0" value="0">
     </div>
     <div class="row">
       <label for="sH">Incertitude sur la hauteur
-        <span class="sub">Montez à 0,40 m si le pied du mât est masqué par le relief.</span></label>
-      <input id="sH" type="number" step="0.01" min="0" max="1" value="0.04">
+        <span class="sub">Marge si l'objet n'est pas parfaitement vertical ou partiellement masqué.</span></label>
+      <input id="sH" type="number" step="0.01" min="0" max="1" value="0.05">
     </div>
     <div class="row">
       <label for="navg">Images moyennées
-        <span class="sub">Plus élevé, plus stable, mais plus long à converger.</span></label>
+        <span class="sub">Plus élevé = plus stable mais plus lent.</span></label>
       <input id="navg" type="number" step="5" min="5" max="90" value="30">
     </div>
     <div class="row">
       <label for="digizoom">Zoom numérique
-        <span class="sub">Recadrage logiciel (1× = aucun recadrage).</span></label>
+        <span class="sub">Recadrage logiciel (1× = aucun).</span></label>
       <input id="digizoom" type="number" step="0.1" min="1" max="4" value="1">
+    </div>
+
+    <h3>Calibration libre</h3>
+    <p class="note">Visez un objet dont vous connaissez la hauteur et la distance. Accrochez-le, laissez l'anneau se remplir, puis cliquez sur « Calibrer avec cet objet ». La focale est calculée automatiquement.</p>
+    <div class="row" style="border:0">
+      <label>Objet accroché et stable ?</label>
+      <button class="btn-line" id="calFree">Calibrer avec cet objet</button>
+    </div>
+    <div class="row" style="border:0">
+      <label>Effacer la calibration</label>
+      <button class="btn-line" id="clearcal" style="border-color:rgba(18,58,41,.25);color:rgba(18,58,41,.6)">Effacer</button>
     </div>
 
     <h3>Optique</h3>
     <div class="row">
-      <label for="fov">Champ horizontal supposé
-        <span class="sub">Sert de valeur de repli tant que l'appareil n'est pas calibré.</span></label>
+      <label for="fov">Champ horizontal (repli)</label>
       <input id="fov" type="number" step="1" min="20" max="120" value="66">
     </div>
-    <div class="row">
-      <label for="fpx">Focale effective
-        <span class="sub">En pixels capteur, ramenée au zoom 1×.</span></label>
+    <div class="row" style="border:0">
+      <label for="fpx">Focale manuelle (px)</label>
       <input id="fpx" type="number" step="1" min="0" value="0">
     </div>
 
-    <h3>Calibration</h3>
-    <p class="note" style="margin-top:6px">Visez une cible de hauteur connue à une distance mesurée, accrochez-la, puis validez. La valeur est conservée pour cet appareil.</p>
-    <div class="row">
-      <label for="dcal">Distance réelle de la cible</label>
-      <input id="dcal" type="number" step="0.1" min="1" value="20">
-    </div>
-    <div class="row" style="border:0">
-      <label>Cible accrochée et stable ?</label>
-      <button class="btn-line" id="docal">Calibrer maintenant</button>
-    </div>
-    <div class="row" style="border:0;justify-content:space-between;padding-top:0">
-      <button class="btn-line" id="clearcal" style="border-color:rgba(18,58,41,.25);color:rgba(18,58,41,.6)">Effacer</button>
-      <button class="btn-line" id="measureH">Mesurer la hauteur</button>
+    <div style="display:flex;justify-content:flex-end;margin-top:20px">
       <button class="cta" id="close" style="width:auto;padding:14px 26px">Fermer</button>
     </div>
   </div>
@@ -307,17 +314,18 @@
 
 <!-- ============================ lecture ============================ -->
 <div id="panel">
-  <p class="eyebrow on-cream" id="heroLabel">Distance horizontale</p>
+  <p class="eyebrow on-cream" id="heroLabel">Distance mesurée</p>
   <div id="hero">
     <span id="main" class="idle">—</span>
     <span id="unit">m</span>
     <span id="tol">±—</span>
-    <span id="gpsOk" style="margin-left:auto;font-size:18px;opacity:0.6">📍</span>
+    <span id="realDist"></span>
+    <span id="errorPct"></span>
   </div>
   <p id="warn"></p>
   <div id="grid">
-    <div><span class="eyebrow on-cream">Visée</span><span class="val" id="oLine">—</span></div>
-    <div><span class="eyebrow on-cream">Dénivelé</span><span class="val" id="oDh">—</span></div>
+    <div><span class="eyebrow on-cream">Taille (px)</span><span class="val" id="oPx">—</span></div>
+    <div><span class="eyebrow on-cream">Hauteur objet</span><span class="val" id="oH">—</span></div>
     <div><span class="eyebrow on-cream">Angle</span><span class="val" id="oAng">—</span></div>
     <div><span class="eyebrow on-cream">GPS</span><span class="val" id="oGps">—</span></div>
   </div>
@@ -329,7 +337,6 @@
 const $ = id => document.getElementById(id);
 const DEG = 180 / Math.PI;
 const clamp = (v,a,b) => v < a ? a : v > b ? b : v;
-const sign = x => x >= 0 ? 1 : -1;
 
 /* ---------------------------------------------------------------
    État
@@ -341,14 +348,14 @@ const S = {
   fCal:0, zoomAtCal:1,
   samples:[], lastSeg:null, misses:0,
   gps:null, gpsAcc:Infinity,
-  lastFrameTime:0, frameInterval:1000/15,  // max 15 ips
+  lastFrameTime:0, frameInterval:1000/15,
   hapticDone:false
 };
 
 /* ---------------------------------------------------------------
-   Buffers de traitement — tout se fait en pixels capteur
+   Buffers
 --------------------------------------------------------------- */
-const RW = 120, RH = 420;                 // fenêtre d'analyse réduite pour performance
+const RW = 120, RH = 420;
 const SQ = Math.ceil(Math.hypot(RW, RH));
 const cutC = document.createElement("canvas"); cutC.width = cutC.height = SQ;
 const cutX = cutC.getContext("2d", { willReadFrequently:true });
@@ -363,50 +370,32 @@ const smth = new Float32Array(RH);
 const video = $("v"), stage = $("stage"), ovl = $("ovl"), oxc = ovl.getContext("2d");
 
 /* ---------------------------------------------------------------
-   Gestion des autorisations
+   Permissions & démarrage
 --------------------------------------------------------------- */
 async function requestPermissions() {
   const errors = [];
-  // Caméra
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video:{ facingMode:{ ideal:"environment" }, width:{ ideal:1920 }, height:{ ideal:1080 } },
-      audio:false
-    });
-    stream.getTracks().forEach(t => t.stop()); // on ne garde que pour test
-  } catch (e) {
-    errors.push("Caméra: " + e.message);
-  }
-  // Géolocalisation
+    const stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:"environment" }, width:{ ideal:1920 }, height:{ ideal:1080 } }, audio:false });
+    stream.getTracks().forEach(t => t.stop());
+  } catch (e) { errors.push("Caméra: " + e.message); }
   try {
     await new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject, { timeout:5000 });
     });
-  } catch (e) {
-    errors.push("Géolocalisation: " + e.message);
-  }
-  // Mouvement
+  } catch (e) { errors.push("Géolocalisation: " + e.message); }
   try {
     if (typeof DeviceMotionEvent !== "undefined" && DeviceMotionEvent.requestPermission) {
       const r = await DeviceMotionEvent.requestPermission();
       if (r !== "granted") errors.push("Mouvement: permission refusée");
     }
-  } catch (e) {
-    errors.push("Mouvement: " + e.message);
-  }
+  } catch (e) { errors.push("Mouvement: " + e.message); }
   return errors;
 }
 
-/* ---------------------------------------------------------------
-   Démarrage
---------------------------------------------------------------- */
 $("go").addEventListener("click", async () => {
   $("err").textContent = "";
   const perms = await requestPermissions();
-  if (perms.length) {
-    $("err").textContent = "⚠️ " + perms.join(" — ");
-    // On continue quand même, certaines fonctionnalités seront dégradées
-  }
+  if (perms.length) $("err").textContent = "⚠️ " + perms.join(" — ");
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video:{ facingMode:{ ideal:"environment" }, width:{ ideal:3840 }, height:{ ideal:2160 } },
@@ -418,18 +407,14 @@ $("go").addEventListener("click", async () => {
     setupZoom();
     loadCal();
     $("intro").remove();
-    // Démarrer la géolocalisation
     startGps();
-    // Démarrer la boucle
     requestAnimationFrame(loop);
   } catch (e) {
     $("err").textContent = "❌ La caméra n'a pas démarré : " + e.message;
   }
 });
 
-// Demande de permission pour la motion (déjà gérée dans requestPermissions)
 window.addEventListener("devicemotion", onMotion);
-
 function onMotion(e){
   const g = e.accelerationIncludingGravity;
   if (g && g.x !== null) {
@@ -450,7 +435,7 @@ const elevAxis = () => Math.asin(clamp(-S.grav.z / gnorm(), -1, 1));
 const roll     = () => Math.atan2(S.grav.x, S.grav.y);
 
 /* ---------------------------------------------------------------
-   Zoom optique + numérique
+   Zoom
 --------------------------------------------------------------- */
 function setupZoom(){
   const caps = S.track.getCapabilities ? S.track.getCapabilities() : {};
@@ -459,7 +444,7 @@ function setupZoom(){
   if (!caps.zoom) {
     $("zoomwrap").classList.remove("off");
     $("zoomwrap").innerHTML =
-      '<span class="eyebrow" style="letter-spacing:.14em;line-height:1.5">Zoom optique non disponible — utilisez le zoom numérique dans les réglages</span>';
+      '<span class="eyebrow" style="letter-spacing:.14em;line-height:1.5">Zoom optique non disponible — utilisez le zoom numérique</span>';
     return;
   }
   S.zoomBase = S.track.getSettings().zoom || caps.zoom.min || 1;
@@ -477,7 +462,6 @@ function setupZoom(){
 }
 const fmtZ = z => z.toFixed(1).replace(".", ",") + "×";
 
-/* Focale en pixels capteur, au zoom courant, avec prise en compte du zoom numérique */
 function focalPx(){
   const vw = video.videoWidth;
   if (!vw) return 0;
@@ -491,7 +475,7 @@ function focalPx(){
 const calibrated = () => S.fCal > 0;
 
 /* ---------------------------------------------------------------
-   Géométrie d'affichage — object-fit: cover
+   Affichage
 --------------------------------------------------------------- */
 function view(){
   const w = stage.clientWidth, h = stage.clientHeight;
@@ -503,7 +487,7 @@ const toDisp  = (p, V) => ({ x:V.ox + p.x*V.s, y:V.oy + p.y*V.s });
 const toVideo = (x, y, V) => ({ x:(x - V.ox)/V.s, y:(y - V.oy)/V.s });
 
 /* ---------------------------------------------------------------
-   Accrochage au tap
+   Accrochage
 --------------------------------------------------------------- */
 stage.addEventListener("pointerdown", ev => {
   if ($("sheet").classList.contains("open")) return;
@@ -519,13 +503,11 @@ $("reset").addEventListener("click", () => {
 });
 
 /* ---------------------------------------------------------------
-   Détecteur amélioré : contraste + couleur du fanion
+   Détecteur (contraste + couleur)
 --------------------------------------------------------------- */
 function detect(lx, ly, r){
   const vw = video.videoWidth, vh = video.videoHeight;
   if (!vw || !vh) return null;
-
-  // Appliquer le zoom numérique : recadrage autour du point de verrouillage
   const digi = +$("digizoom").value || 1;
   const cropSize = Math.min(vw, vh) / digi;
   const cx = lx, cy = ly;
@@ -543,7 +525,6 @@ function detect(lx, ly, r){
   wrkX.restore();
 
   const d = wrkX.getImageData(0, 0, RW, RH).data;
-  // Convertir en niveaux de gris et aussi extraire les canaux couleur
   const grayBuf = new Float32Array(RW*RH);
   const rBuf = new Float32Array(RW*RH);
   const gBuf = new Float32Array(RW*RH);
@@ -554,7 +535,6 @@ function detect(lx, ly, r){
     rBuf[j] = R; gBuf[j] = G; bBuf[j] = B;
   }
 
-  // Filtre de contraste vertical (comme avant)
   const W = 5;
   colS.fill(0);
   for (let y = 0; y < RH; y++) {
@@ -569,38 +549,31 @@ function detect(lx, ly, r){
   for (let x = W + 2; x < RW - W - 2; x++) if (colS[x] > best) { best = colS[x]; xb = x; }
   if (xb < 0 || best <= 0) return null;
 
-  // Vérifier la couleur dans une bande autour de xb
-  const bandW = 6;
+  // Couleur (optionnel)
   let hueScore = 0;
+  const bandW = 6;
   for (let y = Math.floor(RH*0.2); y < Math.floor(RH*0.8); y++) {
     const o = y*RW + xb;
     const R = rBuf[o], G = gBuf[o], B = bBuf[o];
-    // Détection de couleurs vives : rouge, jaune, blanc
     const maxC = Math.max(R, G, B);
     const minC = Math.min(R, G, B);
     if (maxC > 80 && (maxC - minC) > 30) {
       const sat = (maxC - minC) / maxC;
       if (sat > 0.3) {
-        // Rouge : R > G et R > B
         if (R > G*1.2 && R > B*1.2) hueScore += 2;
-        // Jaune : R et G élevés, B faible
         else if (R > B*1.4 && G > B*1.4) hueScore += 2;
         else hueScore += 1;
       }
     } else if (maxC > 180 && (maxC - minC) < 30) {
-      // Blanc/crème
       hueScore += 1;
     }
   }
-  if (hueScore < 5) {
-    // Pas assez de couleur typique d'un drapeau, on peut rejeter ou baisser la confiance
-    // On ne rejette pas complètement, mais on peut pondérer plus tard
-  }
+  // On ne rejette pas sur la couleur, mais on peut pondérer
 
   const sorted = Array.from(colS.slice(W, RW - W)).sort((a,b) => a - b);
   const med = sorted[sorted.length >> 1] || 1;
   const contrast = best / med;
-  if (contrast < 1.6) return null; // seuil un peu plus bas grâce à la couleur
+  if (contrast < 1.6) return null;
 
   const dm = colS[xb-1] - 2*colS[xb] + colS[xb+1];
   const xs = dm !== 0 ? xb + 0.5*(colS[xb-1] - colS[xb+1]) / dm : xb;
@@ -647,7 +620,7 @@ function detect(lx, ly, r){
   };
   const yTs = edge(yT, -1), yBs = edge(yB, +1);
   const span = yBs - yTs;
-  if (span < 10) return null; // seuil ajusté
+  if (span < 10) return null;
 
   const back = (wx, wy) => {
     const dx = wx - RW/2, dy = wy - RH/2;
@@ -661,7 +634,7 @@ function detect(lx, ly, r){
 }
 
 /* ---------------------------------------------------------------
-   Statistiques robustes avec rejet des outliers dynamique
+   Statistiques robustes
 --------------------------------------------------------------- */
 function robust(arr){
   if (arr.length < 3) return { med:arr[0]||0, sig:Infinity };
@@ -669,7 +642,6 @@ function robust(arr){
   const m = a[a.length >> 1];
   const dev = a.map(v => Math.abs(v - m)).sort((x,y) => x - y);
   const mad = 1.4826 * (dev[dev.length >> 1] || 0);
-  // Rejet des outliers > 3*MAD
   const good = a.filter(v => Math.abs(v - m) <= 3 * mad);
   if (good.length < 2) return { med:m, sig:mad };
   const med2 = good[good.length >> 1];
@@ -679,7 +651,7 @@ function robust(arr){
 }
 
 /* ---------------------------------------------------------------
-   Boucle avec limitation de fréquence
+   Boucle
 --------------------------------------------------------------- */
 function loop(time){
   if (time - S.lastFrameTime >= S.frameInterval) {
@@ -719,9 +691,6 @@ function loop(time){
   requestAnimationFrame(loop);
 }
 
-/* ---------------------------------------------------------------
-   Dessin du viseur
---------------------------------------------------------------- */
 function drawOverlay(V, r, seg, N){
   const cx = V.w/2, cy = V.h/2;
   const gold = "#C9A227", mint = "rgba(143,192,161,.75)";
@@ -764,18 +733,10 @@ function drawOverlay(V, r, seg, N){
     oxc.textAlign = "center";
     oxc.fillText("Immobilisez le téléphone", m.x, m.y + R + 20);
   }
-
-  // Indicateur de couleur si détecté
-  if (seg.hueScore > 8) {
-    oxc.fillStyle = "rgba(143,192,161,.8)";
-    oxc.font = "12px sans-serif";
-    oxc.textAlign = "center";
-    oxc.fillText("🏳️", m.x, m.y - R - 10);
-  }
 }
 
 /* ---------------------------------------------------------------
-   Lecture et affichage des résultats
+   Lecture
 --------------------------------------------------------------- */
 function readout(V, f, r, N){
   const nb = (v, n=1) => Number.isFinite(v) ? v.toFixed(n).replace(".", ",") : "—";
@@ -785,25 +746,26 @@ function readout(V, f, r, N){
 
   $("pxread").textContent = (seg ? Math.round(seg.span) : "—") + " px · f "
     + (f > 0 ? Math.round(f) : "—");
-  $("stat").textContent = !S.locked ? "En attente de cible"
-    : !seg ? "Cible perdue"
+  $("stat").textContent = !S.locked ? "En attente"
+    : !seg ? "Perdu"
     : S.samples.length < N ? "Stabilisation " + Math.round(100*S.samples.length/N) + " %"
-    : (calibrated() ? "Mesuré · calibré" : "Mesuré · non calibré");
+    : (calibrated() ? "Mesuré ✅" : "Mesuré ⚠️");
 
   const warn = $("warn");
   if (!seg || !S.samples.length || f <= 0) {
     $("main").classList.add("idle"); $("main").textContent = "—";
     $("tol").textContent = "±—";
-    for (const id of ["oLine","oDh","oAng"]) $(id).textContent = "—";
+    $("realDist").textContent = "";
+    $("errorPct").style.display = "none";
+    for (const id of ["oPx","oH","oAng"]) $(id).textContent = "—";
     warn.classList.remove("show");
     S.hapticDone = false;
     return;
   }
 
-  // Rejet des outliers déjà intégré dans robust
   const st = robust(S.samples);
   const span = st.med;
-  const H  = +$("H").value  || 2.13;
+  const H  = +$("H").value  || 2.00;
   const sH = Math.max(+$("sH").value || 0, 0);
 
   const dLine = H * f / span;
@@ -817,47 +779,46 @@ function readout(V, f, r, N){
   const rel = Math.hypot(sigSpan/span, sH/H, calibrated() ? 0.012 : 0.05);
   const tol = dLine * rel;
 
-  // Vérification GPS
-  let gpsDist = Infinity;
-  if (S.gps) {
-    // On pourrait estimer la distance jusqu'au drapeau via la position du green, mais on n'a pas la position du drapeau.
-    // On affiche juste l'incertitude GPS
-    gpsDist = S.gps.accuracy;
-  }
-  const gpsOk = S.gps && gpsDist < 20 && Math.abs(dHz - (S.gps.latitude ? 0 : 0)) < 10; // simplifié
-  $("gpsOk").style.opacity = gpsOk ? "1" : "0.6";
-  $("gpsOk").textContent = gpsOk ? "✅" : "📍";
-
   $("main").classList.remove("idle");
-  $("main").textContent = nb(compet ? dHz : dHz + dh, 0);
-  $("tol").textContent  = "±" + nb(tol, 1);
-  $("oLine").textContent = nb(dLine, 1);
-  $("oAng").textContent  = nb(theta*DEG, 1) + "°";
-  if (compet) {
-    $("oDh").textContent = "masqué";
-    $("oDh").className = "val";
+  const finalDist = compet ? dHz : dHz + dh;
+  $("main").textContent = nb(finalDist, 0);
+  $("tol").textContent = "±" + nb(tol, 1);
+  $("oPx").textContent = Math.round(span) + " px";
+  $("oH").textContent = H.toFixed(2) + " m";
+  $("oAng").textContent = nb(theta*DEG, 1) + "°";
+
+  // Distance réelle et écart
+  const realD = +$("realD").value || 0;
+  if (realD > 0) {
+    $("realDist").textContent = "📏 " + realD.toFixed(1) + " m";
+    const err = finalDist - realD;
+    const pct = (err / realD) * 100;
+    $("errorPct").style.display = "inline-block";
+    $("errorPct").textContent = (err >= 0 ? "+" : "") + err.toFixed(1) + " m (" + pct.toFixed(1) + " %)";
+    $("errorPct").style.color = Math.abs(pct) < 5 ? "var(--moss)" : "var(--alert)";
+    $("errorPct").style.background = Math.abs(pct) < 5 ? "rgba(45,106,79,.12)" : "rgba(210,100,60,.12)";
   } else {
-    $("oDh").textContent = (dh >= 0 ? "+" : "−") + nb(Math.abs(dh), 1);
-    $("oDh").className = dh < 0 ? "val neg" : "val";
+    $("realDist").textContent = "";
+    $("errorPct").style.display = "none";
   }
 
-  // Retour haptique lorsque la mesure est stable et qu'on ne l'a pas encore fait
+  // Haptique
   if (S.samples.length >= N && !S.hapticDone) {
     try { navigator.vibrate && navigator.vibrate(30); } catch(e) {}
     S.hapticDone = true;
   }
 
   let msg = "";
-  if (span < 25)          msg = "Le mât ne fait que " + Math.round(span) + " px. Zoomez : sous 25 px la mesure n'est pas fiable.";
-  else if (!calibrated()) msg = "Appareil non calibré : le champ de vision est estimé, ce qui ajoute environ 5 % d'erreur.";
-  else if (sH >= 0.3)     msg = "Occultation déclarée : la marge tient compte d'un pied de mât partiellement masqué.";
-  else if (seg.contrast < 2.4) msg = "Contraste faible — vérifiez que le repère suit bien le mât et non un tronc ou un poteau.";
+  if (span < 25)          msg = "Objet trop petit (" + Math.round(span) + " px) — zoomez.";
+  else if (!calibrated()) msg = "Non calibré — utilisez « Calibrer avec cet objet » pour plus de précision.";
+  else if (sH >= 0.3)     msg = "Incertitude élevée sur la hauteur.";
+  else if (seg.contrast < 2.4) msg = "Contraste faible, vérifiez le suivi.";
   warn.textContent = msg;
   warn.classList.toggle("show", !!msg);
 }
 
 /* ---------------------------------------------------------------
-   Calibration et mesure de hauteur
+   Calibration libre
 --------------------------------------------------------------- */
 const CAL_KEY = "telemetre.cal.v1";
 function loadCal(){
@@ -871,12 +832,14 @@ function loadCal(){
     }
   } catch (e) {}
 }
-$("docal").addEventListener("click", () => {
-  const d = +$("dcal").value, H = +$("H").value;
-  if (!S.samples.length) { alert("Accrochez d'abord une cible et laissez l'anneau se remplir."); return; }
-  if (!(d > 0 && H > 0)) { alert("Renseignez la distance réelle et la hauteur de la cible."); return; }
+
+$("calFree").addEventListener("click", () => {
+  if (!S.samples.length) { alert("Accrochez d'abord un objet et laissez l'anneau se remplir."); return; }
+  const H = +$("H").value;
+  const realD = +$("realD").value;
+  if (!(H > 0 && realD > 0)) { alert("Entrez la hauteur réelle et la distance réelle de l'objet dans les réglages."); return; }
   const span = robust(S.samples).med;
-  S.fCal = span * d / H;
+  S.fCal = span * realD / H;
   S.zoomAtCal = S.zoomNow;
   $("fpx").value = Math.round(S.fCal);
   try {
@@ -887,35 +850,11 @@ $("docal").addEventListener("click", () => {
   S.samples.length = 0;
   $("sheet").classList.remove("open");
 });
+
 $("clearcal").addEventListener("click", () => {
   S.fCal = 0; S.zoomAtCal = 1; $("fpx").value = 0;
   try { localStorage.removeItem(CAL_KEY); } catch (e) {}
   S.samples.length = 0;
-});
-
-// Mesure automatique de la hauteur à partir de la distance GPS (ou saisie)
-$("measureH").addEventListener("click", () => {
-  if (!S.samples.length) { alert("Accrochez le drapeau et attendez que l'anneau soit plein."); return; }
-  const span = robust(S.samples).med;
-  const f = focalPx();
-  if (!f) { alert("Focale inconnue. Calibrez d'abord la focale."); return; }
-  // Demander la distance : soit GPS, soit saisie
-  let dist = 0;
-  if (S.gps && S.gps.accuracy < 50) {
-    dist = prompt("Distance approximative (GPS disponible) ?", "30");
-  } else {
-    dist = prompt("Entrez la distance estimée jusqu'au drapeau (en mètres) :", "30");
-  }
-  if (dist === null) return;
-  const d = parseFloat(dist);
-  if (isNaN(d) || d <= 0) { alert("Distance invalide."); return; }
-  const H_calc = d * span / f;
-  if (H_calc < 0.5 || H_calc > 5) {
-    if (!confirm("La hauteur calculée (" + H_calc.toFixed(2) + " m) semble anormale. Continuer ?")) return;
-  }
-  $("H").value = H_calc.toFixed(2);
-  S.samples.length = 0;
-  alert("Hauteur mesurée : " + H_calc.toFixed(2) + " m. Vous pouvez maintenant utiliser cette valeur.");
 });
 
 /* ---------------------------------------------------------------
@@ -939,7 +878,7 @@ function startGps(){
 $("gear").addEventListener("click", () => $("sheet").classList.add("open"));
 $("close").addEventListener("click", () => $("sheet").classList.remove("open"));
 $("compet").addEventListener("change", e => $("gear").classList.toggle("armed", !e.target.checked));
-for (const id of ["H","sH","fov","fpx","navg","digizoom"])
+for (const id of ["H","sH","fov","fpx","navg","digizoom","realD"])
   $(id).addEventListener("change", () => { S.samples.length = 0; });
 addEventListener("resize", () => { S.samples.length = 0; });
 
