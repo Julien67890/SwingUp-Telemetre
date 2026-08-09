@@ -4,463 +4,639 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0D1210">
-<title>Télémètre — IA + visée optique</title>
+<meta name="theme-color" content="#0F3325">
+<title>Greens — Carte de score</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root{
-    --ink:#0D1210;
-    --graticule:#7FE3B0;
-    --span:#FFC94A;
-    --paper:#E8EDE9;
-    --dim:rgba(232,237,233,.52);
-    --line:rgba(127,227,176,.22);
-    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-    --ui:system-ui,-apple-system,"Segoe UI",sans-serif;
+    --deep:#0F3325; --forest:#14432F; --moss:#2D6A4F; --mint:#8FC0A1;
+    --cream:#F1EDE2; --cream-2:#FAF8F2; --ink:#123A29;
+    --gold:#C9A227; --gold-soft:rgba(201,162,39,.16); --alert:#D2643C;
+    --serif:"Playfair Display",Georgia,serif;
+    --sans:"Poppins",system-ui,-apple-system,"Segoe UI",sans-serif;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%;margin:0;background:var(--ink);color:var(--paper);font-family:var(--ui);overscroll-behavior:none}
-  body{display:flex;flex-direction:column}
+  html{height:100%}
+  body{margin:0;height:100dvh;min-height:100%;display:flex;flex-direction:column;
+    background:var(--forest);color:var(--cream);font-family:var(--sans);overflow:hidden}
+  .eyebrow{font:600 9px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--moss);margin:0}
 
-  .eyebrow{font:600 10px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+  /* ===================== en-tête ===================== */
+  #top{flex:none;display:flex;align-items:center;gap:10px;background:var(--deep);
+    padding:calc(9px + env(safe-area-inset-top)) 13px 9px}
+  #mark{width:34px;height:34px;border-radius:10px;background:var(--moss);display:grid;place-items:center;flex:none}
+  #ttl{min-width:0}
+  #ttl h1{margin:0;font:500 15px/1.1 var(--serif);letter-spacing:.01em}
+  #ttl p{margin:2px 0 0;font:600 8.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--mint)}
+  #chips{margin-left:auto;display:flex;align-items:center;gap:6px}
+  .chip{padding:6px 9px;border-radius:999px;background:rgba(143,192,161,.1);border:1px solid rgba(143,192,161,.24);
+    color:var(--mint);font:600 9px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+  button.chip{cursor:pointer}
+  button.chip.on{border-color:var(--gold);color:var(--gold);background:var(--gold-soft)}
 
-  /* ---------- écran d'accueil ---------- */
-  #intro{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;justify-content:center;
-    gap:22px;padding:32px 26px;background:
-    radial-gradient(120% 80% at 50% 0%,#16211B 0%,var(--ink) 62%)}
-  #intro h1{margin:0;font:500 30px/1.05 var(--ui);letter-spacing:-.02em}
-  #intro h1 em{font-style:normal;color:var(--graticule)}
-  #intro ol{margin:0;padding-left:1.1em;font-size:14px;line-height:1.65;color:var(--dim)}
-  #intro ol b{color:var(--paper);font-weight:500}
-  .btn{appearance:none;border:1px solid var(--graticule);background:transparent;color:var(--graticule);
-    font:600 12px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;padding:16px 20px;border-radius:2px;cursor:pointer}
-  .btn:active{background:rgba(127,227,176,.12)}
-  .btn:focus-visible{outline:2px solid var(--span);outline-offset:3px}
-  #err{color:#FF7A66;font:400 13px/1.5 var(--ui);min-height:1em}
+  /* ===================== carte ===================== */
+  #map{flex:1;min-height:0;position:relative;background:#0B1F16}
+  .leaflet-container{background:#0B1F16;font-family:var(--sans)}
+  .leaflet-control-attribution{background:rgba(15,51,37,.82)!important;color:var(--mint)!important;font-size:9px!important}
+  .leaflet-control-attribution a{color:var(--mint)!important}
 
-  /* ---------- viseur ---------- */
-  #stage{position:relative;flex:1;min-height:0;overflow:hidden;background:#000;touch-action:none}
-  video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-  svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .me-icon{background:none!important;border:0!important}
+  .beam{position:absolute;inset:0;transform-origin:50% 50%;transition:transform .12s linear;opacity:0}
+  .beam.on{opacity:1}
+  .beam::before{content:"";position:absolute;left:50%;top:50%;width:0;height:0;
+    border-left:27px solid transparent;border-right:27px solid transparent;
+    border-bottom:52px solid rgba(201,162,39,.38);transform:translate(-50%,-100%)}
+  .beam::after{content:"";position:absolute;left:50%;top:50%;width:0;height:0;
+    border-left:13px solid transparent;border-right:13px solid transparent;
+    border-bottom:52px solid rgba(201,162,39,.5);transform:translate(-50%,-100%)}
+  .dot{position:absolute;left:50%;top:50%;width:17px;height:17px;margin:-8.5px 0 0 -8.5px;
+    border-radius:50%;background:var(--gold);border:3px solid var(--deep);box-shadow:0 1px 4px rgba(0,0,0,.5)}
+  .gtag{background:none!important;border:0!important}
+  .gtag span{display:block;transform:translate(-50%,-50%);padding:3px 8px;border-radius:999px;
+    background:rgba(15,51,37,.8);border:1px solid rgba(143,192,161,.35);color:var(--cream);
+    font:500 10px/1.2 var(--sans);white-space:nowrap}
+  .gtag.sel span{border-color:var(--gold);color:var(--gold);background:rgba(15,51,37,.92)}
 
-  .handle{position:absolute;width:66px;height:66px;margin:-33px 0 0 -33px;border:0;background:none;
-    cursor:grab;touch-action:none;padding:0;z-index:5}
-  .handle:active{cursor:grabbing}
-  .handle::before{content:"";position:absolute;inset:23px;border:1.5px solid var(--span);border-radius:50%}
-  .handle::after{content:attr(data-tag);position:absolute;left:50%;top:-2px;transform:translateX(-50%);
-    font:600 9px/1 var(--mono);letter-spacing:.16em;color:var(--span)}
-  .handle:focus-visible::before{inset:18px;border-width:2px;box-shadow:0 0 0 2px rgba(255,201,74,.35)}
+  #mtools{position:absolute;right:10px;top:10px;z-index:800;display:flex;flex-direction:column;gap:6px}
+  .tool{width:44px;height:44px;border-radius:12px;border:1px solid rgba(143,192,161,.3);
+    background:rgba(15,51,37,.82);color:var(--mint);cursor:pointer;font:600 8px/1.2 var(--sans);letter-spacing:.04em}
+  .tool:active{background:rgba(45,106,79,.85)}
+  .tool.armed{border-color:var(--gold);color:var(--gold)}
+  .tool.hide{display:none}
 
-  #topbar{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;
-    padding:14px 16px;background:linear-gradient(#0D1210CC,transparent);z-index:6;pointer-events:none}
-  #topbar > *{pointer-events:auto}
+  #bar{position:absolute;left:10px;right:64px;top:10px;z-index:800;display:none;flex-direction:column;gap:8px;
+    padding:11px 13px;border-radius:13px;background:rgba(15,51,37,.94);border:1px solid var(--gold)}
+  #bar.on{display:flex}
+  #barMsg{margin:0;font-size:11.5px;line-height:1.4;color:var(--cream)}
+  #barRow{display:flex;align-items:center;gap:7px}
+  #tolWrap{flex:1;display:none;align-items:center;gap:7px}
+  #tolWrap.on{display:flex}
+  #tol{flex:1;accent-color:var(--gold);height:16px}
+  .mini{appearance:none;border:1px solid var(--gold);background:transparent;color:var(--gold);
+    font:500 10.5px/1 var(--sans);padding:8px 10px;border-radius:8px;cursor:pointer;white-space:nowrap}
+  .mini.ghost{border-color:rgba(143,192,161,.4);color:var(--mint)}
 
-  /* ---------- commandes OSD (zoom + IA) ---------- */
-  #osd-controls{position:absolute;bottom:80px;right:12px;display:flex;flex-direction:column;gap:8px;z-index:10;pointer-events:none}
-  #osd-controls > *{pointer-events:auto}
-  .osd-btn{width:44px;height:44px;border-radius:2px;background:rgba(13,18,16,.7);border:1px solid var(--line);
-    color:var(--paper);font:500 18px/1 var(--mono);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(4px)}
-  .osd-btn:active{background:rgba(127,227,176,.15)}
-  .osd-btn.active{background:rgba(127,227,176,.2);border-color:var(--graticule);color:var(--graticule)}
+  #banner{position:absolute;left:10px;right:64px;bottom:10px;z-index:800;display:none;
+    padding:11px 13px;border-radius:13px;background:rgba(210,100,60,.94);color:#fff;
+    font-size:11.5px;line-height:1.45}
+  #banner.on{display:block}
+  #banner b{font-weight:600}
 
-  /* ---------- lecture ---------- */
-  #panel{background:var(--ink);border-top:1px solid var(--line);padding:14px 16px calc(14px + env(safe-area-inset-bottom))}
-  #hero{display:flex;align-items:baseline;gap:10px}
-  #main{font:500 60px/.9 var(--mono);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-  #main.stale{color:var(--dim)}
-  #unit{font:500 18px/1 var(--mono);color:var(--dim)}
-  #tol{margin-left:auto;font:400 12px/1 var(--mono);color:var(--dim)}
-  #grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:14px;background:var(--line)}
-  #grid div{background:var(--ink);padding:9px 8px 10px}
-  #grid span{display:block;font:500 17px/1 var(--mono);font-variant-numeric:tabular-nums;margin-top:6px}
-  .neg{color:var(--span)}
+  /* ===================== bandeau de données ===================== */
+  #strip{flex:none;background:var(--cream);color:var(--ink);
+    padding:9px 11px calc(9px + env(safe-area-inset-bottom));
+    box-shadow:0 -6px 18px rgba(0,0,0,.22)}
+  #sHead{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  #gName{font:600 15px/1.1 var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #gSub{margin-left:auto;font-size:10px;color:rgba(18,58,41,.5);white-space:nowrap}
+  #blind{padding:4px 9px;border-radius:999px;background:var(--gold-soft);color:#7A6112;
+    font:600 8.5px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;display:none}
+  #blind.on{display:block}
+  #cells{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+  .c{background:var(--cream-2);border-radius:10px;padding:7px 6px 8px;text-align:center;min-width:0}
+  .c b{display:block;margin-top:4px;font:600 19px/1 var(--serif);font-variant-numeric:tabular-nums;
+    color:var(--ink);white-space:nowrap}
+  .c.front b{color:var(--moss)}
+  .c b i{font:500 9px/1 var(--sans);font-style:normal;color:rgba(18,58,41,.42);margin-left:1px}
+  .c.up b{color:var(--alert)} .c.down b{color:var(--moss)}
 
-  /* ---------- réglages ---------- */
-  #gear{position:absolute;right:12px;bottom:12px;width:44px;height:44px;border:1px solid var(--line);
-    border-radius:2px;background:rgba(13,18,16,.6);color:var(--graticule);font:500 11px/1 var(--mono);cursor:pointer;z-index:6}
-  #sheet{position:absolute;inset:0;z-index:20;background:rgba(9,13,11,.94);padding:20px 18px;overflow:auto;display:none}
-  #sheet.open{display:block}
-  .row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--line)}
-  .row label{font-size:13px;color:var(--dim);flex:1}
-  input[type=number]{width:96px;background:transparent;border:1px solid var(--line);color:var(--paper);
-    font:500 14px/1 var(--mono);padding:9px;border-radius:2px;text-align:right}
-  input[type=range]{width:100%;accent-color:var(--graticule);background:transparent}
-  select{background:var(--ink);border:1px solid var(--line);color:var(--paper);font:500 13px var(--mono);padding:9px;border-radius:2px}
-  .note{font-size:12px;line-height:1.6;color:var(--dim);margin:14px 0 0}
-  .zoom-group{display:flex;align-items:center;gap:8px;flex:1;max-width:180px}
-  .zoom-group .btn{font-size:16px;padding:4px 12px;line-height:1.4}
+  /* ===================== accueil ===================== */
+  #intro{position:fixed;inset:0;z-index:2000;overflow-y:auto;
+    background:radial-gradient(130% 90% at 50% -10%,#1B5238 0%,var(--forest) 55%,var(--deep) 100%);
+    padding:calc(24px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;justify-content:center;gap:18px}
+  #intro h2{margin:6px 0 0;font:600 30px/1.14 var(--serif);letter-spacing:-.015em}
+  #intro h2 em{font-style:italic;color:var(--mint)}
+  #iCard{background:var(--cream);color:var(--ink);border-radius:18px;padding:18px}
+  #iCard p{margin:10px 0 0;font-size:13.5px;line-height:1.55}
+  #iCard p:first-child{margin:0}
+  .cta{appearance:none;border:0;width:100%;padding:18px 20px;border-radius:14px;background:var(--moss);
+    color:var(--cream-2);cursor:pointer;font:500 15.5px/1 var(--sans);
+    display:flex;align-items:center;justify-content:center;gap:9px}
+  .cta:active{background:#255840}
+  .cta:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+  #iBrand{display:flex;align-items:center;gap:11px}
+  #iBrand div h3{margin:0;font:500 15px/1.1 var(--serif)}
+  #iBrand div p{margin:2px 0 0;font:600 9px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--mint)}
+  .pill{margin-left:auto;padding:6px 13px;border-radius:999px;background:rgba(143,192,161,.14);color:var(--mint);
+    font:600 9px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase}
+  #err{margin:0;min-height:1em;font-size:12.5px;line-height:1.5;color:#F0A88C}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 
-<div id="intro">
-  <p class="eyebrow">Visée optique + IA + inclinomètre</p>
-  <h1>Mesurez une distance en <em>encadrant</em> l'objet.</h1>
-  <ol>
-    <li>L'IA détecte automatiquement l'objet principal et place les repères <b>HAUT/PIED</b>.</li>
-    <li>Affinez manuellement si besoin, ou activez le suivi IA.</li>
-    <li>La hauteur en pixels + l'angle donnent la portée horizontale.</li>
-  </ol>
-  <button class="btn" id="go">Activer la caméra</button>
-  <p id="err"></p>
-</div>
-
-<div id="stage">
-  <video id="v" playsinline muted autoplay></video>
-  <svg id="ov" aria-hidden="true">
-    <g id="hz" stroke="var(--graticule)" fill="none" stroke-width="1"></g>
-    <line id="spanline" stroke="var(--span)" stroke-width="1.5" stroke-dasharray="7 5"/>
-  </svg>
-  <button class="handle" id="hTop" data-tag="HAUT" aria-label="Repère sommet"></button>
-  <button class="handle" id="hBot" data-tag="PIED" aria-label="Repère base"></button>
-
-  <div id="topbar">
-    <span class="eyebrow" id="stat">—</span>
-    <span class="eyebrow" id="pxread">0 px</span>
+<header id="top">
+  <div id="mark" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M6 21V3.5l11 4.2L6 12" stroke="#F1EDE2" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="17" cy="16" r="2" fill="#C9A227"/></svg>
   </div>
-
-  <!-- Commandes OSD : Zoom + IA -->
-  <div id="osd-controls">
-    <button class="osd-btn" id="zoomMainPlus" aria-label="Zoom +">+</button>
-    <button class="osd-btn" id="zoomMainMinus" aria-label="Zoom −">−</button>
-    <button class="osd-btn" id="autoTrackBtn" aria-label="Suivi IA">AI</button>
+  <div id="ttl"><h1>Greens</h1><p id="courseName">Carte de score</p></div>
+  <div id="chips">
+    <span class="chip" id="acc">GPS —</span>
+    <button class="chip on" id="compet" aria-pressed="true">Compét.</button>
   </div>
+</header>
 
-  <button id="gear" aria-label="Réglages">RÉG</button>
-
-  <div id="sheet" role="dialog" aria-label="Réglages">
-    <p class="eyebrow">Cible</p>
-    <div class="row"><label for="tgt">Hauteur de référence</label>
-      <select id="tgt">
-        <option value="2.13">Drapeau 2,13 m</option>
-        <option value="1.75">Personne 1,75 m</option>
-        <option value="0">Autre…</option>
-      </select></div>
-    <div class="row"><label for="H">Hauteur réelle (m)</label><input id="H" type="number" step="0.01" value="2.13"></div>
-
-    <p class="eyebrow" style="margin-top:22px">Optique</p>
-    <div class="row"><label for="fov">Champ horizontal supposé (°)</label><input id="fov" type="number" step="1" value="66"></div>
-    <div class="row">
-      <label for="zoom">Zoom</label>
-      <div class="zoom-group">
-        <button class="btn" id="zoomMinus" style="padding:4px 12px;">−</button>
-        <input id="zoom" type="range" min="1" max="1" step="0.1" value="1" disabled>
-        <button class="btn" id="zoomPlus" style="padding:4px 12px;">+</button>
-      </div>
+<main id="map">
+  <div id="mtools">
+    <button class="tool" id="bMe" title="Recentrer">MOI</button>
+    <button class="tool" id="bDetect" title="Détecter un green">DÉTECT</button>
+    <button class="tool" id="bDraw" title="Tracer à la main">TRACER</button>
+    <button class="tool" id="bLoad" title="Recharger les greens">OSM</button>
+    <button class="tool hide" id="bPos" title="Placer ma position">POS.</button>
+  </div>
+  <div id="bar">
+    <p id="barMsg"></p>
+    <div id="barRow">
+      <div id="tolWrap"><span class="eyebrow" style="color:var(--mint)">Étendue</span><input type="range" id="tol" min="8" max="60" step="2" value="26" aria-label="Sensibilité"></div>
+      <button class="mini ghost" id="bAgain">Refaire</button>
+      <button class="mini" id="bKeep">Garder</button>
+      <button class="mini ghost" id="bCancel">Fermer</button>
     </div>
-    <div class="row"><label for="fpx">Focale effective (px)</label><input id="fpx" type="number" step="1" value="0"></div>
-
-    <p class="eyebrow" style="margin-top:22px">Calibration</p>
-    <div class="row"><label for="dcal">Distance connue de la cible (m)</label><input id="dcal" type="number" step="0.1" value="20"></div>
-    <div class="row"><label>Encadrez la cible puis validez</label>
-      <button class="btn" id="docal" style="padding:11px 14px">Calibrer</button></div>
-
-    <p class="note">La focale se recalcule à chaque changement de zoom. Notez la valeur en pixels après calibration.</p>
-    <div class="row" style="border:0;justify-content:flex-end"><button class="btn" id="close">Fermer</button></div>
   </div>
+  <div id="banner"></div>
+</main>
+
+<footer id="strip">
+  <div id="sHead">
+    <span id="gName">Aucun green choisi</span>
+    <span id="blind">Coup aveugle</span>
+    <span id="gSub"></span>
+  </div>
+  <div id="cells">
+    <div class="c front"><span class="eyebrow">Avant</span><b id="dFront">—</b></div>
+    <div class="c"><span class="eyebrow">Arrière</span><b id="dBack">—</b></div>
+    <div class="c"><span class="eyebrow">Gauche</span><b id="dLeft">—</b></div>
+    <div class="c"><span class="eyebrow">Droite</span><b id="dRight">—</b></div>
+    <div class="c" id="cElev"><span class="eyebrow">Déniv.</span><b id="dElev">—</b></div>
+  </div>
+</footer>
+
+<div id="intro">
+  <div id="iBrand">
+    <div id="mark" style="width:42px;height:42px;border-radius:13px" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none"><path d="M6 21V3.5l11 4.2L6 12" stroke="#F1EDE2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="17" cy="16" r="2" fill="#C9A227"/></svg>
+    </div>
+    <div><h3>Greens</h3><p>Carte de score</p></div>
+    <span class="pill">Bêta</span>
+  </div>
+  <h2>Touchez le green<br><em>que vous allez jouer.</em></h2>
+  <div id="iCard">
+    <p class="eyebrow">Sur n'importe quel parcours</p>
+    <p>La vue satellite se centre sur vous, le faisceau montre où pointe le téléphone. Touchez un green : distances à ses bords avant, arrière, gauche et droite, plus le dénivelé.</p>
+    <p>Parcours absent d'OpenStreetMap ? L'outil <b>DÉTECT</b> extrait le contour depuis l'image satellite.</p>
+  </div>
+  <button class="cta" id="go">Ouvrir la carte <span aria-hidden="true">→</span></button>
+  <p id="err" role="alert"></p>
 </div>
 
-<div id="panel">
-  <p class="eyebrow">Portée horizontale</p>
-  <div id="hero">
-    <span id="main" class="stale">—</span><span id="unit">m</span><span id="tol">±—</span>
-  </div>
-  <div id="grid">
-    <div><span class="eyebrow">Horizontale</span><span id="oHz">—</span></div>
-    <div><span class="eyebrow">Visée</span><span id="oLine">—</span></div>
-    <div><span class="eyebrow">Dénivelé</span><span id="oDh">—</span></div>
-    <div><span class="eyebrow">Angle</span><span id="oAng">—</span></div>
-  </div>
-</div>
-
-<!-- TensorFlow.js + COCO-SSD -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 (() => {
-  const $ = id => document.getElementById(id);
-  const stage=$('stage'), video=$('v'), ov=$('ov'), hzG=$('hz'), spanLine=$('spanline');
-  const hTop=$('hTop'), hBot=$('hBot');
-  const DEG=180/Math.PI;
+"use strict";
+const $ = id => document.getElementById(id);
+const R_E = 6371008.8, D2R = Math.PI/180, R2D = 180/Math.PI;
+const KEY = "greens.custom.v2", LAST = "greens.last.v1";
 
-  // Positions relatives des repères
-  let pTop={x:.5,y:.32}, pBot={x:.5,y:.62};
-  let grav={x:0,y:9.81,z:0}, haveMotion=false;
-  let track=null, zoomBase=1, zoomNow=1, fCal=0, zoomAtCal=1;
+const S = { pos:null, acc:null, heading:null, manualPos:false,
+            greens:[], sel:null, mode:null, draft:[], detect:null,
+            alti:null, altiKey:"", altiBusy:false, france:null };
+let map, base, meMarker, accRing, spokes, gLayer, tagLayer, tmpLayer, follow = true;
 
-  // IA / Suivi
-  let model = null;
-  let autoTrack = false;
-  let smoothTop = {x:.5, y:.3};
-  let smoothBot = {x:.5, y:.6};
-  let detectionActive = false;
-  let lastDetected = null; // pour IoU
+/* ---------- géométrie ---------- */
+const loc   = (la,lo,la0,lo0) => [ (lo-lo0)*D2R*R_E*Math.cos(la0*D2R), (la-la0)*D2R*R_E ];
+const unloc = (x,y,la0,lo0)   => [ la0 + (y/R_E)*R2D, lo0 + (x/(R_E*Math.cos(la0*D2R)))*R2D ];
+const brg   = (x,y) => (Math.atan2(x,y)*R2D + 360) % 360;
+const wrap  = a => { a=(a+180)%360; return (a<0?a+360:a)-180; };
+const ctr   = cs => [ cs.reduce((s,c)=>s+c[0],0)/cs.length, cs.reduce((s,c)=>s+c[1],0)/cs.length ];
 
-  /* ---------- démarrage ---------- */
-  $('go').addEventListener('click', async () => {
-    $('err').textContent='';
-    try{
-      if (typeof DeviceMotionEvent!=='undefined' && DeviceMotionEvent.requestPermission){
-        try{ haveMotion = await DeviceMotionEvent.requestPermission()==='granted'; }catch(e){ haveMotion=false; }
-      } else haveMotion=true;
-      if (haveMotion) window.addEventListener('devicemotion', onMotion);
+function segD(ax,ay,bx,by){
+  const vx=bx-ax, vy=by-ay, L=vx*vx+vy*vy;
+  let t = L>0 ? -(ax*vx+ay*vy)/L : 0; t = t<0?0:t>1?1:t;
+  const cx=ax+t*vx, cy=ay+t*vy;
+  return { d:Math.hypot(cx,cy), x:cx, y:cy };
+}
+function measure(g, pos){
+  const P = g.coords.map(c => loc(c[0],c[1],pos.lat,pos.lon));
+  if (P.length < 3) return null;
+  const cx = P.reduce((s,p)=>s+p[0],0)/P.length, cy = P.reduce((s,p)=>s+p[1],0)/P.length;
+  const axis = brg(cx,cy);
+  let front={d:Infinity}, back={d:-1};
+  for (let i=0;i<P.length;i++){
+    const a=P[i], b=P[(i+1)%P.length], s=segD(a[0],a[1],b[0],b[1]);
+    if (s.d < front.d) front = s;
+    const dv = Math.hypot(a[0],a[1]);
+    if (dv > back.d) back = { d:dv, x:a[0], y:a[1] };
+  }
+  let left={rel:Infinity}, right={rel:-Infinity};
+  for (const p of P){
+    const rel = wrap(brg(p[0],p[1]) - axis);
+    if (rel < left.rel)  left  = { rel, d:Math.hypot(p[0],p[1]), x:p[0], y:p[1] };
+    if (rel > right.rel) right = { rel, d:Math.hypot(p[0],p[1]), x:p[0], y:p[1] };
+  }
+  return { axis, front, back, left, right, centre:{ d:Math.hypot(cx,cy), x:cx, y:cy },
+           width:Math.hypot(left.x-right.x, left.y-right.y),
+           ll:p => unloc(p.x,p.y,pos.lat,pos.lon) };
+}
 
-      const s = await navigator.mediaDevices.getUserMedia({
-        video:{ facingMode:{ideal:'environment'}, width:{ideal:1920}, height:{ideal:1080} }, audio:false });
-      video.srcObject=s;
-      await video.play();
-      track = s.getVideoTracks()[0];
-      setupZoom();
+/* ---------- fonds ---------- */
+const ESRI = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+const IGN  = "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0"
+           + "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg"
+           + "&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}";
+const inFR = p => p && p.lat>41 && p.lat<51.6 && p.lon>-5.5 && p.lon<10;
 
-      // Charger le modèle IA
-      status('Chargement IA…');
-      model = await cocoSsd.load({ base: 'mobilenet_v2' });
-      status('IA prête. Activez "AI" pour le suivi auto.');
+function setBase(france){
+  if (S.france === france) return;
+  S.france = france;
+  if (base) map.removeLayer(base);
+  base = L.tileLayer(france ? IGN : ESRI, {
+    maxNativeZoom:19, maxZoom:21, crossOrigin:"anonymous",
+    attribution: france
+      ? "Ortho &amp; RGE ALTI &copy; IGN &mdash; greens &copy; OpenStreetMap"
+      : "Imagerie &copy; Esri &mdash; altitudes Copernicus &mdash; greens &copy; OpenStreetMap"
+  }).addTo(map);
+  base.bringToBack();
+}
 
-      $('intro').remove();
-      placeHandles();
-      requestAnimationFrame(loop);
-      // Lancer la boucle de détection
-      detectionLoop();
-    }catch(e){
-      $('err').textContent = "Erreur : "+e.message+" — HTTPS et autorisations requises.";
-    }
+async function elevations(pts){
+  if (!pts.length) return [];
+  if (S.france){
+    const r = await fetch("https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest/elevation.json?lon="
+      + encodeURIComponent(pts.map(p=>p[1].toFixed(6)).join("|")) + "&lat="
+      + encodeURIComponent(pts.map(p=>p[0].toFixed(6)).join("|"))
+      + "&resource=ign_rge_alti_wld&delimiter=" + encodeURIComponent("|")
+      + "&indent=false&measures=false&zonly=true");
+    const j = await r.json();
+    return (j.elevations||[]).map(e => { const z = typeof e === "number" ? e : e.z; return z === -99999 ? null : z; });
+  }
+  const r = await fetch("https://api.open-meteo.com/v1/elevation?latitude="
+    + pts.map(p=>p[0].toFixed(6)).join(",") + "&longitude=" + pts.map(p=>p[1].toFixed(6)).join(","));
+  return (await r.json()).elevation || [];
+}
+
+/* ---------- carte : créée tout de suite, sans attendre le GPS ---------- */
+function initMap(){
+  let start = [46.6, 2.4], z = 5;
+  try { const l = JSON.parse(localStorage.getItem(LAST)); if (l) { start = [l.lat, l.lon]; z = 18; } } catch(e){}
+  map = L.map("map", { zoomControl:false, attributionControl:true }).setView(start, z);
+  setBase(inFR({ lat:start[0], lon:start[1] }));
+  gLayer = L.layerGroup().addTo(map);
+  tagLayer = L.layerGroup().addTo(map);
+  spokes = L.layerGroup().addTo(map);
+  tmpLayer = L.layerGroup().addTo(map);
+
+  meMarker = L.marker(start, {
+    icon: L.divIcon({ className:"me-icon", iconSize:[100,100], iconAnchor:[50,50],
+      html:'<div class="beam"></div><div class="dot"></div>' }),
+    interactive:false, zIndexOffset:1000
   });
+  accRing = L.circle(start, { radius:0, color:"#C9A227", weight:1, opacity:.3, fill:false, interactive:false });
 
-  function status(msg){ $('stat').textContent = msg; }
+  map.on("dragstart", () => { follow = false; });
+  map.on("click", e => {
+    if (S.mode === "pos"){ setPos(e.latlng.lat, e.latlng.lng, 5, true); closeBar(); return; }
+    if (S.mode === "draw"){ pushDraft(e.latlng); return; }
+    if (S.mode === "detect"){ runDetect(e.latlng); return; }
+    const hit = hitTest(e.latlng);
+    if (hit){ S.sel = hit; refresh(); }
+  });
+  setTimeout(() => map.invalidateSize(), 120);
+  addEventListener("resize", () => map.invalidateSize());
+}
 
-  /* ---------- Zoom ---------- */
-  function setupZoom(){
-    const z = $('zoom');
-    const cap = track.getCapabilities ? track.getCapabilities() : {};
-    if (cap.zoom) {
-      z.min = cap.zoom.min; z.max = cap.zoom.max; z.step = cap.zoom.step || 0.1;
-      zoomBase = track.getSettings().zoom || cap.zoom.min;
-      z.value = zoomBase; zoomNow = zoomBase; z.disabled = false;
-    } else {
-      z.min = 1; z.max = 1; z.value = 1; z.disabled = true;
-    }
-
-    const applyZoom = (val) => {
-      const z = $('zoom');
-      val = Math.min(z.max, Math.max(z.min, val));
-      z.value = val;
-      z.dispatchEvent(new Event('input'));
-    };
-
-    z.addEventListener('input', () => {
-      zoomNow = +z.value;
-      if (track && track.applyConstraints) track.applyConstraints({ advanced: [{ zoom: zoomNow }] }).catch(()=>{});
-    });
-
-    // Boutons du panneau
-    $('zoomMinus').addEventListener('click', () => { if(!z.disabled) applyZoom(+z.value - 0.1); });
-    $('zoomPlus').addEventListener('click', () => { if(!z.disabled) applyZoom(+z.value + 0.1); });
-
-    // Boutons OSD (page principale)
-    $('zoomMainMinus').addEventListener('click', () => { if(!z.disabled) applyZoom(+z.value - 0.1); });
-    $('zoomMainPlus').addEventListener('click', () => { if(!z.disabled) applyZoom(+z.value + 0.1); });
+function hitTest(ll){
+  let best=null, bd=Infinity;
+  for (const g of S.greens){
+    const c = ctr(g.coords);
+    const d = Math.hypot(...loc(ll.lat, ll.lng, c[0], c[1]));
+    const inside = g.layer && g.layer.getBounds().contains(ll);
+    const score = inside ? 0 : d;
+    if (score < bd && (inside || d < 45)){ bd = score; best = g; }
   }
+  return best;
+}
 
-  /* ---------- Capteurs ---------- */
-  function onMotion(e){
-    const g = e.accelerationIncludingGravity; if(!g||g.x===null) return;
-    const a=.12;
-    grav.x += a*(g.x-grav.x); grav.y += a*(g.y-grav.y); grav.z += a*(g.z-grav.z);
+/* ---------- position ---------- */
+function setPos(lat, lon, acc, manual){
+  const first = !S.pos;
+  S.pos = { lat, lon }; S.acc = acc; S.manualPos = !!manual;
+  try { localStorage.setItem(LAST, JSON.stringify({ lat, lon })); } catch(e){}
+  setBase(inFR(S.pos));
+  if (first){ meMarker.addTo(map); accRing.addTo(map); map.setView([lat,lon], 18); }
+  meMarker.setLatLng([lat,lon]);
+  accRing.setLatLng([lat,lon]).setRadius(acc || 0);
+  $("acc").textContent = manual ? "Pos. manuelle" : "GPS ±" + Math.round(acc) + " m";
+  if (follow) map.panTo([lat,lon], { animate:false });
+  if (first) loadCourse();
+  refresh();
+}
+
+function startGeo(){
+  if (!window.isSecureContext){
+    warn("Cette page n'est pas servie en <b>HTTPS</b>, le navigateur bloque donc le GPS et la boussole. "
+       + "Hébergez le fichier en https (ou localhost). En attendant, touchez <b>POS.</b> pour vous placer à la main.");
+    $("bPos").classList.remove("hide");
+    return;
   }
-  const norm = () => Math.hypot(grav.x,grav.y,grav.z)||9.81;
-  const elevAxis = () => Math.asin(Math.max(-1,Math.min(1,-grav.z/norm())));
-  const roll     = () => Math.atan2(grav.x, grav.y);
+  if (!navigator.geolocation){ warn("Ce navigateur ne donne pas accès à la position. Utilisez <b>POS.</b>"); $("bPos").classList.remove("hide"); return; }
+  navigator.geolocation.watchPosition(
+    p => { hideWarn(); setPos(p.coords.latitude, p.coords.longitude, p.coords.accuracy, false); },
+    e => { warn("Position indisponible : " + e.message + ". Touchez <b>POS.</b> pour vous placer à la main.");
+           $("bPos").classList.remove("hide"); },
+    { enableHighAccuracy:true, maximumAge:1500, timeout:15000 }
+  );
+}
 
-  /* ---------- Optique ---------- */
-  function focalPx(){
-    const manual = +$('fpx').value;
-    if (fCal>0) return fCal * (zoomNow/zoomAtCal);
-    if (manual>0) return manual * (zoomNow/zoomBase);
-    const vw=video.videoWidth, vh=video.videoHeight;
-    if(!vw) return 0;
-    const sc = Math.max(stage.clientWidth/vw, stage.clientHeight/vh);
-    const hfov = (+$('fov').value||66)/DEG;
-    return ((vw*sc)/2)/Math.tan(hfov/2) * (zoomNow/zoomBase);
-  }
+async function startCompass(){
+  const need = typeof DeviceOrientationEvent !== "undefined" && DeviceOrientationEvent.requestPermission;
+  if (need){ try{ if ((await DeviceOrientationEvent.requestPermission()) !== "granted") return; }catch(e){ return; } }
+  const on = e => {
+    let h = null;
+    if (typeof e.webkitCompassHeading === "number") h = e.webkitCompassHeading;
+    else if (e.absolute && typeof e.alpha === "number") h = (360 - e.alpha) % 360;
+    if (h === null) return;
+    S.heading = S.heading === null ? h : (S.heading + 0.25*wrap(h - S.heading) + 360) % 360;
+    const el = meMarker.getElement && meMarker.getElement();
+    const beam = el && el.querySelector(".beam");
+    if (beam){ beam.classList.add("on"); beam.style.transform = "rotate(" + S.heading.toFixed(1) + "deg)"; }
+  };
+  addEventListener("deviceorientationabsolute", on);
+  addEventListener("deviceorientation", on);
+}
 
-  /* ---------- Poignées ---------- */
-  function placeHandles(){
-    const w=stage.clientWidth, h=stage.clientHeight;
-    hTop.style.left=(pTop.x*w)+'px'; hTop.style.top=(pTop.y*h)+'px';
-    hBot.style.left=(pBot.x*w)+'px'; hBot.style.top=(pBot.y*h)+'px';
-  }
+const warn = html => { $("banner").innerHTML = html; $("banner").classList.add("on"); };
+const hideWarn = () => $("banner").classList.remove("on");
 
-  function drag(el, p){
-    el.addEventListener('pointerdown', ev=>{ el.setPointerCapture(ev.pointerId); el.dataset.on=1; if(autoTrack) toggleAuto(); });
-    el.addEventListener('pointermove', ev=>{
-      if(!el.dataset.on) return;
-      const r=stage.getBoundingClientRect();
-      p.x=Math.min(1,Math.max(0,(ev.clientX-r.left)/r.width));
-      p.y=Math.min(1,Math.max(0,(ev.clientY-r.top)/r.height));
-      placeHandles();
-    });
-    const up=ev=>{ delete el.dataset.on; };
-    el.addEventListener('pointerup',up); el.addEventListener('pointercancel',up);
-    el.addEventListener('keydown', ev=>{
-      const s = ev.shiftKey?.02:.003, k=ev.key;
-      if(k==='ArrowUp') p.y-=s; else if(k==='ArrowDown') p.y+=s;
-      else if(k==='ArrowLeft') p.x-=s; else if(k==='ArrowRight') p.x+=s; else return;
-      ev.preventDefault(); placeHandles();
-    });
-  }
-  drag(hTop,pTop); drag(hBot,pBot);
-  addEventListener('resize', placeHandles);
-
-  /* ---------- IA / Détection automatique ---------- */
-  async function detectionLoop() {
-    if (!model || !video || video.readyState < 2) {
-      setTimeout(detectionLoop, 300);
-      return;
-    }
-    try {
-      if (autoTrack) {
-        const predictions = await model.detect(video);
-        let best = null;
-        let bestArea = 0;
-        const centerX = 0.5, centerY = 0.5;
-        for (const p of predictions) {
-          if (p.score < 0.5) continue;
-          const [x,y,w,h] = p.bbox;
-          // Pénaliser les objets trop petits ou excentrés
-          const area = w * h;
-          const cx = (x + w/2) / video.videoWidth;
-          const cy = (y + h/2) / video.videoHeight;
-          const distCenter = Math.hypot(cx - centerX, cy - centerY);
-          // Favoriser les gros objets proches du centre
-          const score = area * (1 - distCenter * 0.5);
-          if (score > bestArea) {
-            bestArea = score;
-            best = { x, y, width: w, height: h, class: p.class };
-          }
-        }
-
-        if (best) {
-          const w = stage.clientWidth, h = stage.clientHeight;
-          const vw = video.videoWidth, vh = video.videoHeight;
-          // Normaliser
-          const targetTop = { x: (best.x + best.width/2) / vw, y: best.y / vh };
-          const targetBot = { x: (best.x + best.width/2) / vw, y: (best.y + best.height) / vh };
-
-          // Lissage (stabilisation)
-          const alpha = 0.35; // plus faible = plus lisse
-          smoothTop.x += alpha * (targetTop.x - smoothTop.x);
-          smoothTop.y += alpha * (targetTop.y - smoothTop.y);
-          smoothBot.x += alpha * (targetBot.x - smoothBot.x);
-          smoothBot.y += alpha * (targetBot.y - smoothBot.y);
-
-          // Appliquer aux repères
-          pTop.x = Math.min(1, Math.max(0, smoothTop.x));
-          pTop.y = Math.min(1, Math.max(0, smoothTop.y));
-          pBot.x = Math.min(1, Math.max(0, smoothBot.x));
-          pBot.y = Math.min(1, Math.max(0, smoothBot.y));
-
-          placeHandles();
-          status('🤖 IA: ' + best.class);
-        } else {
-          status('🤖 IA: aucun objet détecté');
-        }
+/* ---------- données parcours ---------- */
+async function loadCourse(){
+  if (!S.pos) return;
+  $("courseName").textContent = "Recherche du parcours…";
+  const q = `[out:json][timeout:30];
+    (way["golf"="green"](around:2500,${S.pos.lat},${S.pos.lon});
+     relation["golf"="green"](around:2500,${S.pos.lat},${S.pos.lon});
+     way["golf"="hole"](around:2500,${S.pos.lat},${S.pos.lon});
+     way["leisure"="golf_course"](around:2500,${S.pos.lat},${S.pos.lon});
+     relation["leisure"="golf_course"](around:2500,${S.pos.lat},${S.pos.lon}););
+    out geom tags;`;
+  let greens = [], holes = [], name = null;
+  try{
+    const r = await fetch("https://overpass-api.de/api/interpreter", {
+      method:"POST", body:"data=" + encodeURIComponent(q),
+      headers:{ "Content-Type":"application/x-www-form-urlencoded" } });
+    const j = await r.json();
+    for (const el of (j.elements||[])){
+      const t = el.tags || {};
+      if (t.leisure === "golf_course" && t.name && !name) name = t.name;
+      let cs = null;
+      if (el.geometry) cs = el.geometry.map(g => [g.lat, g.lon]);
+      else if (el.members){
+        const o = el.members.find(m => m.role === "outer" && m.geometry);
+        if (o) cs = o.geometry.map(g => [g.lat, g.lon]);
       }
-    } catch(e) { /* silencieux */ }
-    setTimeout(detectionLoop, 150);
-  }
-
-  /* ---------- Toggle Auto ---------- */
-  function toggleAuto() {
-    autoTrack = !autoTrack;
-    const btn = $('autoTrackBtn');
-    if(autoTrack){
-      btn.classList.add('active');
-      btn.textContent = 'AI✓';
-      status('Suivi IA activé');
-      // Initialiser le lissage sur la position actuelle
-      smoothTop.x = pTop.x; smoothTop.y = pTop.y;
-      smoothBot.x = pBot.x; smoothBot.y = pBot.y;
-    } else {
-      btn.classList.remove('active');
-      btn.textContent = 'AI';
-      status('Suivi IA désactivé');
+      if (!cs || cs.length < 2) continue;
+      if (t.golf === "green") greens.push({ id:"o"+el.id, name:t.ref?("Trou "+t.ref):null, coords:cs, src:"osm" });
+      else if (t.golf === "hole") holes.push({ ref:t.ref||null, end:cs[cs.length-1] });
     }
-  }
-
-  $('autoTrackBtn').addEventListener('click', toggleAuto);
-
-  /* ---------- Cible & Calibration ---------- */
-  $('tgt').addEventListener('change', e=>{ if(+e.target.value>0) $('H').value=e.target.value; });
-  $('gear').addEventListener('click', ()=> $('sheet').classList.add('open'));
-  $('close').addEventListener('click', ()=> $('sheet').classList.remove('open'));
-  $('docal').addEventListener('click', ()=>{
-    const d=+$('dcal').value, H=+$('H').value, px=spanPx();
-    if(d>0 && H>0 && px>4){
-      fCal = px*d/H; zoomAtCal = zoomNow;
-      $('fpx').value = Math.round(fCal);
-      $('sheet').classList.remove('open');
-      status('Calibré !');
+    if (!greens.length && holes.length){
+      for (const h of holes){
+        const ring = [];
+        for (let a=0;a<360;a+=24){ const b=a*D2R; ring.push(unloc(Math.sin(b)*14, Math.cos(b)*14, h.end[0], h.end[1])); }
+        greens.push({ id:"h"+(h.ref||ring[0][0]), name:h.ref?("Trou "+h.ref):null, coords:ring, src:"approx" });
+      }
     }
+    for (const g of greens){
+      if (g.name) continue;
+      const c = ctr(g.coords); let bd=Infinity, best=null;
+      for (const h of holes){ const d = Math.hypot(...loc(h.end[0],h.end[1],c[0],c[1])); if (d<bd){ bd=d; best=h; } }
+      if (best && bd < 80 && best.ref) g.name = "Trou " + best.ref;
+    }
+  }catch(e){}
+  S.greens = greens.concat(readCustom());
+  $("courseName").textContent = name || (S.greens.length ? "Parcours non nommé" : "Parcours inconnu");
+  if (!greens.length) warn("Ce parcours n'est pas dans OpenStreetMap. Utilisez <b>DÉTECT</b> sur le centre d'un green, ou <b>TRACER</b>.");
+  drawGreens(); refresh();
+}
+
+function drawGreens(){
+  gLayer.clearLayers(); tagLayer.clearLayers();
+  S.greens.forEach((g,i) => {
+    if (!g.name) g.name = "Green " + (i+1);
+    const sel = S.sel && S.sel.id === g.id;
+    g.layer = L.polygon(g.coords, {
+      color: sel?"#C9A227":"#8FC0A1", weight: sel?2.5:1.5, opacity:.9,
+      fillColor: sel?"#C9A227":"#8FC0A1", fillOpacity: sel?.22:.12
+    }).addTo(gLayer);
+    g.layer.on("click", () => { S.sel = g; refresh(); });
+    L.marker(ctr(g.coords), { icon:L.divIcon({ className:"gtag"+(sel?" sel":""), html:"<span>"+g.name+"</span>" }), interactive:false }).addTo(tagLayer);
   });
+}
 
-  /* ---------- Géométrie ---------- */
-  function spanPx(){
-    const w=stage.clientWidth, h=stage.clientHeight, r=roll();
-    const dx=(pTop.x-pBot.x)*w, dy=(pTop.y-pBot.y)*h;
-    const ux=-Math.sin(r), uy=-Math.cos(r);
-    return Math.abs(dx*ux+dy*uy);
+/* ---------- détection sur l'image satellite ---------- */
+const mpp = (lat,z) => 156543.03392 * Math.cos(lat*D2R) / Math.pow(2,z);
+function grab(ll, halfM){
+  const z = map.getZoom(), m = mpp(ll.lat, z);
+  const half = Math.min(Math.round(halfM/m), 260), size = half*2;
+  const cv = document.createElement("canvas"); cv.width = cv.height = size;
+  const cx = cv.getContext("2d", { willReadFrequently:true });
+  const c = map.latLngToContainerPoint(ll), ts = base.getTileSize().x;
+  let n = 0;
+  for (const k in base._tiles){
+    const t = base._tiles[k];
+    if (!t.el || !t.el.complete || !t.el.naturalWidth) continue;
+    const lp = L.point(t.coords.x*ts, t.coords.y*ts).subtract(map.getPixelOrigin());
+    const cp = map.layerPointToContainerPoint(lp);
+    cx.drawImage(t.el, cp.x - (c.x - half), cp.y - (c.y - half), ts, ts); n++;
   }
-
-  const fmt = (v,n=1) => (Math.abs(v)<1e4 ? v.toFixed(n) : '—');
-
-  /* ---------- Boucle d'affichage ---------- */
-  function loop(){
-    const w=stage.clientWidth, h=stage.clientHeight, cx=w/2, cy=h/2;
-    ov.setAttribute('viewBox',`0 0 ${w} ${h}`);
-    const f=focalPx(), el=elevAxis(), r=roll();
-
-    // Horizon
-    let d='';
-    for(let a=-15;a<=15;a+=5){
-      const y = cy + f*Math.tan(el - a/DEG);
-      if(!isFinite(y)||y<-h||y>2*h) continue;
-      const half = a===0 ? w*.46 : w*.12;
-      d += `M${cx-half} ${y}H${cx+half}`;
-      if(a!==0) d += `M${cx-half} ${y}v${a>0?6:-6}M${cx+half} ${y}v${a>0?6:-6}`;
+  if (!n) return null;
+  try { return { data:cx.getImageData(0,0,size,size).data, size, half, m }; }
+  catch(e){ return { tainted:true }; }
+}
+function grow(px, tol){
+  const { data, size } = px, seed = (size/2|0)*size + (size/2|0);
+  const r0=data[seed*4], g0=data[seed*4+1], b0=data[seed*4+2];
+  const mask = new Uint8Array(size*size), q=[seed]; mask[seed]=1;
+  let n=1; const cap = size*size*0.55, lim = size/2 - 2;
+  while (q.length && n < cap){
+    const i = q.pop(), x = i%size, y = (i/size)|0;
+    for (const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const nx=x+dx, ny=y+dy;
+      if (nx<1||ny<1||nx>=size-1||ny>=size-1) continue;
+      const ni = ny*size+nx;
+      if (mask[ni] || Math.hypot(nx-size/2, ny-size/2) > lim) continue;
+      const j = ni*4;
+      if (Math.abs(data[j]-r0)+Math.abs(data[j+1]-g0)+Math.abs(data[j+2]-b0) > tol*3) continue;
+      mask[ni]=1; n++; q.push(ni);
     }
-    d += `M${cx-9} ${cy}h18M${cx} ${cy-9}v18`;
-    hzG.setAttribute('transform',`rotate(${r*DEG} ${cx} ${cy})`);
-    hzG.innerHTML = `<path d="${d}"/>`;
-
-    spanLine.setAttribute('x1',pTop.x*w); spanLine.setAttribute('y1',pTop.y*h);
-    spanLine.setAttribute('x2',pBot.x*w); spanLine.setAttribute('y2',pBot.y*h);
-
-    const px=spanPx(), H=+$('H').value||2.13;
-    $('pxread').textContent = px.toFixed(0)+' px  ·  f '+(f?f.toFixed(0):'—');
-
-    if(f>0 && px>4 && H>0){
-      const dLine = H*f/px;
-      const thetaBase = el + Math.atan((cy - pBot.y*h)/f);
-      const dHz = dLine*Math.cos(thetaBase);
-      const dh  = dLine*Math.sin(thetaBase);
-      const played = dHz;
-      const tol = dLine*(2/px);
-
-      $('main').classList.remove('stale');
-      $('main').textContent = fmt(played,0);
-      $('tol').textContent  = '±'+fmt(tol,1)+' m';
-      $('oHz').textContent  = fmt(dHz,1);
-      $('oLine').textContent= fmt(dLine,1);
-      $('oDh').textContent  = (dh>=0?'+':'')+fmt(dh,1);
-      $('oDh').className    = dh<0?'neg':'';
-      $('oAng').textContent = fmt(thetaBase*DEG,1)+'°';
-    } else {
-      $('main').classList.add('stale'); $('main').textContent='—';
-    }
-    requestAnimationFrame(loop);
   }
+  return { mask, n, lim };
+}
+function contour(px, reg, ll){
+  const { size, m } = px, { mask, lim } = reg;
+  let sx=0, sy=0, n=0;
+  for (let i=0;i<mask.length;i++) if (mask[i]){ sx+=i%size; sy+=(i/size)|0; n++; }
+  if (n < 40) return null;
+  sx/=n; sy/=n;
+  const ring=[]; let leak=0, steps=0;
+  for (let a=0;a<360;a+=7.5){
+    steps++;
+    const t=a*D2R, ux=Math.sin(t), uy=-Math.cos(t);
+    let r=0, miss=0;
+    while (r < lim){
+      const x=Math.round(sx+ux*(r+1)), y=Math.round(sy+uy*(r+1));
+      if (x<0||y<0||x>=size||y>=size) break;
+      if (mask[y*size+x]){ r++; miss=0; } else if (++miss>2) break; else r++;
+    }
+    if (r >= lim-2) leak++;
+    ring.push(unloc((sx+ux*r-size/2)*m, -(sy+uy*r-size/2)*m, ll.lat, ll.lng));
+  }
+  return { ring, area:n*m*m, leak: leak/steps > 0.25 };
+}
+function runDetect(ll){
+  if (map.getZoom() < 18){ msg("Zoomez au niveau 18 minimum pour détecter."); return; }
+  const px = grab(ll, 55);
+  if (!px){ msg("Tuiles pas encore chargées. Attendez puis retouchez."); return; }
+  if (px.tainted){ msg("Ce fond interdit la lecture des pixels. Passez par TRACER."); return; }
+  S.detect = { px, ll }; applyDetect();
+}
+function applyDetect(){
+  const { px, ll } = S.detect, c = contour(px, grow(px, +$("tol").value), ll);
+  tmpLayer.clearLayers();
+  if (!c){ msg("Rien de cohérent ici. Visez le centre du green ou montez l'étendue."); return; }
+  S.detect.ring = c.ring;
+  L.polygon(c.ring, { color:"#C9A227", weight:2.5, fillColor:"#C9A227", fillOpacity:.28 }).addTo(tmpLayer);
+  msg(c.leak ? "Le contour déborde — baissez l'étendue."
+             : Math.round(c.area) + " m², " + Math.round(Math.sqrt(c.area/Math.PI)*2) + " m de diamètre.");
+  $("tolWrap").classList.add("on");
+}
+const msg = t => { $("barMsg").innerHTML = t; $("bar").classList.add("on"); };
+
+/* ---------- tracé manuel ---------- */
+function pushDraft(ll){
+  S.draft.push([ll.lat, ll.lng]);
+  tmpLayer.clearLayers();
+  if (S.draft.length > 1) L.polygon(S.draft, { color:"#C9A227", weight:2, fillColor:"#C9A227", fillOpacity:.2 }).addTo(tmpLayer);
+  S.draft.forEach(p => L.circleMarker(p, { radius:4, color:"#C9A227", fillOpacity:1 }).addTo(tmpLayer));
+  msg(S.draft.length + " point" + (S.draft.length>1?"s":"") + " — 3 minimum.");
+}
+function readCustom(){ try{ return (JSON.parse(localStorage.getItem(KEY))||[]).map(g=>({...g, src:"draw"})); }catch(e){ return []; } }
+function writeCustom(l){ try{ localStorage.setItem(KEY, JSON.stringify(l.map(g=>({id:g.id,name:g.name,coords:g.coords})))); }catch(e){} }
+function saveGreen(coords){
+  const name = prompt("Nom du green (par exemple « Trou 7 »)") || ("Green " + (S.greens.length+1));
+  const g = { id:"c"+Date.now(), name, coords, src:"draw" };
+  S.greens.push(g); S.sel = g; writeCustom(S.greens.filter(x => x.src === "draw"));
+  drawGreens(); refresh();
+}
+function closeBar(){
+  S.mode = null; S.detect = null; S.draft = [];
+  tmpLayer.clearLayers();
+  $("bar").classList.remove("on"); $("tolWrap").classList.remove("on");
+  ["bDetect","bDraw","bPos"].forEach(i => $(i).classList.remove("armed"));
+}
+
+/* ---------- altimétrie ---------- */
+async function updateAlti(m){
+  const front = m.ll(m.front), c = m.ll(m.centre);
+  const key = [S.pos.lat.toFixed(5), S.pos.lon.toFixed(5), c[0].toFixed(5)].join(",");
+  if (key === S.altiKey || S.altiBusy) return;
+  S.altiBusy = true; S.altiKey = key;
+  try{
+    const line = [];
+    for (let i=0;i<=20;i++){ const t=i/20; line.push([ S.pos.lat+(front[0]-S.pos.lat)*t, S.pos.lon+(front[1]-S.pos.lon)*t ]); }
+    const z = await elevations(line.concat([c]));
+    const zp = z[0], zc = z[z.length-1];
+    if (zp != null && zc != null){
+      const eye = zp + 1.6, tgt = z[z.length-2] + 1.0;
+      let blind = false;
+      for (let i=1;i<z.length-2;i++){ if (z[i] != null && z[i] > eye + (i/20)*(tgt-eye) + 0.7){ blind = true; break; } }
+      S.alti = { player:zp, centre:zc, blind };
+    } else S.alti = null;
+  }catch(e){ S.alti = null; }
+  S.altiBusy = false; render();
+}
+
+/* ---------- rendu ---------- */
+function refresh(){
+  if (!S.pos || !map) return;
+  if (S.sel && !S.greens.find(g => g.id === S.sel.id)) S.sel = null;
+  drawGreens();
+  const m = S.sel ? measure(S.sel, S.pos) : null;
+  spokes.clearLayers();
+  if (m){
+    const from = [S.pos.lat, S.pos.lon];
+    const st = (c,w,dash) => ({ color:c, weight:w, opacity:.9, dashArray:dash, interactive:false });
+    L.polyline([from, m.ll(m.front)], st("#8FC0A1",2.5)).addTo(spokes);
+    L.polyline([from, m.ll(m.back)],  st("#F1EDE2",1.4,"5 6")).addTo(spokes);
+    L.polyline([from, m.ll(m.left)],  st("#C9A227",1.4,"3 5")).addTo(spokes);
+    L.polyline([from, m.ll(m.right)], st("#C9A227",1.4,"3 5")).addTo(spokes);
+    updateAlti(m);
+  }
+  render(m);
+}
+function render(m){
+  const nb = (v,n=0) => Number.isFinite(v) ? v.toFixed(n).replace(".",",") : "—";
+  const set = (id,v) => $(id).innerHTML = v === "—" ? "—" : v + '<i>m</i>';
+  const compet = $("compet").classList.contains("on");
+  if (!m || !S.sel){
+    $("gName").textContent = S.greens.length ? "Touchez un green" : (S.pos ? "Aucun green trouvé" : "En attente de position");
+    $("gSub").textContent = "";
+    ["dFront","dBack","dLeft","dRight","dElev"].forEach(i => set(i,"—"));
+    $("blind").classList.remove("on");
+    $("cElev").className = "c";
+    return;
+  }
+  $("gName").textContent = S.sel.name;
+  $("gSub").textContent = Math.round(m.width) + " m large"
+    + (S.sel.src === "approx" ? " · estimé" : S.sel.src === "draw" ? " · tracé" : "");
+  set("dFront", nb(m.front.d)); set("dBack", nb(m.back.d));
+  set("dLeft", nb(m.left.d));   set("dRight", nb(m.right.d));
+  const a = S.alti;
+  if (a && !compet){
+    const dz = a.centre - a.player;
+    $("dElev").innerHTML = (dz>=0?"+":"−") + nb(Math.abs(dz),1) + "<i>m</i>";
+    $("cElev").className = "c " + (dz >= 0 ? "up" : "down");
+  } else {
+    $("dElev").innerHTML = compet ? "—" : "—";
+    $("cElev").className = "c";
+  }
+  $("blind").classList.toggle("on", !!(a && a.blind && !compet));
+}
+
+/* ---------- outils ---------- */
+const armTool = (id, mode, text) => $(id).addEventListener("click", () => {
+  const on = S.mode !== mode; closeBar();
+  if (on){ S.mode = mode; $(id).classList.add("armed"); msg(text); }
+});
+armTool("bDetect","detect","Touchez le centre du green à détecter.");
+armTool("bDraw","draw","Touchez la carte pour poser les points du contour.");
+armTool("bPos","pos","Touchez la carte à l'endroit où vous vous trouvez.");
+$("bLoad").addEventListener("click", loadCourse);
+$("bMe").addEventListener("click", () => { follow = true; if (S.pos) map.setView([S.pos.lat,S.pos.lon], 18); });
+$("bCancel").addEventListener("click", closeBar);
+$("bAgain").addEventListener("click", () => { tmpLayer.clearLayers(); S.detect = null; S.draft = []; $("tolWrap").classList.remove("on"); msg("Touchez à nouveau."); });
+$("bKeep").addEventListener("click", () => {
+  if (S.mode === "draw"){ if (S.draft.length < 3){ msg("Il faut au moins trois points."); return; } saveGreen(S.draft.slice()); }
+  else if (S.detect && S.detect.ring){ saveGreen(S.detect.ring); }
+  else { msg("Rien à garder pour l'instant."); return; }
+  closeBar();
+});
+$("tol").addEventListener("input", () => { if (S.detect && S.detect.px) applyDetect(); });
+$("compet").addEventListener("click", () => {
+  const on = $("compet").classList.toggle("on");
+  $("compet").setAttribute("aria-pressed", on);
+  refresh();
+});
+setInterval(() => { if (S.pos && S.sel) refresh(); }, 2000);
+
+$("go").addEventListener("click", async () => {
+  $("intro").remove();
+  initMap();
+  await startCompass();
+  startGeo();
+});
 })();
 </script>
 </body>
