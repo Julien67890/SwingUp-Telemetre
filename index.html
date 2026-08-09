@@ -1,502 +1,358 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mesure de distance par caméra</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, sans-serif;
-    }
-    body {
-      margin: 0;
-      background: #1a1a2e;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      color: white;
-    }
-    .container {
-      background: #16213e;
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-      max-width: 800px;
-      width: 100%;
-      position: relative;
-    }
-    .video-wrapper {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 4/3;
-      background: #0f0f1f;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    video, canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    canvas {
-      pointer-events: auto; /* pour capturer les clics */
-    }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 16px;
-      justify-content: center;
-    }
-    .controls input {
-      padding: 8px 12px;
-      border: none;
-      border-radius: 8px;
-      background: #2a2a4a;
-      color: white;
-      width: 100px;
-      font-size: 14px;
-      text-align: center;
-    }
-    .controls input::placeholder {
-      color: #8888aa;
-    }
-    .controls button {
-      padding: 8px 18px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      background: #e94560;
-      color: white;
-      cursor: pointer;
-      transition: 0.2s;
-      font-size: 14px;
-    }
-    .controls button:hover {
-      background: #c73652;
-      transform: scale(1.03);
-    }
-    .controls button:disabled {
-      opacity: 0.4;
-      pointer-events: none;
-    }
-    .controls button.secondary {
-      background: #533483;
-    }
-    .controls button.secondary:hover {
-      background: #6a4a9a;
-    }
-    .info {
-      margin-top: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #0f0f1f;
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-size: 16px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .info .status {
-      color: #aaa;
-    }
-    .info .distance {
-      font-size: 22px;
-      font-weight: bold;
-      color: #4fc3f7;
-      min-width: 100px;
-      text-align: right;
-    }
-    .info .distance .unit {
-      font-size: 16px;
-      font-weight: normal;
-      color: #888;
-    }
-    .info .selected {
-      color: #ffd54f;
-      font-weight: 500;
-    }
-    @media (max-width: 600px) {
-      .controls input { width: 80px; }
-      .controls button { font-size: 12px; padding: 6px 12px; }
-      .info { font-size: 14px; }
-      .info .distance { font-size: 18px; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0D1210">
+<title>Télémètre — visée optique</title>
+<style>
+  :root{
+    --ink:#0D1210;
+    --graticule:#7FE3B0;
+    --span:#FFC94A;
+    --paper:#E8EDE9;
+    --dim:rgba(232,237,233,.52);
+    --line:rgba(127,227,176,.22);
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --ui:system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;margin:0;background:var(--ink);color:var(--paper);font-family:var(--ui);overscroll-behavior:none}
+  body{display:flex;flex-direction:column}
+
+  .eyebrow{font:600 10px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+
+  /* ---------- écran d'accueil ---------- */
+  #intro{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;justify-content:center;
+    gap:22px;padding:32px 26px;background:
+    radial-gradient(120% 80% at 50% 0%,#16211B 0%,var(--ink) 62%)}
+  #intro h1{margin:0;font:500 30px/1.05 var(--ui);letter-spacing:-.02em}
+  #intro h1 em{font-style:normal;color:var(--graticule)}
+  #intro ol{margin:0;padding-left:1.1em;font-size:14px;line-height:1.65;color:var(--dim)}
+  #intro ol b{color:var(--paper);font-weight:500}
+  .btn{appearance:none;border:1px solid var(--graticule);background:transparent;color:var(--graticule);
+    font:600 12px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;padding:16px 20px;border-radius:2px;cursor:pointer}
+  .btn:active{background:rgba(127,227,176,.12)}
+  .btn:focus-visible{outline:2px solid var(--span);outline-offset:3px}
+  #err{color:#FF7A66;font:400 13px/1.5 var(--ui);min-height:1em}
+
+  /* ---------- viseur ---------- */
+  #stage{position:relative;flex:1;min-height:0;overflow:hidden;background:#000;touch-action:none}
+  video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+
+  .handle{position:absolute;width:66px;height:66px;margin:-33px 0 0 -33px;border:0;background:none;
+    cursor:grab;touch-action:none;padding:0}
+  .handle:active{cursor:grabbing}
+  .handle::before{content:"";position:absolute;inset:23px;border:1.5px solid var(--span);border-radius:50%}
+  .handle::after{content:attr(data-tag);position:absolute;left:50%;top:-2px;transform:translateX(-50%);
+    font:600 9px/1 var(--mono);letter-spacing:.16em;color:var(--span)}
+  .handle:focus-visible::before{inset:18px;border-width:2px;box-shadow:0 0 0 2px rgba(255,201,74,.35)}
+
+  #topbar{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;
+    padding:14px 16px;background:linear-gradient(#0D1210CC,transparent)}
+
+  /* ---------- lecture ---------- */
+  #panel{background:var(--ink);border-top:1px solid var(--line);padding:14px 16px calc(14px + env(safe-area-inset-bottom))}
+  #hero{display:flex;align-items:baseline;gap:10px}
+  #main{font:500 60px/.9 var(--mono);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+  #main.stale{color:var(--dim)}
+  #unit{font:500 18px/1 var(--mono);color:var(--dim)}
+  #tol{margin-left:auto;font:400 12px/1 var(--mono);color:var(--dim)}
+  #grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:14px;background:var(--line)}
+  #grid div{background:var(--ink);padding:9px 8px 10px}
+  #grid span{display:block;font:500 17px/1 var(--mono);font-variant-numeric:tabular-nums;margin-top:6px}
+  .neg{color:var(--span)}
+
+  /* ---------- réglages ---------- */
+  #gear{position:absolute;right:12px;bottom:12px;width:44px;height:44px;border:1px solid var(--line);
+    border-radius:2px;background:rgba(13,18,16,.6);color:var(--graticule);font:500 11px/1 var(--mono);cursor:pointer}
+  #sheet{position:absolute;inset:0;z-index:20;background:rgba(9,13,11,.94);padding:20px 18px;overflow:auto;display:none}
+  #sheet.open{display:block}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .row label{font-size:13px;color:var(--dim);flex:1}
+  input[type=number]{width:96px;background:transparent;border:1px solid var(--line);color:var(--paper);
+    font:500 14px/1 var(--mono);padding:9px;border-radius:2px;text-align:right}
+  input[type=range]{width:100%;accent-color:var(--graticule);background:transparent}
+  select{background:var(--ink);border:1px solid var(--line);color:var(--paper);font:500 13px var(--mono);padding:9px;border-radius:2px}
+  .note{font-size:12px;line-height:1.6;color:var(--dim);margin:14px 0 0}
+  .zoom-group{display:flex;align-items:center;gap:8px;flex:1;max-width:180px}
+  .zoom-group .btn{font-size:16px;padding:4px 12px;line-height:1.4}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head>
 <body>
 
-<div class="container">
-  <div class="video-wrapper">
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas"></canvas>
-  </div>
+<div id="intro">
+  <p class="eyebrow">Visée optique + inclinomètre</p>
+  <h1>Mesurez une distance en <em>encadrant</em> le drapeau.</h1>
+  <ol>
+    <li>Placez le repère <b>HAUT</b> sur le sommet du drapeau et <b>PIED</b> sur sa base.</li>
+    <li>La hauteur en pixels donne la distance de visée ; la gravité donne l'angle.</li>
+    <li>Calibrez une fois sur une cible de distance connue pour la précision.</li>
+  </ol>
+  <button class="btn" id="go">Activer la caméra</button>
+  <p id="err"></p>
+</div>
 
-  <div class="controls">
-    <input id="heightInput" type="number" step="0.01" placeholder="Hauteur (m)" />
-    <input id="distInput" type="number" step="0.01" placeholder="Distance (m)" />
-    <button id="calibrateBtn" class="secondary" disabled>📏 Calibrer</button>
-    <button id="resetBtn" class="secondary">🔄 Réinitialiser</button>
-    <button id="measureBtn">▶ Mesurer</button>
-  </div>
+<div id="stage">
+  <video id="v" playsinline muted autoplay></video>
+  <svg id="ov" aria-hidden="true">
+    <g id="hz" stroke="var(--graticule)" fill="none" stroke-width="1"></g>
+    <line id="spanline" stroke="var(--span)" stroke-width="1.5" stroke-dasharray="7 5"/>
+  </svg>
+  <button class="handle" id="hTop" data-tag="HAUT" aria-label="Repère sommet du drapeau"></button>
+  <button class="handle" id="hBot" data-tag="PIED" aria-label="Repère base du drapeau"></button>
 
-  <div class="info">
-    <span class="status" id="status">📷 Attente de la caméra…</span>
-    <span class="selected" id="selectedInfo">Aucun objet sélectionné</span>
-    <span class="distance" id="distanceDisplay">— <span class="unit">m</span></span>
+  <div id="topbar">
+    <span class="eyebrow" id="stat">—</span>
+    <span class="eyebrow" id="pxread">0 px</span>
+  </div>
+  <button id="gear" aria-label="Réglages">RÉG</button>
+
+  <div id="sheet" role="dialog" aria-label="Réglages">
+    <p class="eyebrow">Cible</p>
+    <div class="row"><label for="tgt">Hauteur de référence</label>
+      <select id="tgt">
+        <option value="2.13">Drapeau 2,13 m</option>
+        <option value="1.75">Personne 1,75 m</option>
+        <option value="0">Autre…</option>
+      </select></div>
+    <div class="row"><label for="H">Hauteur réelle (m)</label><input id="H" type="number" step="0.01" value="2.13"></div>
+
+    <p class="eyebrow" style="margin-top:22px">Optique</p>
+    <div class="row"><label for="fov">Champ horizontal supposé (°)</label><input id="fov" type="number" step="1" value="66"></div>
+    <div class="row">
+      <label for="zoom">Zoom</label>
+      <div class="zoom-group">
+        <button class="btn" id="zoomMinus" style="padding:4px 12px;">−</button>
+        <input id="zoom" type="range" min="1" max="1" step="0.1" value="1" disabled>
+        <button class="btn" id="zoomPlus" style="padding:4px 12px;">+</button>
+      </div>
+    </div>
+    <div class="row"><label for="fpx">Focale effective (px)</label><input id="fpx" type="number" step="1" value="0"></div>
+
+    <p class="eyebrow" style="margin-top:22px">Calibration</p>
+    <div class="row"><label for="dcal">Distance connue de la cible (m)</label><input id="dcal" type="number" step="0.1" value="20"></div>
+    <div class="row"><label>Encadrez la cible puis validez</label>
+      <button class="btn" id="docal" style="padding:11px 14px">Calibrer</button></div>
+
+    <p class="note">La focale se recalcule à chaque changement de zoom. Notez la valeur en pixels après calibration : elle peut être ressaisie directement au prochain lancement.</p>
+    <div class="row" style="border:0;justify-content:flex-end"><button class="btn" id="close">Fermer</button></div>
   </div>
 </div>
 
-<!-- TensorFlow.js et COCO-SSD depuis CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
+<div id="panel">
+  <p class="eyebrow">Portée horizontale</p>
+  <div id="hero">
+    <span id="main" class="stale">—</span><span id="unit">m</span><span id="tol">±—</span>
+  </div>
+  <div id="grid">
+    <div><span class="eyebrow">Horizontale</span><span id="oHz">—</span></div>
+    <div><span class="eyebrow">Visée</span><span id="oLine">—</span></div>
+    <div><span class="eyebrow">Dénivelé</span><span id="oDh">—</span></div>
+    <div><span class="eyebrow">Angle</span><span id="oAng">—</span></div>
+  </div>
+</div>
 
 <script>
-  (function() {
-    // --- Éléments DOM ---
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
+(() => {
+  const $ = id => document.getElementById(id);
+  const stage=$('stage'), video=$('v'), ov=$('ov'), hzG=$('hz'), spanLine=$('spanline');
+  const hTop=$('hTop'), hBot=$('hBot');
+  const DEG=180/Math.PI;
 
-    const heightInput = document.getElementById('heightInput');
-    const distInput = document.getElementById('distInput');
-    const calibrateBtn = document.getElementById('calibrateBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const measureBtn = document.getElementById('measureBtn');
-    const statusEl = document.getElementById('status');
-    const selectedInfo = document.getElementById('selectedInfo');
-    const distanceDisplay = document.getElementById('distanceDisplay');
+  let pTop={x:.5,y:.32}, pBot={x:.5,y:.62};      // positions relatives au stage
+  let grav={x:0,y:9.81,z:0}, haveMotion=false;
+  let track=null, zoomBase=1, zoomNow=1, fCal=0, zoomAtCal=1;
 
-    // --- État de l'application ---
-    let model = null;
-    let isMeasuring = false;
-    let isCalibrated = false;
-    let calibrationFactor = null; // K = hauteur_pixels * distance_actuelle
-    let selectedBox = null;       // { x, y, width, height, class }
-    let lastKnownBox = null;      // pour suivre l'objet
-    let frameId = null;
-    let detectionInterval = null;
+  /* ---------- démarrage ---------- */
+  $('go').addEventListener('click', async () => {
+    $('err').textContent='';
+    try{
+      if (typeof DeviceMotionEvent!=='undefined' && DeviceMotionEvent.requestPermission){
+        try{ haveMotion = await DeviceMotionEvent.requestPermission()==='granted'; }catch(e){ haveMotion=false; }
+      } else haveMotion=true;
+      if (haveMotion) window.addEventListener('devicemotion', onMotion);
 
-    // Paramètres de performance
-    const DETECTION_INTERVAL_MS = 150; // détecter toutes les 150ms pour fluidité
-    const CONFIDENCE_THRESHOLD = 0.5;
+      const s = await navigator.mediaDevices.getUserMedia({
+        video:{ facingMode:{ideal:'environment'}, width:{ideal:1920}, height:{ideal:1080} }, audio:false });
+      video.srcObject=s;
+      await video.play();
+      track = s.getVideoTracks()[0];
+      setupZoom();
+      $('intro').remove();
+      placeHandles();
+      requestAnimationFrame(loop);
+    }catch(e){
+      $('err').textContent = "Caméra indisponible : "+e.message+" — l'accès exige HTTPS et une autorisation.";
+    }
+  });
 
-    // --- Initialisation de la caméra ---
-    async function initCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } }
-        });
-        video.srcObject = stream;
-        await video.play();
-        // Adapter la taille du canvas
-        canvas.width = video.videoWidth || 640;
-        canvas.height = video.videoHeight || 480;
-        statusEl.textContent = '📸 Caméra prête, chargement du modèle…';
-        return true;
-      } catch (err) {
-        statusEl.textContent = '❌ Erreur caméra : ' + err.message;
-        return false;
-      }
+  function setupZoom(){
+    const z = $('zoom');
+    const cap = track.getCapabilities ? track.getCapabilities() : {};
+    if (cap.zoom) {
+      z.min = cap.zoom.min;
+      z.max = cap.zoom.max;
+      z.step = cap.zoom.step || 0.1;
+      zoomBase = track.getSettings().zoom || cap.zoom.min;
+      z.value = zoomBase;
+      zoomNow = zoomBase;
+      z.disabled = false;
+    } else {
+      // zoom non géré : on laisse le curseur désactivé
+      z.min = 1; z.max = 1; z.value = 1;
+      z.disabled = true;
     }
 
-    // --- Chargement du modèle COCO-SSD ---
-    async function loadModel() {
-      try {
-        model = await cocoSsd.load({ base: 'mobilenet_v2' });
-        statusEl.textContent = '✅ Modèle chargé – cliquez sur un objet dans l’image';
-        return true;
-      } catch (err) {
-        statusEl.textContent = '❌ Erreur modèle : ' + err.message;
-        return false;
+    // Événement du curseur
+    z.addEventListener('input', () => {
+      zoomNow = +z.value;
+      if (track && track.applyConstraints) {
+        track.applyConstraints({ advanced: [{ zoom: zoomNow }] }).catch(() => {});
       }
+    });
+
+    // Boutons – et +
+    const minus = $('zoomMinus');
+    const plus = $('zoomPlus');
+    const step = 0.1;
+
+    const changeZoom = (delta) => {
+      if (z.disabled) return;
+      let val = +z.value + delta;
+      val = Math.min(z.max, Math.max(z.min, val));
+      z.value = val;
+      z.dispatchEvent(new Event('input'));
+    };
+
+    minus.addEventListener('click', () => changeZoom(-step));
+    plus.addEventListener('click', () => changeZoom(step));
+  }
+
+  /* ---------- capteurs ---------- */
+  function onMotion(e){
+    const g = e.accelerationIncludingGravity; if(!g||g.x===null) return;
+    const a=.12;
+    grav.x += a*(g.x-grav.x); grav.y += a*(g.y-grav.y); grav.z += a*(g.z-grav.z);
+  }
+  const norm = () => Math.hypot(grav.x,grav.y,grav.z)||9.81;
+  const elevAxis = () => Math.asin(Math.max(-1,Math.min(1,-grav.z/norm()))); // axe caméra / horizontale
+  const roll     = () => Math.atan2(grav.x, grav.y);
+
+  /* ---------- optique ---------- */
+  function focalPx(){
+    const manual = +$('fpx').value;
+    if (fCal>0) return fCal * (zoomNow/zoomAtCal);
+    if (manual>0) return manual * (zoomNow/zoomBase);
+    const vw=video.videoWidth, vh=video.videoHeight;
+    if(!vw) return 0;
+    const sc = Math.max(stage.clientWidth/vw, stage.clientHeight/vh);
+    const hfov = (+$('fov').value||66)/DEG;
+    return ((vw*sc)/2)/Math.tan(hfov/2) * (zoomNow/zoomBase);
+  }
+
+  /* ---------- poignées ---------- */
+  function placeHandles(){
+    const w=stage.clientWidth, h=stage.clientHeight;
+    hTop.style.left=pTop.x*w+'px'; hTop.style.top=pTop.y*h+'px';
+    hBot.style.left=pBot.x*w+'px'; hBot.style.top=pBot.y*h+'px';
+  }
+  function drag(el, p){
+    el.addEventListener('pointerdown', ev=>{ el.setPointerCapture(ev.pointerId); el.dataset.on=1; });
+    el.addEventListener('pointermove', ev=>{
+      if(!el.dataset.on) return;
+      const r=stage.getBoundingClientRect();
+      p.x=Math.min(1,Math.max(0,(ev.clientX-r.left)/r.width));
+      p.y=Math.min(1,Math.max(0,(ev.clientY-r.top)/r.height));
+      placeHandles();
+    });
+    const up=ev=>{ delete el.dataset.on; };
+    el.addEventListener('pointerup',up); el.addEventListener('pointercancel',up);
+    el.addEventListener('keydown', ev=>{
+      const s = ev.shiftKey?0.02:0.003, k=ev.key;
+      if(k==='ArrowUp') p.y-=s; else if(k==='ArrowDown') p.y+=s;
+      else if(k==='ArrowLeft') p.x-=s; else if(k==='ArrowRight') p.x+=s; else return;
+      ev.preventDefault(); placeHandles();
+    });
+  }
+  drag(hTop,pTop); drag(hBot,pBot);
+  addEventListener('resize', placeHandles);
+
+  /* ---------- cible ---------- */
+  $('tgt').addEventListener('change', e=>{ if(+e.target.value>0) $('H').value=e.target.value; });
+  $('gear').addEventListener('click', ()=> $('sheet').classList.add('open'));
+  $('close').addEventListener('click', ()=> $('sheet').classList.remove('open'));
+  $('docal').addEventListener('click', ()=>{
+    const d=+$('dcal').value, H=+$('H').value, px=spanPx();
+    if(d>0 && H>0 && px>4){
+      fCal = px*d/H; zoomAtCal = zoomNow;
+      $('fpx').value = Math.round(fCal);
+      $('sheet').classList.remove('open');
     }
+  });
 
-    // --- Détection des objets sur une image ---
-    async function detectObjects() {
-      if (!model || video.readyState < 2) return [];
-      try {
-        const predictions = await model.detect(video);
-        return predictions.filter(p => p.score >= CONFIDENCE_THRESHOLD);
-      } catch (e) {
-        console.warn('Erreur détection:', e);
-        return [];
-      }
+  /* ---------- géométrie ---------- */
+  function spanPx(){
+    const w=stage.clientWidth, h=stage.clientHeight, r=roll();
+    const dx=(pTop.x-pBot.x)*w, dy=(pTop.y-pBot.y)*h;
+    const ux=-Math.sin(r), uy=-Math.cos(r);
+    return Math.abs(dx*ux+dy*uy);
+  }
+
+  const fmt = (v,n=1) => (Math.abs(v)<1e4 ? v.toFixed(n) : '—');
+
+  function loop(){
+    const w=stage.clientWidth, h=stage.clientHeight, cx=w/2, cy=h/2;
+    ov.setAttribute('viewBox',`0 0 ${w} ${h}`);
+    const f=focalPx(), el=elevAxis(), r=roll();
+
+    // horizon artificiel + échelle de tangage
+    let d='';
+    for(let a=-15;a<=15;a+=5){
+      const y = cy + f*Math.tan(el - a/DEG);
+      if(!isFinite(y)||y<-h||y>2*h) continue;
+      const half = a===0 ? w*.46 : w*.12;
+      d += `M${cx-half} ${y}H${cx+half}`;
+      if(a!==0) d += `M${cx-half} ${y}v${a>0?6:-6}M${cx+half} ${y}v${a>0?6:-6}`;
     }
+    d += `M${cx-9} ${cy}h18M${cx} ${cy-9}v18`;
+    hzG.setAttribute('transform',`rotate(${r*DEG} ${cx} ${cy})`);
+    hzG.innerHTML = `<path d="${d}"/>`;
 
-    // --- Dessiner les boîtes et l'interface ---
-    function drawOverlay(detections, selected) {
-      const w = canvas.width, h = canvas.height;
-      ctx.clearRect(0, 0, w, h);
+    spanLine.setAttribute('x1',pTop.x*w); spanLine.setAttribute('y1',pTop.y*h);
+    spanLine.setAttribute('x2',pBot.x*w); spanLine.setAttribute('y2',pBot.y*h);
 
-      // Dessiner toutes les détections
-      detections.forEach(d => {
-        const [x, y, width, height] = d.bbox;
-        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x, y, width, height);
-        ctx.fillStyle = 'rgba(255,255,255,0.4)';
-        ctx.font = '14px sans-serif';
-        ctx.fillText(`${d.class} (${Math.round(d.score*100)}%)`, x, y - 6);
-      });
+    // résolution
+    const px=spanPx(), H=+$('H').value||2.13;
+    $('pxread').textContent = px.toFixed(0)+' px  ·  f '+(f?f.toFixed(0):'—');
+    $('stat').textContent = haveMotion ? (fCal?'calibré':'estimé') : 'sans inclinomètre';
 
-      // Mettre en avant la boîte sélectionnée
-      if (selected) {
-        const { x, y, width, height } = selected;
-        ctx.strokeStyle = '#ffd54f';
-        ctx.lineWidth = 4;
-        ctx.shadowColor = '#ffd54f';
-        ctx.shadowBlur = 12;
-        ctx.strokeRect(x, y, width, height);
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = '#ffd54f';
-        ctx.font = 'bold 16px sans-serif';
-        ctx.fillText('🎯 ' + (selected.class || 'Objet'), x, y - 12);
-      }
+    if(f>0 && px>4 && H>0){
+      const dLine = H*f/px;
+      const thetaBase = el + Math.atan((cy - pBot.y*h)/f);
+      const dHz = dLine*Math.cos(thetaBase);
+      const dh  = dLine*Math.sin(thetaBase);
+      // ✅ Correction : on affiche la distance horizontale (portée)
+      const played = dHz;
+      const tol = dLine*(2/px);
+
+      $('main').classList.remove('stale');
+      $('main').textContent = fmt(played,0);
+      $('tol').textContent  = '±'+fmt(tol,1)+' m';
+      $('oHz').textContent  = fmt(dHz,1);
+      $('oLine').textContent= fmt(dLine,1);
+      $('oDh').textContent  = (dh>=0?'+':'')+fmt(dh,1);
+      $('oDh').className    = dh<0?'neg':'';
+      $('oAng').textContent = fmt(thetaBase*DEG,1)+'°';
+    } else {
+      $('main').classList.add('stale'); $('main').textContent='—';
     }
-
-    // --- Trouver l'objet cliqué ---
-    function getObjectAtClick(e, detections) {
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      const mx = (e.clientX - rect.left) * scaleX;
-      const my = (e.clientY - rect.top) * scaleY;
-
-      // Chercher la boîte contenant le point (on prend la plus petite surface pour précision)
-      let best = null;
-      let bestArea = Infinity;
-      for (const d of detections) {
-        const [x, y, w, h] = d.bbox;
-        if (mx >= x && mx <= x + w && my >= y && my <= y + h) {
-          const area = w * h;
-          if (area < bestArea) {
-            bestArea = area;
-            best = { x, y, width: w, height: h, class: d.class };
-          }
-        }
-      }
-      return best;
-    }
-
-    // --- Suivi : trouver la détection la plus proche de la boîte précédente ---
-    function findClosestDetection(detections, prevBox) {
-      if (!prevBox) return null;
-      let best = null;
-      let bestIoU = 0;
-      for (const d of detections) {
-        const [x, y, w, h] = d.bbox;
-        const iou = computeIoU({ x, y, width: w, height: h }, prevBox);
-        if (iou > bestIoU) {
-          bestIoU = iou;
-          best = { x, y, width: w, height: h, class: d.class };
-        }
-      }
-      // Seuil d'IoU pour éviter les sauts
-      return (bestIoU > 0.3) ? best : null;
-    }
-
-    function computeIoU(a, b) {
-      const ax = a.x, ay = a.y, aw = a.width, ah = a.height;
-      const bx = b.x, by = b.y, bw = b.width, bh = b.height;
-      const x1 = Math.max(ax, bx), y1 = Math.max(ay, by);
-      const x2 = Math.min(ax + aw, bx + bw), y2 = Math.min(ay + ah, by + bh);
-      const inter = Math.max(0, x2 - x1) * Math.max(0, y2 - y1);
-      const areaA = aw * ah, areaB = bw * bh;
-      return inter / (areaA + areaB - inter + 1e-6);
-    }
-
-    // --- Boucle de mesure ---
-    async function measureLoop() {
-      if (!isMeasuring) return;
-
-      const detections = await detectObjects();
-      if (detections.length === 0) {
-        statusEl.textContent = '⚠️ Aucun objet détecté';
-        drawOverlay([], selectedBox);
-        requestAnimationFrame(measureLoop);
-        return;
-      }
-
-      // Si on a un objet sélectionné, on le suit
-      let currentBox = null;
-      if (selectedBox) {
-        // Chercher la détection la plus proche
-        currentBox = findClosestDetection(detections, lastKnownBox || selectedBox);
-        if (currentBox) {
-          // Mise à jour
-          lastKnownBox = { ...currentBox };
-        } else {
-          // Perte de suivi : on garde l'ancienne boîte mais on affiche un avertissement
-          currentBox = lastKnownBox || selectedBox;
-          statusEl.textContent = '⚠️ Suivi perdu, utilisation de la dernière position';
-        }
-      } else {
-        // Pas d'objet sélectionné : on affiche juste les détections
-        drawOverlay(detections, null);
-        requestAnimationFrame(measureLoop);
-        return;
-      }
-
-      // Calcul de la distance si calibré
-      if (isCalibrated && currentBox) {
-        const heightPx = currentBox.height;
-        if (heightPx > 0) {
-          const distance = calibrationFactor / heightPx;
-          distanceDisplay.textContent = distance.toFixed(2) + ' m';
-        } else {
-          distanceDisplay.textContent = '— m';
-        }
-        selectedInfo.textContent = `📌 ${currentBox.class || 'Objet'} suivi`;
-        statusEl.textContent = '📏 Mesure en cours';
-      } else if (!isCalibrated) {
-        statusEl.textContent = '🔧 Calibrez d’abord (hauteur et distance)';
-        distanceDisplay.textContent = '— m';
-      }
-
-      // Dessiner
-      drawOverlay(detections, currentBox);
-      requestAnimationFrame(measureLoop);
-    }
-
-    // --- Lancer / arrêter la mesure ---
-    function startMeasurement() {
-      if (isMeasuring) return;
-      if (!selectedBox) {
-        statusEl.textContent = '⚠️ Veuillez d’abord cliquer sur un objet';
-        return;
-      }
-      if (!isCalibrated) {
-        statusEl.textContent = '⚠️ Veuillez calibrer (hauteur + distance)';
-        return;
-      }
-      isMeasuring = true;
-      measureBtn.textContent = '⏹ Arrêter';
-      measureBtn.classList.add('secondary');
-      statusEl.textContent = '📏 Mesure en cours…';
-      lastKnownBox = { ...selectedBox };
-      measureLoop();
-    }
-
-    function stopMeasurement() {
-      isMeasuring = false;
-      measureBtn.textContent = '▶ Mesurer';
-      measureBtn.classList.remove('secondary');
-      statusEl.textContent = isCalibrated ? '✅ Calibré, prêt à mesurer' : '🔧 En attente de calibration';
-      if (frameId) {
-        cancelAnimationFrame(frameId);
-        frameId = null;
-      }
-    }
-
-    function toggleMeasurement() {
-      if (isMeasuring) {
-        stopMeasurement();
-      } else {
-        startMeasurement();
-      }
-    }
-
-    // --- Calibration ---
-    function calibrate() {
-      const h = parseFloat(heightInput.value);
-      const d = parseFloat(distInput.value);
-      if (!selectedBox) {
-        statusEl.textContent = '❌ Sélectionnez d’abord un objet (cliquez dessus)';
-        return;
-      }
-      if (!h || h <= 0 || !d || d <= 0) {
-        statusEl.textContent = '❌ Entrez une hauteur et une distance valides ( > 0)';
-        return;
-      }
-      // Le facteur K = hauteur_pixels * distance
-      calibrationFactor = selectedBox.height * d;
-      isCalibrated = true;
-      calibrateBtn.disabled = true;
-      statusEl.textContent = `✅ Calibré (K = ${calibrationFactor.toFixed(1)}) – Lancez la mesure`;
-      selectedInfo.textContent = `📌 ${selectedBox.class || 'Objet'} calibré (H=${h}m, D0=${d}m)`;
-      // Mettre à jour distance affichée
-      distanceDisplay.textContent = d.toFixed(2) + ' m (calibration)';
-    }
-
-    // --- Réinitialisation ---
-    function resetAll() {
-      stopMeasurement();
-      selectedBox = null;
-      lastKnownBox = null;
-      isCalibrated = false;
-      calibrationFactor = null;
-      calibrateBtn.disabled = true;
-      heightInput.value = '';
-      distInput.value = '';
-      distanceDisplay.textContent = '— m';
-      selectedInfo.textContent = 'Aucun objet sélectionné';
-      statusEl.textContent = '🔄 Réinitialisé – cliquez sur un objet';
-      drawOverlay([], null);
-    }
-
-    // --- Gestion du clic sur le canvas ---
-    async function onCanvasClick(e) {
-      if (isMeasuring) return; // ne pas changer de sélection pendant la mesure
-
-      const detections = await detectObjects();
-      if (detections.length === 0) {
-        statusEl.textContent = '⚠️ Aucun objet détecté, réessayez';
-        return;
-      }
-      const clicked = getObjectAtClick(e, detections);
-      if (clicked) {
-        selectedBox = clicked;
-        lastKnownBox = { ...clicked };
-        calibrateBtn.disabled = false;
-        selectedInfo.textContent = `🎯 ${clicked.class || 'Objet'} sélectionné (${Math.round(clicked.width)}×${Math.round(clicked.height)} px)`;
-        statusEl.textContent = '🔧 Entrez hauteur et distance, puis Calibrer';
-        drawOverlay(detections, clicked);
-      } else {
-        statusEl.textContent = '❌ Cliquez exactement sur un objet détecté';
-      }
-    }
-
-    // --- Initialisation complète ---
-    async function init() {
-      const camOk = await initCamera();
-      if (!camOk) return;
-      const modelOk = await loadModel();
-      if (!modelOk) return;
-
-      // Écouteurs
-      canvas.addEventListener('click', onCanvasClick);
-      calibrateBtn.addEventListener('click', calibrate);
-      resetBtn.addEventListener('click', resetAll);
-      measureBtn.addEventListener('click', toggleMeasurement);
-
-      // Lancer une boucle de dessin pour l'affichage des détections en attente
-      function idleDraw() {
-        if (!isMeasuring) {
-          // On met à jour les détections pour affichage
-          detectObjects().then(dets => {
-            drawOverlay(dets, selectedBox);
-            if (dets.length === 0 && !selectedBox) {
-              statusEl.textContent = '👀 Aucun objet – placez un objet devant la caméra';
-            }
-          }).catch(() => {});
-        }
-        requestAnimationFrame(idleDraw);
-      }
-      idleDraw();
-
-      statusEl.textContent = '✅ Prêt – cliquez sur un objet pour le sélectionner';
-    }
-
-    // Lancer au chargement
-    init();
-  })();
+    requestAnimationFrame(loop);
+  }
+})();
 </script>
 </body>
 </html>
