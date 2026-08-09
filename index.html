@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0D1210">
-<title>Télémètre — visée optique</title>
+<title>Télémètre — IA + visée optique</title>
 <style>
   :root{
     --ink:#0D1210;
@@ -43,7 +43,7 @@
   svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 
   .handle{position:absolute;width:66px;height:66px;margin:-33px 0 0 -33px;border:0;background:none;
-    cursor:grab;touch-action:none;padding:0}
+    cursor:grab;touch-action:none;padding:0;z-index:5}
   .handle:active{cursor:grabbing}
   .handle::before{content:"";position:absolute;inset:23px;border:1.5px solid var(--span);border-radius:50%}
   .handle::after{content:attr(data-tag);position:absolute;left:50%;top:-2px;transform:translateX(-50%);
@@ -51,7 +51,16 @@
   .handle:focus-visible::before{inset:18px;border-width:2px;box-shadow:0 0 0 2px rgba(255,201,74,.35)}
 
   #topbar{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;
-    padding:14px 16px;background:linear-gradient(#0D1210CC,transparent)}
+    padding:14px 16px;background:linear-gradient(#0D1210CC,transparent);z-index:6;pointer-events:none}
+  #topbar > *{pointer-events:auto}
+
+  /* ---------- commandes OSD (zoom + IA) ---------- */
+  #osd-controls{position:absolute;bottom:80px;right:12px;display:flex;flex-direction:column;gap:8px;z-index:10;pointer-events:none}
+  #osd-controls > *{pointer-events:auto}
+  .osd-btn{width:44px;height:44px;border-radius:2px;background:rgba(13,18,16,.7);border:1px solid var(--line);
+    color:var(--paper);font:500 18px/1 var(--mono);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(4px)}
+  .osd-btn:active{background:rgba(127,227,176,.15)}
+  .osd-btn.active{background:rgba(127,227,176,.2);border-color:var(--graticule);color:var(--graticule)}
 
   /* ---------- lecture ---------- */
   #panel{background:var(--ink);border-top:1px solid var(--line);padding:14px 16px calc(14px + env(safe-area-inset-bottom))}
@@ -67,7 +76,7 @@
 
   /* ---------- réglages ---------- */
   #gear{position:absolute;right:12px;bottom:12px;width:44px;height:44px;border:1px solid var(--line);
-    border-radius:2px;background:rgba(13,18,16,.6);color:var(--graticule);font:500 11px/1 var(--mono);cursor:pointer}
+    border-radius:2px;background:rgba(13,18,16,.6);color:var(--graticule);font:500 11px/1 var(--mono);cursor:pointer;z-index:6}
   #sheet{position:absolute;inset:0;z-index:20;background:rgba(9,13,11,.94);padding:20px 18px;overflow:auto;display:none}
   #sheet.open{display:block}
   .row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--line)}
@@ -85,12 +94,12 @@
 <body>
 
 <div id="intro">
-  <p class="eyebrow">Visée optique + inclinomètre</p>
-  <h1>Mesurez une distance en <em>encadrant</em> le drapeau.</h1>
+  <p class="eyebrow">Visée optique + IA + inclinomètre</p>
+  <h1>Mesurez une distance en <em>encadrant</em> l'objet.</h1>
   <ol>
-    <li>Placez le repère <b>HAUT</b> sur le sommet du drapeau et <b>PIED</b> sur sa base.</li>
-    <li>La hauteur en pixels donne la distance de visée ; la gravité donne l'angle.</li>
-    <li>Calibrez une fois sur une cible de distance connue pour la précision.</li>
+    <li>L'IA détecte automatiquement l'objet principal et place les repères <b>HAUT/PIED</b>.</li>
+    <li>Affinez manuellement si besoin, ou activez le suivi IA.</li>
+    <li>La hauteur en pixels + l'angle donnent la portée horizontale.</li>
   </ol>
   <button class="btn" id="go">Activer la caméra</button>
   <p id="err"></p>
@@ -102,13 +111,21 @@
     <g id="hz" stroke="var(--graticule)" fill="none" stroke-width="1"></g>
     <line id="spanline" stroke="var(--span)" stroke-width="1.5" stroke-dasharray="7 5"/>
   </svg>
-  <button class="handle" id="hTop" data-tag="HAUT" aria-label="Repère sommet du drapeau"></button>
-  <button class="handle" id="hBot" data-tag="PIED" aria-label="Repère base du drapeau"></button>
+  <button class="handle" id="hTop" data-tag="HAUT" aria-label="Repère sommet"></button>
+  <button class="handle" id="hBot" data-tag="PIED" aria-label="Repère base"></button>
 
   <div id="topbar">
     <span class="eyebrow" id="stat">—</span>
     <span class="eyebrow" id="pxread">0 px</span>
   </div>
+
+  <!-- Commandes OSD : Zoom + IA -->
+  <div id="osd-controls">
+    <button class="osd-btn" id="zoomMainPlus" aria-label="Zoom +">+</button>
+    <button class="osd-btn" id="zoomMainMinus" aria-label="Zoom −">−</button>
+    <button class="osd-btn" id="autoTrackBtn" aria-label="Suivi IA">AI</button>
+  </div>
+
   <button id="gear" aria-label="Réglages">RÉG</button>
 
   <div id="sheet" role="dialog" aria-label="Réglages">
@@ -138,7 +155,7 @@
     <div class="row"><label>Encadrez la cible puis validez</label>
       <button class="btn" id="docal" style="padding:11px 14px">Calibrer</button></div>
 
-    <p class="note">La focale se recalcule à chaque changement de zoom. Notez la valeur en pixels après calibration : elle peut être ressaisie directement au prochain lancement.</p>
+    <p class="note">La focale se recalcule à chaque changement de zoom. Notez la valeur en pixels après calibration.</p>
     <div class="row" style="border:0;justify-content:flex-end"><button class="btn" id="close">Fermer</button></div>
   </div>
 </div>
@@ -156,6 +173,10 @@
   </div>
 </div>
 
+<!-- TensorFlow.js + COCO-SSD -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
+
 <script>
 (() => {
   const $ = id => document.getElementById(id);
@@ -163,9 +184,18 @@
   const hTop=$('hTop'), hBot=$('hBot');
   const DEG=180/Math.PI;
 
-  let pTop={x:.5,y:.32}, pBot={x:.5,y:.62};      // positions relatives au stage
+  // Positions relatives des repères
+  let pTop={x:.5,y:.32}, pBot={x:.5,y:.62};
   let grav={x:0,y:9.81,z:0}, haveMotion=false;
   let track=null, zoomBase=1, zoomNow=1, fCal=0, zoomAtCal=1;
+
+  // IA / Suivi
+  let model = null;
+  let autoTrack = false;
+  let smoothTop = {x:.5, y:.3};
+  let smoothBot = {x:.5, y:.6};
+  let detectionActive = false;
+  let lastDetected = null; // pour IoU
 
   /* ---------- démarrage ---------- */
   $('go').addEventListener('click', async () => {
@@ -182,67 +212,68 @@
       await video.play();
       track = s.getVideoTracks()[0];
       setupZoom();
+
+      // Charger le modèle IA
+      status('Chargement IA…');
+      model = await cocoSsd.load({ base: 'mobilenet_v2' });
+      status('IA prête. Activez "AI" pour le suivi auto.');
+
       $('intro').remove();
       placeHandles();
       requestAnimationFrame(loop);
+      // Lancer la boucle de détection
+      detectionLoop();
     }catch(e){
-      $('err').textContent = "Caméra indisponible : "+e.message+" — l'accès exige HTTPS et une autorisation.";
+      $('err').textContent = "Erreur : "+e.message+" — HTTPS et autorisations requises.";
     }
   });
 
+  function status(msg){ $('stat').textContent = msg; }
+
+  /* ---------- Zoom ---------- */
   function setupZoom(){
     const z = $('zoom');
     const cap = track.getCapabilities ? track.getCapabilities() : {};
     if (cap.zoom) {
-      z.min = cap.zoom.min;
-      z.max = cap.zoom.max;
-      z.step = cap.zoom.step || 0.1;
+      z.min = cap.zoom.min; z.max = cap.zoom.max; z.step = cap.zoom.step || 0.1;
       zoomBase = track.getSettings().zoom || cap.zoom.min;
-      z.value = zoomBase;
-      zoomNow = zoomBase;
-      z.disabled = false;
+      z.value = zoomBase; zoomNow = zoomBase; z.disabled = false;
     } else {
-      // zoom non géré : on laisse le curseur désactivé
-      z.min = 1; z.max = 1; z.value = 1;
-      z.disabled = true;
+      z.min = 1; z.max = 1; z.value = 1; z.disabled = true;
     }
 
-    // Événement du curseur
-    z.addEventListener('input', () => {
-      zoomNow = +z.value;
-      if (track && track.applyConstraints) {
-        track.applyConstraints({ advanced: [{ zoom: zoomNow }] }).catch(() => {});
-      }
-    });
-
-    // Boutons – et +
-    const minus = $('zoomMinus');
-    const plus = $('zoomPlus');
-    const step = 0.1;
-
-    const changeZoom = (delta) => {
-      if (z.disabled) return;
-      let val = +z.value + delta;
+    const applyZoom = (val) => {
+      const z = $('zoom');
       val = Math.min(z.max, Math.max(z.min, val));
       z.value = val;
       z.dispatchEvent(new Event('input'));
     };
 
-    minus.addEventListener('click', () => changeZoom(-step));
-    plus.addEventListener('click', () => changeZoom(step));
+    z.addEventListener('input', () => {
+      zoomNow = +z.value;
+      if (track && track.applyConstraints) track.applyConstraints({ advanced: [{ zoom: zoomNow }] }).catch(()=>{});
+    });
+
+    // Boutons du panneau
+    $('zoomMinus').addEventListener('click', () => { if(!z.disabled) applyZoom(+z.value - 0.1); });
+    $('zoomPlus').addEventListener('click', () => { if(!z.disabled) applyZoom(+z.value + 0.1); });
+
+    // Boutons OSD (page principale)
+    $('zoomMainMinus').addEventListener('click', () => { if(!z.disabled) applyZoom(+z.value - 0.1); });
+    $('zoomMainPlus').addEventListener('click', () => { if(!z.disabled) applyZoom(+z.value + 0.1); });
   }
 
-  /* ---------- capteurs ---------- */
+  /* ---------- Capteurs ---------- */
   function onMotion(e){
     const g = e.accelerationIncludingGravity; if(!g||g.x===null) return;
     const a=.12;
     grav.x += a*(g.x-grav.x); grav.y += a*(g.y-grav.y); grav.z += a*(g.z-grav.z);
   }
   const norm = () => Math.hypot(grav.x,grav.y,grav.z)||9.81;
-  const elevAxis = () => Math.asin(Math.max(-1,Math.min(1,-grav.z/norm()))); // axe caméra / horizontale
+  const elevAxis = () => Math.asin(Math.max(-1,Math.min(1,-grav.z/norm())));
   const roll     = () => Math.atan2(grav.x, grav.y);
 
-  /* ---------- optique ---------- */
+  /* ---------- Optique ---------- */
   function focalPx(){
     const manual = +$('fpx').value;
     if (fCal>0) return fCal * (zoomNow/zoomAtCal);
@@ -254,14 +285,15 @@
     return ((vw*sc)/2)/Math.tan(hfov/2) * (zoomNow/zoomBase);
   }
 
-  /* ---------- poignées ---------- */
+  /* ---------- Poignées ---------- */
   function placeHandles(){
     const w=stage.clientWidth, h=stage.clientHeight;
-    hTop.style.left=pTop.x*w+'px'; hTop.style.top=pTop.y*h+'px';
-    hBot.style.left=pBot.x*w+'px'; hBot.style.top=pBot.y*h+'px';
+    hTop.style.left=(pTop.x*w)+'px'; hTop.style.top=(pTop.y*h)+'px';
+    hBot.style.left=(pBot.x*w)+'px'; hBot.style.top=(pBot.y*h)+'px';
   }
+
   function drag(el, p){
-    el.addEventListener('pointerdown', ev=>{ el.setPointerCapture(ev.pointerId); el.dataset.on=1; });
+    el.addEventListener('pointerdown', ev=>{ el.setPointerCapture(ev.pointerId); el.dataset.on=1; if(autoTrack) toggleAuto(); });
     el.addEventListener('pointermove', ev=>{
       if(!el.dataset.on) return;
       const r=stage.getBoundingClientRect();
@@ -272,7 +304,7 @@
     const up=ev=>{ delete el.dataset.on; };
     el.addEventListener('pointerup',up); el.addEventListener('pointercancel',up);
     el.addEventListener('keydown', ev=>{
-      const s = ev.shiftKey?0.02:0.003, k=ev.key;
+      const s = ev.shiftKey?.02:.003, k=ev.key;
       if(k==='ArrowUp') p.y-=s; else if(k==='ArrowDown') p.y+=s;
       else if(k==='ArrowLeft') p.x-=s; else if(k==='ArrowRight') p.x+=s; else return;
       ev.preventDefault(); placeHandles();
@@ -281,7 +313,85 @@
   drag(hTop,pTop); drag(hBot,pBot);
   addEventListener('resize', placeHandles);
 
-  /* ---------- cible ---------- */
+  /* ---------- IA / Détection automatique ---------- */
+  async function detectionLoop() {
+    if (!model || !video || video.readyState < 2) {
+      setTimeout(detectionLoop, 300);
+      return;
+    }
+    try {
+      if (autoTrack) {
+        const predictions = await model.detect(video);
+        let best = null;
+        let bestArea = 0;
+        const centerX = 0.5, centerY = 0.5;
+        for (const p of predictions) {
+          if (p.score < 0.5) continue;
+          const [x,y,w,h] = p.bbox;
+          // Pénaliser les objets trop petits ou excentrés
+          const area = w * h;
+          const cx = (x + w/2) / video.videoWidth;
+          const cy = (y + h/2) / video.videoHeight;
+          const distCenter = Math.hypot(cx - centerX, cy - centerY);
+          // Favoriser les gros objets proches du centre
+          const score = area * (1 - distCenter * 0.5);
+          if (score > bestArea) {
+            bestArea = score;
+            best = { x, y, width: w, height: h, class: p.class };
+          }
+        }
+
+        if (best) {
+          const w = stage.clientWidth, h = stage.clientHeight;
+          const vw = video.videoWidth, vh = video.videoHeight;
+          // Normaliser
+          const targetTop = { x: (best.x + best.width/2) / vw, y: best.y / vh };
+          const targetBot = { x: (best.x + best.width/2) / vw, y: (best.y + best.height) / vh };
+
+          // Lissage (stabilisation)
+          const alpha = 0.35; // plus faible = plus lisse
+          smoothTop.x += alpha * (targetTop.x - smoothTop.x);
+          smoothTop.y += alpha * (targetTop.y - smoothTop.y);
+          smoothBot.x += alpha * (targetBot.x - smoothBot.x);
+          smoothBot.y += alpha * (targetBot.y - smoothBot.y);
+
+          // Appliquer aux repères
+          pTop.x = Math.min(1, Math.max(0, smoothTop.x));
+          pTop.y = Math.min(1, Math.max(0, smoothTop.y));
+          pBot.x = Math.min(1, Math.max(0, smoothBot.x));
+          pBot.y = Math.min(1, Math.max(0, smoothBot.y));
+
+          placeHandles();
+          status('🤖 IA: ' + best.class);
+        } else {
+          status('🤖 IA: aucun objet détecté');
+        }
+      }
+    } catch(e) { /* silencieux */ }
+    setTimeout(detectionLoop, 150);
+  }
+
+  /* ---------- Toggle Auto ---------- */
+  function toggleAuto() {
+    autoTrack = !autoTrack;
+    const btn = $('autoTrackBtn');
+    if(autoTrack){
+      btn.classList.add('active');
+      btn.textContent = 'AI✓';
+      status('Suivi IA activé');
+      // Initialiser le lissage sur la position actuelle
+      smoothTop.x = pTop.x; smoothTop.y = pTop.y;
+      smoothBot.x = pBot.x; smoothBot.y = pBot.y;
+    } else {
+      btn.classList.remove('active');
+      btn.textContent = 'AI';
+      status('Suivi IA désactivé');
+    }
+  }
+
+  $('autoTrackBtn').addEventListener('click', toggleAuto);
+
+  /* ---------- Cible & Calibration ---------- */
   $('tgt').addEventListener('change', e=>{ if(+e.target.value>0) $('H').value=e.target.value; });
   $('gear').addEventListener('click', ()=> $('sheet').classList.add('open'));
   $('close').addEventListener('click', ()=> $('sheet').classList.remove('open'));
@@ -291,10 +401,11 @@
       fCal = px*d/H; zoomAtCal = zoomNow;
       $('fpx').value = Math.round(fCal);
       $('sheet').classList.remove('open');
+      status('Calibré !');
     }
   });
 
-  /* ---------- géométrie ---------- */
+  /* ---------- Géométrie ---------- */
   function spanPx(){
     const w=stage.clientWidth, h=stage.clientHeight, r=roll();
     const dx=(pTop.x-pBot.x)*w, dy=(pTop.y-pBot.y)*h;
@@ -304,12 +415,13 @@
 
   const fmt = (v,n=1) => (Math.abs(v)<1e4 ? v.toFixed(n) : '—');
 
+  /* ---------- Boucle d'affichage ---------- */
   function loop(){
     const w=stage.clientWidth, h=stage.clientHeight, cx=w/2, cy=h/2;
     ov.setAttribute('viewBox',`0 0 ${w} ${h}`);
     const f=focalPx(), el=elevAxis(), r=roll();
 
-    // horizon artificiel + échelle de tangage
+    // Horizon
     let d='';
     for(let a=-15;a<=15;a+=5){
       const y = cy + f*Math.tan(el - a/DEG);
@@ -325,17 +437,14 @@
     spanLine.setAttribute('x1',pTop.x*w); spanLine.setAttribute('y1',pTop.y*h);
     spanLine.setAttribute('x2',pBot.x*w); spanLine.setAttribute('y2',pBot.y*h);
 
-    // résolution
     const px=spanPx(), H=+$('H').value||2.13;
     $('pxread').textContent = px.toFixed(0)+' px  ·  f '+(f?f.toFixed(0):'—');
-    $('stat').textContent = haveMotion ? (fCal?'calibré':'estimé') : 'sans inclinomètre';
 
     if(f>0 && px>4 && H>0){
       const dLine = H*f/px;
       const thetaBase = el + Math.atan((cy - pBot.y*h)/f);
       const dHz = dLine*Math.cos(thetaBase);
       const dh  = dLine*Math.sin(thetaBase);
-      // ✅ Correction : on affiche la distance horizontale (portée)
       const played = dHz;
       const tol = dLine*(2/px);
 
