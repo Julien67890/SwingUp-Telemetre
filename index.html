@@ -1,888 +1,502 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0F3325">
-<title>Télémètre — Test libre</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --deep:#0F3325;
-    --forest:#14432F;
-    --moss:#2D6A4F;
-    --mint:#8FC0A1;
-    --mint-dim:rgba(143,192,161,.55);
-    --cream:#F1EDE2;
-    --cream-2:#FAF8F2;
-    --ink:#123A29;
-    --gold:#C9A227;
-    --gold-soft:rgba(201,162,39,.16);
-    --alert:#D2643C;
-    --serif:"Playfair Display",Georgia,serif;
-    --sans:"Poppins",system-ui,-apple-system,"Segoe UI",sans-serif;
-    --r-card:20px;
-    --r-field:14px;
-  }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%;margin:0;overscroll-behavior:none}
-  body{
-    background:var(--forest);color:var(--cream);font-family:var(--sans);font-weight:400;
-    display:flex;flex-direction:column;
-  }
-  .eyebrow{
-    font:600 10px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;
-    color:var(--mint);margin:0;
-  }
-  .eyebrow.on-cream{color:var(--moss)}
-
-  #intro{
-    position:fixed;inset:0;z-index:60;overflow:auto;
-    background:radial-gradient(130% 90% at 50% -10%,#1B5238 0%,var(--forest) 55%,var(--deep) 100%);
-    padding:calc(28px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));
-    display:flex;flex-direction:column;justify-content:center;gap:20px;
-  }
-  #brand{display:flex;align-items:center;gap:12px}
-  #mark{
-    width:44px;height:44px;border-radius:13px;background:var(--moss);
-    display:grid;place-items:center;flex:none;
-  }
-  #mark svg{width:22px;height:22px}
-  #brand h2{margin:0;font:500 15px/1.15 var(--serif);letter-spacing:.01em}
-  #brand p{margin:2px 0 0}
-  .pill{
-    display:inline-block;padding:7px 15px;border-radius:999px;
-    background:rgba(143,192,161,.14);color:var(--mint);
-    font:600 10px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;
-  }
-  #intro h1{
-    margin:6px 0 0;font:600 33px/1.12 var(--serif);letter-spacing:-.015em;color:var(--cream);
-  }
-  #intro h1 em{font-style:italic;color:var(--mint)}
-  #steps{background:var(--cream);color:var(--ink);border-radius:var(--r-card);padding:20px 20px 22px}
-  #steps ol{margin:14px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:14px}
-  #steps li{display:flex;gap:13px;align-items:flex-start;font-size:14px;line-height:1.5}
-  #steps .num{
-    flex:none;width:26px;height:26px;border-radius:8px;background:var(--moss);color:var(--cream-2);
-    display:grid;place-items:center;font:500 13px/1 var(--sans);margin-top:1px;
-  }
-  #steps li:nth-child(2) .num{background:var(--gold);color:#402F00}
-  #steps li b{font-weight:500}
-  .cta{
-    appearance:none;border:0;width:100%;padding:19px 22px;border-radius:var(--r-field);
-    background:var(--moss);color:var(--cream-2);cursor:pointer;
-    font:500 16px/1 var(--sans);display:flex;align-items:center;justify-content:center;gap:10px;
-  }
-  .cta:active{background:#255840}
-  .cta:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
-  #err{margin:0;min-height:1.2em;font-size:13px;line-height:1.55;color:#F0A88C}
-  #legal{margin:0;font-size:12px;line-height:1.6;color:var(--mint-dim);text-align:center}
-
-  #stage{position:relative;flex:1;min-height:0;overflow:hidden;background:#000;touch-action:none;cursor:crosshair}
-  #v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-  #ovl{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-
-  #topbar{
-    position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;
-    padding:calc(12px + env(safe-area-inset-top)) 14px 22px;
-    background:linear-gradient(180deg,rgba(15,51,37,.85),transparent);
-  }
-  #stat{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .chip{
-    padding:6px 11px;border-radius:999px;background:rgba(15,51,37,.6);
-    border:1px solid rgba(143,192,161,.25);color:var(--mint);
-    font:600 10px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;
-  }
-  #hint{
-    position:absolute;left:50%;bottom:96px;transform:translateX(-50%);
-    padding:11px 18px;border-radius:999px;background:rgba(15,51,37,.82);
-    border:1px solid rgba(201,162,39,.4);color:var(--cream);
-    font-size:13px;white-space:nowrap;transition:opacity .25s;
-  }
-  #hint.gone{opacity:0}
-
-  #tools{position:absolute;right:12px;bottom:16px;display:flex;flex-direction:column;gap:9px}
-  .tool{
-    width:48px;height:48px;border-radius:14px;border:1px solid rgba(143,192,161,.28);
-    background:rgba(15,51,37,.62);color:var(--mint);cursor:pointer;
-    font:600 10px/1.25 var(--sans);letter-spacing:.08em;
-  }
-  .tool:active{background:rgba(45,106,79,.7)}
-  .tool.armed{border-color:var(--gold);color:var(--gold)}
-
-  #zoomwrap{
-    position:absolute;left:14px;bottom:16px;right:74px;display:flex;align-items:center;gap:11px;
-    padding:10px 15px;border-radius:999px;background:rgba(15,51,37,.62);
-    border:1px solid rgba(143,192,161,.22);
-  }
-  #zoomwrap.off{display:none}
-  #zoom{flex:1;accent-color:var(--gold);height:20px}
-  #zlab{font:600 11px/1 var(--sans);color:var(--gold);min-width:34px;text-align:right;letter-spacing:.04em}
-
-  #panel{
-    background:var(--cream);color:var(--ink);
-    border-radius:var(--r-card) var(--r-card) 0 0;margin-top:-20px;position:relative;z-index:5;
-    padding:17px 18px calc(16px + env(safe-area-inset-bottom));
-  }
-  #hero{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-top:7px}
-  #main{
-    font:600 62px/.86 var(--serif);letter-spacing:-.03em;font-variant-numeric:tabular-nums;
-    color:var(--ink);transition:color .2s;
-  }
-  #main.idle{color:rgba(18,58,41,.28)}
-  #unit{font:500 19px/1 var(--sans);color:rgba(18,58,41,.5)}
-  #tol{
-    margin-left:auto;padding:6px 12px;border-radius:999px;background:var(--gold-soft);
-    font:500 12px/1 var(--sans);color:#7A6112;font-variant-numeric:tabular-nums;
-  }
-  #realDist{
-    font:500 14px/1 var(--sans);color:rgba(18,58,41,.6);
-    background:var(--cream-2);padding:6px 14px;border-radius:999px;
-  }
-  #errorPct{
-    font:500 13px/1 var(--sans);color:var(--alert);padding:4px 10px;border-radius:999px;
-    background:rgba(210,100,60,.1);display:none;
-  }
-  #warn{
-    margin:11px 0 0;padding:11px 13px;border-radius:var(--r-field);
-    background:rgba(210,100,60,.12);color:#8E3C1C;font-size:12.5px;line-height:1.5;display:none;
-  }
-  #warn.show{display:block}
-  #grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
-  #grid div{background:var(--cream-2);border-radius:12px;padding:10px 9px 11px;min-width:0}
-  #grid .val{
-    display:block;margin-top:7px;font:500 16px/1 var(--serif);
-    font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap;
-  }
-  #grid .val.neg{color:var(--alert)}
-  #grid .eyebrow{font-size:9px;letter-spacing:.14em}
-
-  #sheet{
-    position:absolute;inset:0;z-index:40;background:var(--cream);color:var(--ink);
-    padding:20px 18px calc(20px + env(safe-area-inset-bottom));overflow:auto;display:none;
-  }
-  #sheet.open{display:block}
-  #sheet h3{margin:22px 0 4px;font:600 19px/1.2 var(--serif)}
-  #sheet h3:first-of-type{margin-top:10px}
-  .row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid rgba(18,58,41,.1)}
-  .row label{font-size:13.5px;line-height:1.4;color:rgba(18,58,41,.72);flex:1}
-  .row .sub{display:block;font-size:11.5px;color:rgba(18,58,41,.45);margin-top:3px}
-  input[type=number],select{
-    width:112px;background:#fff;border:1px solid rgba(18,58,41,.16);color:var(--ink);
-    font:500 14px/1 var(--sans);padding:11px;border-radius:11px;text-align:right;
-  }
-  select{width:auto;text-align:left}
-  .sw{position:relative;width:50px;height:29px;flex:none}
-  .sw input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:2}
-  .sw i{
-    position:absolute;inset:0;border-radius:999px;background:rgba(18,58,41,.18);transition:background .18s;
-  }
-  .sw i::after{
-    content:"";position:absolute;top:3px;left:3px;width:23px;height:23px;border-radius:50%;
-    background:#fff;transition:transform .18s;
-  }
-  .sw input:checked + i{background:var(--moss)}
-  .sw input:checked + i::after{transform:translateX(21px)}
-  .sw input:focus-visible + i{box-shadow:0 0 0 3px var(--gold-soft)}
-  .btn-line{
-    appearance:none;border:1px solid var(--moss);background:transparent;color:var(--moss);
-    font:500 13px/1 var(--sans);padding:12px 16px;border-radius:11px;cursor:pointer;white-space:nowrap;
-  }
-  .btn-line:active{background:rgba(45,106,79,.09)}
-  .note{font-size:12px;line-height:1.65;color:rgba(18,58,41,.55);margin:14px 0 0}
-  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mesure de distance par caméra</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    body {
+      margin: 0;
+      background: #1a1a2e;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: white;
+    }
+    .container {
+      background: #16213e;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      max-width: 800px;
+      width: 100%;
+      position: relative;
+    }
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: #0f0f1f;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    video, canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    canvas {
+      pointer-events: auto; /* pour capturer les clics */
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+      justify-content: center;
+    }
+    .controls input {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      background: #2a2a4a;
+      color: white;
+      width: 100px;
+      font-size: 14px;
+      text-align: center;
+    }
+    .controls input::placeholder {
+      color: #8888aa;
+    }
+    .controls button {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      background: #e94560;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 14px;
+    }
+    .controls button:hover {
+      background: #c73652;
+      transform: scale(1.03);
+    }
+    .controls button:disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .controls button.secondary {
+      background: #533483;
+    }
+    .controls button.secondary:hover {
+      background: #6a4a9a;
+    }
+    .info {
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f0f1f;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .info .status {
+      color: #aaa;
+    }
+    .info .distance {
+      font-size: 22px;
+      font-weight: bold;
+      color: #4fc3f7;
+      min-width: 100px;
+      text-align: right;
+    }
+    .info .distance .unit {
+      font-size: 16px;
+      font-weight: normal;
+      color: #888;
+    }
+    .info .selected {
+      color: #ffd54f;
+      font-weight: 500;
+    }
+    @media (max-width: 600px) {
+      .controls input { width: 80px; }
+      .controls button { font-size: 12px; padding: 6px 12px; }
+      .info { font-size: 14px; }
+      .info .distance { font-size: 18px; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- ============================ accueil ============================ -->
-<div id="intro">
-  <div id="brand">
-    <div id="mark" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3.5l11 4.2L6 12" stroke="#F1EDE2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="17" cy="16" r="2" fill="#C9A227"/></svg>
-    </div>
-    <div>
-      <h2>Télémètre</h2>
-      <p class="eyebrow">Test libre</p>
-    </div>
-    <span class="pill" style="margin-left:auto">Bêta</span>
+<div class="container">
+  <div class="video-wrapper">
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
   </div>
 
-  <h1>Mesurez n’importe<br><em>quel objet</em></h1>
-
-  <div id="steps">
-    <p class="eyebrow on-cream">Trois gestes</p>
-    <ol>
-      <li><span class="num">1</span><span>Visez un objet vertical (poteau, arbre, personne). <b>Zoomez pour qu’il fasse au moins 30 px</b>.</span></li>
-      <li><span class="num">2</span><span>Touchez l’objet. L’app s’accroche et le suit.</span></li>
-      <li><span class="num">3</span><span>Immobilisez le téléphone, l’anneau se remplit. <b>La distance s’affiche.</b></span></li>
-    </ol>
-    <p style="font-size:13px;color:rgba(18,58,41,.6);margin:12px 0 0">Pour tester, entrez sa hauteur réelle et sa distance réelle dans les réglages (⚙️) et validez la calibration.</p>
+  <div class="controls">
+    <input id="heightInput" type="number" step="0.01" placeholder="Hauteur (m)" />
+    <input id="distInput" type="number" step="0.01" placeholder="Distance (m)" />
+    <button id="calibrateBtn" class="secondary" disabled>📏 Calibrer</button>
+    <button id="resetBtn" class="secondary">🔄 Réinitialiser</button>
+    <button id="measureBtn">▶ Mesurer</button>
   </div>
 
-  <button class="cta" id="go">Activer la caméra <span aria-hidden="true">→</span></button>
-  <p id="err" role="alert"></p>
-  <p id="legal">Mesure sans limite d’objet. Mode compétition disponible. Calibration persistante.</p>
-</div>
-
-<!-- ============================ viseur ============================ -->
-<div id="stage">
-  <video id="v" playsinline muted autoplay></video>
-  <canvas id="ovl"></canvas>
-
-  <div id="topbar">
-    <span class="chip" id="stat">Recherche</span>
-    <span class="chip" id="pxread">— px</span>
-  </div>
-
-  <p id="hint">Touchez l'objet</p>
-
-  <div id="zoomwrap" class="off">
-    <span class="eyebrow" style="letter-spacing:.14em">Zoom</span>
-    <input type="range" id="zoom" min="1" max="1" step="0.1" value="1" aria-label="Zoom">
-    <span id="zlab">1,0×</span>
-  </div>
-
-  <div id="tools">
-    <button class="tool" id="reset" aria-label="Relâcher la cible">LÂCHER</button>
-    <button class="tool" id="gear" aria-label="Réglages">RÉG</button>
-  </div>
-
-  <!-- ============================ réglages ============================ -->
-  <div id="sheet" role="dialog" aria-label="Réglages" aria-modal="true">
-    <h3>Mesure</h3>
-    <div class="row">
-      <label for="compet">Mode compétition
-        <span class="sub">Affiche la distance horizontale seule.</span></label>
-      <span class="sw"><input type="checkbox" id="compet" checked><i></i></span>
-    </div>
-    <div class="row">
-      <label for="H">Hauteur réelle de l'objet
-        <span class="sub">En mètres (ex. 2,00 pour une porte, 1,75 pour une personne).</span></label>
-      <input id="H" type="number" step="0.01" min="0.3" max="10" value="2.00">
-    </div>
-    <div class="row">
-      <label for="realD">Distance réelle (pour test)
-        <span class="sub">Mesurée au mètre ruban ou au GPS. Laissez 0 pour ignorer.</span></label>
-      <input id="realD" type="number" step="0.1" min="0" value="0">
-    </div>
-    <div class="row">
-      <label for="sH">Incertitude sur la hauteur
-        <span class="sub">Marge si l'objet n'est pas parfaitement vertical ou partiellement masqué.</span></label>
-      <input id="sH" type="number" step="0.01" min="0" max="1" value="0.05">
-    </div>
-    <div class="row">
-      <label for="navg">Images moyennées
-        <span class="sub">Plus élevé = plus stable mais plus lent.</span></label>
-      <input id="navg" type="number" step="5" min="5" max="90" value="30">
-    </div>
-    <div class="row">
-      <label for="digizoom">Zoom numérique
-        <span class="sub">Recadrage logiciel (1× = aucun).</span></label>
-      <input id="digizoom" type="number" step="0.1" min="1" max="4" value="1">
-    </div>
-
-    <h3>Calibration libre</h3>
-    <p class="note">Visez un objet dont vous connaissez la hauteur et la distance. Accrochez-le, laissez l'anneau se remplir, puis cliquez sur « Calibrer avec cet objet ». La focale est calculée automatiquement.</p>
-    <div class="row" style="border:0">
-      <label>Objet accroché et stable ?</label>
-      <button class="btn-line" id="calFree">Calibrer avec cet objet</button>
-    </div>
-    <div class="row" style="border:0">
-      <label>Effacer la calibration</label>
-      <button class="btn-line" id="clearcal" style="border-color:rgba(18,58,41,.25);color:rgba(18,58,41,.6)">Effacer</button>
-    </div>
-
-    <h3>Optique</h3>
-    <div class="row">
-      <label for="fov">Champ horizontal (repli)</label>
-      <input id="fov" type="number" step="1" min="20" max="120" value="66">
-    </div>
-    <div class="row" style="border:0">
-      <label for="fpx">Focale manuelle (px)</label>
-      <input id="fpx" type="number" step="1" min="0" value="0">
-    </div>
-
-    <div style="display:flex;justify-content:flex-end;margin-top:20px">
-      <button class="cta" id="close" style="width:auto;padding:14px 26px">Fermer</button>
-    </div>
+  <div class="info">
+    <span class="status" id="status">📷 Attente de la caméra…</span>
+    <span class="selected" id="selectedInfo">Aucun objet sélectionné</span>
+    <span class="distance" id="distanceDisplay">— <span class="unit">m</span></span>
   </div>
 </div>
 
-<!-- ============================ lecture ============================ -->
-<div id="panel">
-  <p class="eyebrow on-cream" id="heroLabel">Distance mesurée</p>
-  <div id="hero">
-    <span id="main" class="idle">—</span>
-    <span id="unit">m</span>
-    <span id="tol">±—</span>
-    <span id="realDist"></span>
-    <span id="errorPct"></span>
-  </div>
-  <p id="warn"></p>
-  <div id="grid">
-    <div><span class="eyebrow on-cream">Taille (px)</span><span class="val" id="oPx">—</span></div>
-    <div><span class="eyebrow on-cream">Hauteur objet</span><span class="val" id="oH">—</span></div>
-    <div><span class="eyebrow on-cream">Angle</span><span class="val" id="oAng">—</span></div>
-    <div><span class="eyebrow on-cream">GPS</span><span class="val" id="oGps">—</span></div>
-  </div>
-</div>
+<!-- TensorFlow.js et COCO-SSD depuis CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
 
 <script>
-(() => {
-"use strict";
-const $ = id => document.getElementById(id);
-const DEG = 180 / Math.PI;
-const clamp = (v,a,b) => v < a ? a : v > b ? b : v;
+  (function() {
+    // --- Éléments DOM ---
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
 
-/* ---------------------------------------------------------------
-   État
---------------------------------------------------------------- */
-const S = {
-  locked:false, lock:{x:0,y:0},
-  grav:{x:0,y:9.81,z:0}, gravSign:1, haveMotion:false, spin:0,
-  track:null, caps:null, zoomBase:1, zoomNow:1,
-  fCal:0, zoomAtCal:1,
-  samples:[], lastSeg:null, misses:0,
-  gps:null, gpsAcc:Infinity,
-  lastFrameTime:0, frameInterval:1000/15,
-  hapticDone:false
-};
+    const heightInput = document.getElementById('heightInput');
+    const distInput = document.getElementById('distInput');
+    const calibrateBtn = document.getElementById('calibrateBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const measureBtn = document.getElementById('measureBtn');
+    const statusEl = document.getElementById('status');
+    const selectedInfo = document.getElementById('selectedInfo');
+    const distanceDisplay = document.getElementById('distanceDisplay');
 
-/* ---------------------------------------------------------------
-   Buffers
---------------------------------------------------------------- */
-const RW = 120, RH = 420;
-const SQ = Math.ceil(Math.hypot(RW, RH));
-const cutC = document.createElement("canvas"); cutC.width = cutC.height = SQ;
-const cutX = cutC.getContext("2d", { willReadFrequently:true });
-const wrkC = document.createElement("canvas"); wrkC.width = RW; wrkC.height = RH;
-const wrkX = wrkC.getContext("2d", { willReadFrequently:true });
-const gray = new Float32Array(RW * RH);
-const resp = new Float32Array(RW * RH);
-const colS = new Float32Array(RW);
-const prof = new Float32Array(RH);
-const smth = new Float32Array(RH);
+    // --- État de l'application ---
+    let model = null;
+    let isMeasuring = false;
+    let isCalibrated = false;
+    let calibrationFactor = null; // K = hauteur_pixels * distance_actuelle
+    let selectedBox = null;       // { x, y, width, height, class }
+    let lastKnownBox = null;      // pour suivre l'objet
+    let frameId = null;
+    let detectionInterval = null;
 
-const video = $("v"), stage = $("stage"), ovl = $("ovl"), oxc = ovl.getContext("2d");
+    // Paramètres de performance
+    const DETECTION_INTERVAL_MS = 150; // détecter toutes les 150ms pour fluidité
+    const CONFIDENCE_THRESHOLD = 0.5;
 
-/* ---------------------------------------------------------------
-   Permissions & démarrage
---------------------------------------------------------------- */
-async function requestPermissions() {
-  const errors = [];
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:"environment" }, width:{ ideal:1920 }, height:{ ideal:1080 } }, audio:false });
-    stream.getTracks().forEach(t => t.stop());
-  } catch (e) { errors.push("Caméra: " + e.message); }
-  try {
-    await new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, { timeout:5000 });
-    });
-  } catch (e) { errors.push("Géolocalisation: " + e.message); }
-  try {
-    if (typeof DeviceMotionEvent !== "undefined" && DeviceMotionEvent.requestPermission) {
-      const r = await DeviceMotionEvent.requestPermission();
-      if (r !== "granted") errors.push("Mouvement: permission refusée");
-    }
-  } catch (e) { errors.push("Mouvement: " + e.message); }
-  return errors;
-}
-
-$("go").addEventListener("click", async () => {
-  $("err").textContent = "";
-  const perms = await requestPermissions();
-  if (perms.length) $("err").textContent = "⚠️ " + perms.join(" — ");
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video:{ facingMode:{ ideal:"environment" }, width:{ ideal:3840 }, height:{ ideal:2160 } },
-      audio:false
-    });
-    video.srcObject = stream;
-    await video.play();
-    S.track = stream.getVideoTracks()[0];
-    setupZoom();
-    loadCal();
-    $("intro").remove();
-    startGps();
-    requestAnimationFrame(loop);
-  } catch (e) {
-    $("err").textContent = "❌ La caméra n'a pas démarré : " + e.message;
-  }
-});
-
-window.addEventListener("devicemotion", onMotion);
-function onMotion(e){
-  const g = e.accelerationIncludingGravity;
-  if (g && g.x !== null) {
-    if (S.gravSign === 1 && Math.abs(g.y) > 8) S.gravSign = g.y > 0 ? 1 : -1;
-    const a = 0.14, s = S.gravSign;
-    S.grav.x += a * (s*g.x - S.grav.x);
-    S.grav.y += a * (s*g.y - S.grav.y);
-    S.grav.z += a * (s*g.z - S.grav.z);
-  }
-  const r = e.rotationRate;
-  if (r && r.alpha !== null) {
-    const mag = Math.hypot(r.alpha||0, r.beta||0, r.gamma||0);
-    S.spin += 0.25 * (mag - S.spin);
-  }
-}
-const gnorm    = () => Math.hypot(S.grav.x, S.grav.y, S.grav.z) || 9.81;
-const elevAxis = () => Math.asin(clamp(-S.grav.z / gnorm(), -1, 1));
-const roll     = () => Math.atan2(S.grav.x, S.grav.y);
-
-/* ---------------------------------------------------------------
-   Zoom
---------------------------------------------------------------- */
-function setupZoom(){
-  const caps = S.track.getCapabilities ? S.track.getCapabilities() : {};
-  S.caps = caps;
-  const z = $("zoom");
-  if (!caps.zoom) {
-    $("zoomwrap").classList.remove("off");
-    $("zoomwrap").innerHTML =
-      '<span class="eyebrow" style="letter-spacing:.14em;line-height:1.5">Zoom optique non disponible — utilisez le zoom numérique</span>';
-    return;
-  }
-  S.zoomBase = S.track.getSettings().zoom || caps.zoom.min || 1;
-  S.zoomNow  = S.zoomBase;
-  z.min = caps.zoom.min; z.max = caps.zoom.max;
-  z.step = caps.zoom.step || 0.1; z.value = S.zoomBase;
-  $("zoomwrap").classList.remove("off");
-  $("zlab").textContent = fmtZ(S.zoomNow);
-  z.addEventListener("input", () => {
-    S.zoomNow = +z.value;
-    $("zlab").textContent = fmtZ(S.zoomNow);
-    S.track.applyConstraints({ advanced:[{ zoom:S.zoomNow }] }).catch(()=>{});
-    S.samples.length = 0;
-  });
-}
-const fmtZ = z => z.toFixed(1).replace(".", ",") + "×";
-
-function focalPx(){
-  const vw = video.videoWidth;
-  if (!vw) return 0;
-  const digi = +$("digizoom").value || 1;
-  if (S.fCal > 0) return S.fCal * (S.zoomNow / S.zoomAtCal) * digi;
-  const manual = +$("fpx").value;
-  if (manual > 0) return manual * (S.zoomNow / S.zoomBase) * digi;
-  const hfov = (+$("fov").value || 66) / DEG;
-  return ((vw / 2) / Math.tan(hfov / 2)) * (S.zoomNow / S.zoomBase) * digi;
-}
-const calibrated = () => S.fCal > 0;
-
-/* ---------------------------------------------------------------
-   Affichage
---------------------------------------------------------------- */
-function view(){
-  const w = stage.clientWidth, h = stage.clientHeight;
-  const vw = video.videoWidth || 1, vh = video.videoHeight || 1;
-  const s = Math.max(w / vw, h / vh);
-  return { w, h, vw, vh, s, ox:(w - vw*s)/2, oy:(h - vh*s)/2 };
-}
-const toDisp  = (p, V) => ({ x:V.ox + p.x*V.s, y:V.oy + p.y*V.s });
-const toVideo = (x, y, V) => ({ x:(x - V.ox)/V.s, y:(y - V.oy)/V.s });
-
-/* ---------------------------------------------------------------
-   Accrochage
---------------------------------------------------------------- */
-stage.addEventListener("pointerdown", ev => {
-  if ($("sheet").classList.contains("open")) return;
-  if (ev.target.closest("#tools, #zoomwrap")) return;
-  const r = stage.getBoundingClientRect(), V = view();
-  const p = toVideo(ev.clientX - r.left, ev.clientY - r.top, V);
-  S.lock = p; S.locked = true; S.samples.length = 0; S.misses = 0; S.lastSeg = null; S.hapticDone = false;
-  $("hint").classList.add("gone");
-});
-$("reset").addEventListener("click", () => {
-  S.locked = false; S.samples.length = 0; S.lastSeg = null; S.hapticDone = false;
-  $("hint").classList.remove("gone");
-});
-
-/* ---------------------------------------------------------------
-   Détecteur (contraste + couleur)
---------------------------------------------------------------- */
-function detect(lx, ly, r){
-  const vw = video.videoWidth, vh = video.videoHeight;
-  if (!vw || !vh) return null;
-  const digi = +$("digizoom").value || 1;
-  const cropSize = Math.min(vw, vh) / digi;
-  const cx = lx, cy = ly;
-  const half = cropSize / 2;
-  const sx = Math.max(0, cx - half), sy = Math.max(0, cy - half);
-  const sw = Math.min(vw - sx, cropSize), sh = Math.min(vh - sy, cropSize);
-
-  cutX.clearRect(0, 0, SQ, SQ);
-  cutX.drawImage(video, sx, sy, sw, sh, 0, 0, SQ, SQ);
-
-  wrkX.save();
-  wrkX.translate(RW/2, RH/2);
-  wrkX.rotate(r);
-  wrkX.drawImage(cutC, -SQ/2, -SQ/2);
-  wrkX.restore();
-
-  const d = wrkX.getImageData(0, 0, RW, RH).data;
-  const grayBuf = new Float32Array(RW*RH);
-  const rBuf = new Float32Array(RW*RH);
-  const gBuf = new Float32Array(RW*RH);
-  const bBuf = new Float32Array(RW*RH);
-  for (let i = 0, j = 0; j < grayBuf.length; i += 4, j++) {
-    const R = d[i], G = d[i+1], B = d[i+2];
-    grayBuf[j] = 0.299*R + 0.587*G + 0.114*B;
-    rBuf[j] = R; gBuf[j] = G; bBuf[j] = B;
-  }
-
-  const W = 5;
-  colS.fill(0);
-  for (let y = 0; y < RH; y++) {
-    const o = y*RW;
-    for (let x = W; x < RW - W; x++) {
-      const v = Math.abs(2*grayBuf[o+x] - grayBuf[o+x-W] - grayBuf[o+x+W]);
-      resp[o+x] = v; colS[x] += v;
-    }
-  }
-
-  let xb = -1, best = 0;
-  for (let x = W + 2; x < RW - W - 2; x++) if (colS[x] > best) { best = colS[x]; xb = x; }
-  if (xb < 0 || best <= 0) return null;
-
-  // Couleur (optionnel)
-  let hueScore = 0;
-  const bandW = 6;
-  for (let y = Math.floor(RH*0.2); y < Math.floor(RH*0.8); y++) {
-    const o = y*RW + xb;
-    const R = rBuf[o], G = gBuf[o], B = bBuf[o];
-    const maxC = Math.max(R, G, B);
-    const minC = Math.min(R, G, B);
-    if (maxC > 80 && (maxC - minC) > 30) {
-      const sat = (maxC - minC) / maxC;
-      if (sat > 0.3) {
-        if (R > G*1.2 && R > B*1.2) hueScore += 2;
-        else if (R > B*1.4 && G > B*1.4) hueScore += 2;
-        else hueScore += 1;
+    // --- Initialisation de la caméra ---
+    async function initCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } }
+        });
+        video.srcObject = stream;
+        await video.play();
+        // Adapter la taille du canvas
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
+        statusEl.textContent = '📸 Caméra prête, chargement du modèle…';
+        return true;
+      } catch (err) {
+        statusEl.textContent = '❌ Erreur caméra : ' + err.message;
+        return false;
       }
-    } else if (maxC > 180 && (maxC - minC) < 30) {
-      hueScore += 1;
     }
-  }
-  // On ne rejette pas sur la couleur, mais on peut pondérer
 
-  const sorted = Array.from(colS.slice(W, RW - W)).sort((a,b) => a - b);
-  const med = sorted[sorted.length >> 1] || 1;
-  const contrast = best / med;
-  if (contrast < 1.6) return null;
-
-  const dm = colS[xb-1] - 2*colS[xb] + colS[xb+1];
-  const xs = dm !== 0 ? xb + 0.5*(colS[xb-1] - colS[xb+1]) / dm : xb;
-
-  for (let y = 0; y < RH; y++) {
-    const o = y*RW;
-    prof[y] = (resp[o+xb-1] + resp[o+xb] + resp[o+xb+1]) / 3;
-  }
-  for (let y = 0; y < RH; y++) {
-    let s = 0, n = 0;
-    for (let k = -2; k <= 2; k++) { const t = y + k; if (t >= 0 && t < RH) { s += prof[t]; n++; } }
-    smth[y] = s / n;
-  }
-
-  let pmax = 0;
-  for (let y = 0; y < RH; y++) if (smth[y] > pmax) pmax = smth[y];
-  const thr = 0.30 * pmax;
-
-  let c = RH >> 1;
-  if (smth[c] < thr) {
-    let found = -1;
-    for (let k = 1; k <= 40; k++) {
-      if (smth[c-k] >= thr) { found = c - k; break; }
-      if (smth[c+k] >= thr) { found = c + k; break; }
+    // --- Chargement du modèle COCO-SSD ---
+    async function loadModel() {
+      try {
+        model = await cocoSsd.load({ base: 'mobilenet_v2' });
+        statusEl.textContent = '✅ Modèle chargé – cliquez sur un objet dans l’image';
+        return true;
+      } catch (err) {
+        statusEl.textContent = '❌ Erreur modèle : ' + err.message;
+        return false;
+      }
     }
-    if (found < 0) return null;
-    c = found;
-  }
 
-  let yT = c, gap = 0;
-  for (let y = c - 1; y >= 1; y--) {
-    if (smth[y] >= thr) { yT = y; gap = 0; } else if (++gap > 5) break;
-  }
-  let yB = c; gap = 0;
-  for (let y = c + 1; y < RH - 1; y++) {
-    if (smth[y] >= thr) { yB = y; gap = 0; } else if (++gap > 5) break;
-  }
-  const edge = (yi, dir) => {
-    const nb = yi + dir;
-    if (nb < 0 || nb >= RH) return yi;
-    const den = smth[yi] - smth[nb];
-    if (Math.abs(den) < 1e-6) return yi;
-    return yi + dir * clamp((smth[yi] - thr) / den, 0, 1);
-  };
-  const yTs = edge(yT, -1), yBs = edge(yB, +1);
-  const span = yBs - yTs;
-  if (span < 10) return null;
-
-  const back = (wx, wy) => {
-    const dx = wx - RW/2, dy = wy - RH/2;
-    return { x:lx + dx*Math.cos(r) + dy*Math.sin(r), y:ly - dx*Math.sin(r) + dy*Math.cos(r) };
-  };
-  return {
-    span, contrast,
-    top:back(xs, yTs), bot:back(xs, yBs), mid:back(xs, (yTs + yBs)/2),
-    hueScore
-  };
-}
-
-/* ---------------------------------------------------------------
-   Statistiques robustes
---------------------------------------------------------------- */
-function robust(arr){
-  if (arr.length < 3) return { med:arr[0]||0, sig:Infinity };
-  const a = arr.slice().sort((x,y) => x - y);
-  const m = a[a.length >> 1];
-  const dev = a.map(v => Math.abs(v - m)).sort((x,y) => x - y);
-  const mad = 1.4826 * (dev[dev.length >> 1] || 0);
-  const good = a.filter(v => Math.abs(v - m) <= 3 * mad);
-  if (good.length < 2) return { med:m, sig:mad };
-  const med2 = good[good.length >> 1];
-  const dev2 = good.map(v => Math.abs(v - med2)).sort((x,y) => x - y);
-  const sig2 = 1.4826 * (dev2[dev2.length >> 1] || 0);
-  return { med:med2, sig:sig2 };
-}
-
-/* ---------------------------------------------------------------
-   Boucle
---------------------------------------------------------------- */
-function loop(time){
-  if (time - S.lastFrameTime >= S.frameInterval) {
-    S.lastFrameTime = time;
-    const V = view(), dpr = Math.min(devicePixelRatio || 1, 2);
-    if (ovl.width !== Math.round(V.w*dpr) || ovl.height !== Math.round(V.h*dpr)) {
-      ovl.width = Math.round(V.w*dpr); ovl.height = Math.round(V.h*dpr);
+    // --- Détection des objets sur une image ---
+    async function detectObjects() {
+      if (!model || video.readyState < 2) return [];
+      try {
+        const predictions = await model.detect(video);
+        return predictions.filter(p => p.score >= CONFIDENCE_THRESHOLD);
+      } catch (e) {
+        console.warn('Erreur détection:', e);
+        return [];
+      }
     }
-    oxc.setTransform(dpr, 0, 0, dpr, 0, 0);
-    oxc.clearRect(0, 0, V.w, V.h);
 
-    const r = roll(), f = focalPx();
-    const N = clamp(+$("navg").value || 30, 5, 90);
-    let seg = null;
+    // --- Dessiner les boîtes et l'interface ---
+    function drawOverlay(detections, selected) {
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
 
-    if (S.locked && V.vw) {
-      seg = detect(S.lock.x, S.lock.y, r);
-      if (seg) {
-        S.lock = seg.mid;
-        S.lastSeg = seg; S.misses = 0;
-        const calm = !S.haveMotion || S.spin < 9;
-        if (calm && f > 0) {
-          S.samples.push(seg.span);
-          if (S.samples.length > N) S.samples.shift();
+      // Dessiner toutes les détections
+      detections.forEach(d => {
+        const [x, y, width, height] = d.bbox;
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, width, height);
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.font = '14px sans-serif';
+        ctx.fillText(`${d.class} (${Math.round(d.score*100)}%)`, x, y - 6);
+      });
+
+      // Mettre en avant la boîte sélectionnée
+      if (selected) {
+        const { x, y, width, height } = selected;
+        ctx.strokeStyle = '#ffd54f';
+        ctx.lineWidth = 4;
+        ctx.shadowColor = '#ffd54f';
+        ctx.shadowBlur = 12;
+        ctx.strokeRect(x, y, width, height);
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#ffd54f';
+        ctx.font = 'bold 16px sans-serif';
+        ctx.fillText('🎯 ' + (selected.class || 'Objet'), x, y - 12);
+      }
+    }
+
+    // --- Trouver l'objet cliqué ---
+    function getObjectAtClick(e, detections) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const mx = (e.clientX - rect.left) * scaleX;
+      const my = (e.clientY - rect.top) * scaleY;
+
+      // Chercher la boîte contenant le point (on prend la plus petite surface pour précision)
+      let best = null;
+      let bestArea = Infinity;
+      for (const d of detections) {
+        const [x, y, w, h] = d.bbox;
+        if (mx >= x && mx <= x + w && my >= y && my <= y + h) {
+          const area = w * h;
+          if (area < bestArea) {
+            bestArea = area;
+            best = { x, y, width: w, height: h, class: d.class };
+          }
         }
-      } else if (++S.misses > 25) {
-        S.locked = false; S.lastSeg = null; S.samples.length = 0; S.hapticDone = false;
-        $("hint").classList.remove("gone");
+      }
+      return best;
+    }
+
+    // --- Suivi : trouver la détection la plus proche de la boîte précédente ---
+    function findClosestDetection(detections, prevBox) {
+      if (!prevBox) return null;
+      let best = null;
+      let bestIoU = 0;
+      for (const d of detections) {
+        const [x, y, w, h] = d.bbox;
+        const iou = computeIoU({ x, y, width: w, height: h }, prevBox);
+        if (iou > bestIoU) {
+          bestIoU = iou;
+          best = { x, y, width: w, height: h, class: d.class };
+        }
+      }
+      // Seuil d'IoU pour éviter les sauts
+      return (bestIoU > 0.3) ? best : null;
+    }
+
+    function computeIoU(a, b) {
+      const ax = a.x, ay = a.y, aw = a.width, ah = a.height;
+      const bx = b.x, by = b.y, bw = b.width, bh = b.height;
+      const x1 = Math.max(ax, bx), y1 = Math.max(ay, by);
+      const x2 = Math.min(ax + aw, bx + bw), y2 = Math.min(ay + ah, by + bh);
+      const inter = Math.max(0, x2 - x1) * Math.max(0, y2 - y1);
+      const areaA = aw * ah, areaB = bw * bh;
+      return inter / (areaA + areaB - inter + 1e-6);
+    }
+
+    // --- Boucle de mesure ---
+    async function measureLoop() {
+      if (!isMeasuring) return;
+
+      const detections = await detectObjects();
+      if (detections.length === 0) {
+        statusEl.textContent = '⚠️ Aucun objet détecté';
+        drawOverlay([], selectedBox);
+        requestAnimationFrame(measureLoop);
+        return;
+      }
+
+      // Si on a un objet sélectionné, on le suit
+      let currentBox = null;
+      if (selectedBox) {
+        // Chercher la détection la plus proche
+        currentBox = findClosestDetection(detections, lastKnownBox || selectedBox);
+        if (currentBox) {
+          // Mise à jour
+          lastKnownBox = { ...currentBox };
+        } else {
+          // Perte de suivi : on garde l'ancienne boîte mais on affiche un avertissement
+          currentBox = lastKnownBox || selectedBox;
+          statusEl.textContent = '⚠️ Suivi perdu, utilisation de la dernière position';
+        }
       } else {
-        seg = S.lastSeg;
+        // Pas d'objet sélectionné : on affiche juste les détections
+        drawOverlay(detections, null);
+        requestAnimationFrame(measureLoop);
+        return;
+      }
+
+      // Calcul de la distance si calibré
+      if (isCalibrated && currentBox) {
+        const heightPx = currentBox.height;
+        if (heightPx > 0) {
+          const distance = calibrationFactor / heightPx;
+          distanceDisplay.textContent = distance.toFixed(2) + ' m';
+        } else {
+          distanceDisplay.textContent = '— m';
+        }
+        selectedInfo.textContent = `📌 ${currentBox.class || 'Objet'} suivi`;
+        statusEl.textContent = '📏 Mesure en cours';
+      } else if (!isCalibrated) {
+        statusEl.textContent = '🔧 Calibrez d’abord (hauteur et distance)';
+        distanceDisplay.textContent = '— m';
+      }
+
+      // Dessiner
+      drawOverlay(detections, currentBox);
+      requestAnimationFrame(measureLoop);
+    }
+
+    // --- Lancer / arrêter la mesure ---
+    function startMeasurement() {
+      if (isMeasuring) return;
+      if (!selectedBox) {
+        statusEl.textContent = '⚠️ Veuillez d’abord cliquer sur un objet';
+        return;
+      }
+      if (!isCalibrated) {
+        statusEl.textContent = '⚠️ Veuillez calibrer (hauteur + distance)';
+        return;
+      }
+      isMeasuring = true;
+      measureBtn.textContent = '⏹ Arrêter';
+      measureBtn.classList.add('secondary');
+      statusEl.textContent = '📏 Mesure en cours…';
+      lastKnownBox = { ...selectedBox };
+      measureLoop();
+    }
+
+    function stopMeasurement() {
+      isMeasuring = false;
+      measureBtn.textContent = '▶ Mesurer';
+      measureBtn.classList.remove('secondary');
+      statusEl.textContent = isCalibrated ? '✅ Calibré, prêt à mesurer' : '🔧 En attente de calibration';
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+        frameId = null;
       }
     }
 
-    drawOverlay(V, r, seg, N);
-    readout(V, f, r, N);
-  }
-  requestAnimationFrame(loop);
-}
-
-function drawOverlay(V, r, seg, N){
-  const cx = V.w/2, cy = V.h/2;
-  const gold = "#C9A227", mint = "rgba(143,192,161,.75)";
-
-  oxc.save();
-  oxc.translate(cx, cy); oxc.rotate(r);
-  oxc.strokeStyle = mint; oxc.lineWidth = 1;
-  oxc.beginPath(); oxc.moveTo(-11, 0); oxc.lineTo(11, 0); oxc.moveTo(0, -11); oxc.lineTo(0, 11); oxc.stroke();
-  oxc.globalAlpha = 0.4;
-  oxc.beginPath(); oxc.moveTo(-V.w*0.34, 0); oxc.lineTo(-26, 0); oxc.moveTo(26, 0); oxc.lineTo(V.w*0.34, 0); oxc.stroke();
-  oxc.restore();
-
-  if (!seg) return;
-
-  const t = toDisp(seg.top, V), b = toDisp(seg.bot, V), m = toDisp(seg.mid, V);
-
-  oxc.strokeStyle = gold; oxc.lineWidth = 2.5; oxc.lineCap = "round";
-  oxc.beginPath(); oxc.moveTo(t.x, t.y); oxc.lineTo(b.x, b.y); oxc.stroke();
-
-  const ux = Math.cos(r), uy = -Math.sin(r);
-  oxc.lineWidth = 1.5;
-  for (const p of [t, b]) {
-    oxc.beginPath();
-    oxc.moveTo(p.x - ux*15, p.y - uy*15);
-    oxc.lineTo(p.x + ux*15, p.y + uy*15);
-    oxc.stroke();
-  }
-
-  const prog = Math.min(S.samples.length / N, 1);
-  const R = 34;
-  oxc.lineWidth = 3; oxc.lineCap = "butt";
-  oxc.strokeStyle = "rgba(241,237,226,.2)";
-  oxc.beginPath(); oxc.arc(m.x, m.y, R, 0, Math.PI*2); oxc.stroke();
-  oxc.strokeStyle = prog >= 1 ? "#8FC0A1" : gold;
-  oxc.beginPath(); oxc.arc(m.x, m.y, R, -Math.PI/2, -Math.PI/2 + prog*Math.PI*2); oxc.stroke();
-
-  if (S.haveMotion && S.spin >= 9) {
-    oxc.fillStyle = "rgba(210,100,60,.9)";
-    oxc.font = "600 11px Poppins, sans-serif";
-    oxc.textAlign = "center";
-    oxc.fillText("Immobilisez le téléphone", m.x, m.y + R + 20);
-  }
-}
-
-/* ---------------------------------------------------------------
-   Lecture
---------------------------------------------------------------- */
-function readout(V, f, r, N){
-  const nb = (v, n=1) => Number.isFinite(v) ? v.toFixed(n).replace(".", ",") : "—";
-  const seg = S.lastSeg;
-  const compet = $("compet").checked;
-  $("heroLabel").textContent = compet ? "Distance horizontale" : "Distance jouée";
-
-  $("pxread").textContent = (seg ? Math.round(seg.span) : "—") + " px · f "
-    + (f > 0 ? Math.round(f) : "—");
-  $("stat").textContent = !S.locked ? "En attente"
-    : !seg ? "Perdu"
-    : S.samples.length < N ? "Stabilisation " + Math.round(100*S.samples.length/N) + " %"
-    : (calibrated() ? "Mesuré ✅" : "Mesuré ⚠️");
-
-  const warn = $("warn");
-  if (!seg || !S.samples.length || f <= 0) {
-    $("main").classList.add("idle"); $("main").textContent = "—";
-    $("tol").textContent = "±—";
-    $("realDist").textContent = "";
-    $("errorPct").style.display = "none";
-    for (const id of ["oPx","oH","oAng"]) $(id).textContent = "—";
-    warn.classList.remove("show");
-    S.hapticDone = false;
-    return;
-  }
-
-  const st = robust(S.samples);
-  const span = st.med;
-  const H  = +$("H").value  || 2.00;
-  const sH = Math.max(+$("sH").value || 0, 0);
-
-  const dLine = H * f / span;
-  const up = -(seg.bot.x - V.vw/2)*Math.sin(r) - (seg.bot.y - V.vh/2)*Math.cos(r);
-  const theta = elevAxis() + Math.atan(up / f);
-  const dHz = dLine * Math.cos(theta);
-  const dh  = dLine * Math.sin(theta);
-
-  const n = S.samples.length;
-  const sigSpan = Math.max(st.sig, 0.4) / Math.sqrt(n);
-  const rel = Math.hypot(sigSpan/span, sH/H, calibrated() ? 0.012 : 0.05);
-  const tol = dLine * rel;
-
-  $("main").classList.remove("idle");
-  const finalDist = compet ? dHz : dHz + dh;
-  $("main").textContent = nb(finalDist, 0);
-  $("tol").textContent = "±" + nb(tol, 1);
-  $("oPx").textContent = Math.round(span) + " px";
-  $("oH").textContent = H.toFixed(2) + " m";
-  $("oAng").textContent = nb(theta*DEG, 1) + "°";
-
-  // Distance réelle et écart
-  const realD = +$("realD").value || 0;
-  if (realD > 0) {
-    $("realDist").textContent = "📏 " + realD.toFixed(1) + " m";
-    const err = finalDist - realD;
-    const pct = (err / realD) * 100;
-    $("errorPct").style.display = "inline-block";
-    $("errorPct").textContent = (err >= 0 ? "+" : "") + err.toFixed(1) + " m (" + pct.toFixed(1) + " %)";
-    $("errorPct").style.color = Math.abs(pct) < 5 ? "var(--moss)" : "var(--alert)";
-    $("errorPct").style.background = Math.abs(pct) < 5 ? "rgba(45,106,79,.12)" : "rgba(210,100,60,.12)";
-  } else {
-    $("realDist").textContent = "";
-    $("errorPct").style.display = "none";
-  }
-
-  // Haptique
-  if (S.samples.length >= N && !S.hapticDone) {
-    try { navigator.vibrate && navigator.vibrate(30); } catch(e) {}
-    S.hapticDone = true;
-  }
-
-  let msg = "";
-  if (span < 25)          msg = "Objet trop petit (" + Math.round(span) + " px) — zoomez.";
-  else if (!calibrated()) msg = "Non calibré — utilisez « Calibrer avec cet objet » pour plus de précision.";
-  else if (sH >= 0.3)     msg = "Incertitude élevée sur la hauteur.";
-  else if (seg.contrast < 2.4) msg = "Contraste faible, vérifiez le suivi.";
-  warn.textContent = msg;
-  warn.classList.toggle("show", !!msg);
-}
-
-/* ---------------------------------------------------------------
-   Calibration libre
---------------------------------------------------------------- */
-const CAL_KEY = "telemetre.cal.v1";
-function loadCal(){
-  try {
-    const raw = localStorage.getItem(CAL_KEY);
-    if (!raw) return;
-    const c = JSON.parse(raw);
-    if (c && c.f > 0 && c.label === (S.track.label || "")) {
-      S.fCal = c.f; S.zoomAtCal = c.zoom || 1;
-      $("fpx").value = Math.round(c.f);
+    function toggleMeasurement() {
+      if (isMeasuring) {
+        stopMeasurement();
+      } else {
+        startMeasurement();
+      }
     }
-  } catch (e) {}
-}
 
-$("calFree").addEventListener("click", () => {
-  if (!S.samples.length) { alert("Accrochez d'abord un objet et laissez l'anneau se remplir."); return; }
-  const H = +$("H").value;
-  const realD = +$("realD").value;
-  if (!(H > 0 && realD > 0)) { alert("Entrez la hauteur réelle et la distance réelle de l'objet dans les réglages."); return; }
-  const span = robust(S.samples).med;
-  S.fCal = span * realD / H;
-  S.zoomAtCal = S.zoomNow;
-  $("fpx").value = Math.round(S.fCal);
-  try {
-    localStorage.setItem(CAL_KEY, JSON.stringify({
-      f:S.fCal, zoom:S.zoomAtCal, label:S.track.label || ""
-    }));
-  } catch (e) {}
-  S.samples.length = 0;
-  $("sheet").classList.remove("open");
-});
+    // --- Calibration ---
+    function calibrate() {
+      const h = parseFloat(heightInput.value);
+      const d = parseFloat(distInput.value);
+      if (!selectedBox) {
+        statusEl.textContent = '❌ Sélectionnez d’abord un objet (cliquez dessus)';
+        return;
+      }
+      if (!h || h <= 0 || !d || d <= 0) {
+        statusEl.textContent = '❌ Entrez une hauteur et une distance valides ( > 0)';
+        return;
+      }
+      // Le facteur K = hauteur_pixels * distance
+      calibrationFactor = selectedBox.height * d;
+      isCalibrated = true;
+      calibrateBtn.disabled = true;
+      statusEl.textContent = `✅ Calibré (K = ${calibrationFactor.toFixed(1)}) – Lancez la mesure`;
+      selectedInfo.textContent = `📌 ${selectedBox.class || 'Objet'} calibré (H=${h}m, D0=${d}m)`;
+      // Mettre à jour distance affichée
+      distanceDisplay.textContent = d.toFixed(2) + ' m (calibration)';
+    }
 
-$("clearcal").addEventListener("click", () => {
-  S.fCal = 0; S.zoomAtCal = 1; $("fpx").value = 0;
-  try { localStorage.removeItem(CAL_KEY); } catch (e) {}
-  S.samples.length = 0;
-});
+    // --- Réinitialisation ---
+    function resetAll() {
+      stopMeasurement();
+      selectedBox = null;
+      lastKnownBox = null;
+      isCalibrated = false;
+      calibrationFactor = null;
+      calibrateBtn.disabled = true;
+      heightInput.value = '';
+      distInput.value = '';
+      distanceDisplay.textContent = '— m';
+      selectedInfo.textContent = 'Aucun objet sélectionné';
+      statusEl.textContent = '🔄 Réinitialisé – cliquez sur un objet';
+      drawOverlay([], null);
+    }
 
-/* ---------------------------------------------------------------
-   GPS
---------------------------------------------------------------- */
-function startGps(){
-  if (!navigator.geolocation) { $("oGps").textContent = "—"; return; }
-  navigator.geolocation.watchPosition(
-    p => {
-      S.gps = p.coords;
-      $("oGps").textContent = "±" + Math.round(p.coords.accuracy) + " m";
-    },
-    () => { $("oGps").textContent = "refusé"; },
-    { enableHighAccuracy:true, maximumAge:2000, timeout:12000 }
-  );
-}
+    // --- Gestion du clic sur le canvas ---
+    async function onCanvasClick(e) {
+      if (isMeasuring) return; // ne pas changer de sélection pendant la mesure
 
-/* ---------------------------------------------------------------
-   Réglages
---------------------------------------------------------------- */
-$("gear").addEventListener("click", () => $("sheet").classList.add("open"));
-$("close").addEventListener("click", () => $("sheet").classList.remove("open"));
-$("compet").addEventListener("change", e => $("gear").classList.toggle("armed", !e.target.checked));
-for (const id of ["H","sH","fov","fpx","navg","digizoom","realD"])
-  $(id).addEventListener("change", () => { S.samples.length = 0; });
-addEventListener("resize", () => { S.samples.length = 0; });
+      const detections = await detectObjects();
+      if (detections.length === 0) {
+        statusEl.textContent = '⚠️ Aucun objet détecté, réessayez';
+        return;
+      }
+      const clicked = getObjectAtClick(e, detections);
+      if (clicked) {
+        selectedBox = clicked;
+        lastKnownBox = { ...clicked };
+        calibrateBtn.disabled = false;
+        selectedInfo.textContent = `🎯 ${clicked.class || 'Objet'} sélectionné (${Math.round(clicked.width)}×${Math.round(clicked.height)} px)`;
+        statusEl.textContent = '🔧 Entrez hauteur et distance, puis Calibrer';
+        drawOverlay(detections, clicked);
+      } else {
+        statusEl.textContent = '❌ Cliquez exactement sur un objet détecté';
+      }
+    }
 
-})();
+    // --- Initialisation complète ---
+    async function init() {
+      const camOk = await initCamera();
+      if (!camOk) return;
+      const modelOk = await loadModel();
+      if (!modelOk) return;
+
+      // Écouteurs
+      canvas.addEventListener('click', onCanvasClick);
+      calibrateBtn.addEventListener('click', calibrate);
+      resetBtn.addEventListener('click', resetAll);
+      measureBtn.addEventListener('click', toggleMeasurement);
+
+      // Lancer une boucle de dessin pour l'affichage des détections en attente
+      function idleDraw() {
+        if (!isMeasuring) {
+          // On met à jour les détections pour affichage
+          detectObjects().then(dets => {
+            drawOverlay(dets, selectedBox);
+            if (dets.length === 0 && !selectedBox) {
+              statusEl.textContent = '👀 Aucun objet – placez un objet devant la caméra';
+            }
+          }).catch(() => {});
+        }
+        requestAnimationFrame(idleDraw);
+      }
+      idleDraw();
+
+      statusEl.textContent = '✅ Prêt – cliquez sur un objet pour le sélectionner';
+    }
+
+    // Lancer au chargement
+    init();
+  })();
 </script>
 </body>
 </html>
