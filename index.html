@@ -25,18 +25,18 @@
     background:var(--forest);color:var(--cream);font-family:var(--sans);overflow:hidden}
   .eyebrow{font:600 9px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--moss);margin:0}
 
-  #top{flex:none;display:flex;align-items:center;gap:10px;background:var(--deep);
-    padding:calc(9px + env(safe-area-inset-top)) 13px 9px}
-  /* ---- LOGO : remplacer le contenu de .mk par <img src="…"> le moment venu ---- */
-  .mk{width:34px;height:34px;border-radius:10px;background:var(--moss);display:grid;place-items:center;
+  /* ---------- en-tête, un cran plus généreux ---------- */
+  #top{flex:none;display:flex;align-items:center;gap:12px;background:var(--deep);
+    padding:calc(13px + env(safe-area-inset-top)) 15px 13px}
+  .mk{width:42px;height:42px;border-radius:13px;background:var(--moss);display:grid;place-items:center;
     flex:none;overflow:hidden}
   .mk img{width:100%;height:100%;object-fit:cover;display:block}
   #ttl{min-width:0}
-  #ttl h1{margin:0;font:500 15px/1.1 var(--serif)}
-  #ttl p{margin:2px 0 0;font:600 8.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--mint);
+  #ttl h1{margin:0;font:500 19px/1.05 var(--serif);letter-spacing:.005em}
+  #ttl p{margin:3px 0 0;font:600 9px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--mint);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #chips{margin-left:auto;display:flex;align-items:center;gap:6px}
-  .chip{padding:6px 9px;border-radius:999px;background:rgba(143,192,161,.1);border:1px solid rgba(143,192,161,.24);
+  .chip{padding:7px 10px;border-radius:999px;background:rgba(143,192,161,.1);border:1px solid rgba(143,192,161,.24);
     color:var(--mint);font:600 9px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
   button.chip{cursor:pointer}
   button.chip.on{border-color:var(--gold);color:var(--gold);background:var(--gold-soft)}
@@ -83,9 +83,11 @@
     background:rgba(15,51,37,.95);border:1px solid var(--gold)}
   #bar.on{display:flex}
   #barMsg{margin:0;font-size:11.5px;line-height:1.4;color:var(--cream)}
-  #tolWrap{display:none;align-items:center;gap:9px}
-  #tolWrap.on{display:flex}
-  #tol{flex:1;accent-color:var(--gold);height:18px;min-width:0}
+  .slide{display:none;align-items:center;gap:9px}
+  .slide.on{display:flex}
+  .slide input[type=range]{flex:1;accent-color:var(--gold);height:18px;min-width:0}
+  .slide .val{font:600 11px/1 var(--sans);color:var(--gold);min-width:38px;text-align:right;
+    font-variant-numeric:tabular-nums}
   #barRow{display:flex;gap:7px}
   .mini{flex:1;appearance:none;border:1px solid var(--gold);background:rgba(201,162,39,.12);color:var(--gold);
     font:500 11.5px/1 var(--sans);padding:11px 8px;border-radius:9px;cursor:pointer;white-space:nowrap}
@@ -127,23 +129,20 @@
   .c b i{font:500 9px/1 var(--sans);font-style:normal;color:rgba(18,58,41,.42);margin-left:1px}
   .c.up b{color:var(--alert)} .c.down b{color:var(--moss)}
 
-  /* ---------- boîtes de dialogue maison ---------- */
   .modal{position:fixed;inset:0;z-index:1800;display:none;justify-content:center;
     background:rgba(9,24,17,.74);padding:16px}
   .modal.on{display:flex}
   .modal.bottom{align-items:flex-end}
   .modal.mid{align-items:center}
   .mcard{width:100%;max-width:430px;background:var(--cream);color:var(--ink);
-    border-radius:20px;padding:19px 18px calc(18px + env(safe-area-inset-bottom));
-    box-shadow:0 14px 40px rgba(0,0,0,.4)}
+    border-radius:20px;padding:19px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 14px 40px rgba(0,0,0,.4)}
   .mcard h3{margin:7px 0 0;font:600 21px/1.18 var(--serif)}
   .mcard h3 em{font-style:italic;color:var(--moss)}
   .msub{margin:6px 0 0;font-size:12.5px;line-height:1.5;color:rgba(18,58,41,.55)}
   #askInput{width:100%;margin-top:15px;background:#fff;border:1.5px solid rgba(18,58,41,.16);
     color:var(--ink);font:600 17px/1 var(--serif);padding:15px 14px;border-radius:13px}
   #askInput:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
-  #askChips{display:flex;gap:6px;margin-top:11px;overflow-x:auto;padding-bottom:3px;
-    scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  #askChips{display:flex;gap:6px;margin-top:11px;overflow-x:auto;padding-bottom:3px;scrollbar-width:none}
   #askChips::-webkit-scrollbar{display:none}
   #askChips button{flex:none;appearance:none;border:1px solid rgba(18,58,41,.16);background:var(--cream-2);
     color:var(--ink);border-radius:999px;padding:9px 13px;font:500 12px/1 var(--sans);cursor:pointer;white-space:nowrap}
@@ -152,38 +151,36 @@
   .mbtn{flex:1;appearance:none;border:0;border-radius:13px;padding:15px 12px;cursor:pointer;
     font:500 14px/1 var(--sans);display:flex;align-items:center;justify-content:center;gap:8px}
   .mbtn.pri{background:var(--moss);color:var(--cream-2)}
-  .mbtn.pri:active{background:#255840}
   .mbtn.sec{background:transparent;color:rgba(18,58,41,.62);border:1px solid rgba(18,58,41,.18)}
-  .mbtn.dgr{background:transparent;color:var(--alert);border:1px solid rgba(210,100,60,.45)}
-  .mbtn.dgr.armed{background:var(--alert);color:#fff;border-color:var(--alert)}
-  .mbtn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
   .mlist{margin-top:15px;display:flex;flex-direction:column;gap:7px}
   .mlist button{appearance:none;display:flex;align-items:center;gap:12px;width:100%;
     background:var(--cream-2);border:1px solid rgba(18,58,41,.1);border-radius:13px;
-    padding:14px 14px;cursor:pointer;color:var(--ink);font:500 14px/1.25 var(--sans);text-align:left}
+    padding:14px;cursor:pointer;color:var(--ink);font:500 14px/1.25 var(--sans);text-align:left}
   .mlist button:active{background:var(--gold-soft)}
   .mlist button .gl{flex:none;width:32px;height:32px;border-radius:9px;background:var(--moss);
     display:grid;place-items:center;color:var(--cream-2)}
   .mlist button small{display:block;margin-top:2px;font:400 11px/1.35 var(--sans);color:rgba(18,58,41,.5)}
   .mlist button.dgr{border-color:rgba(210,100,60,.3);color:var(--alert)}
   .mlist button.dgr .gl{background:var(--alert)}
+  .mlist button.dgr.armed{background:var(--alert);color:#fff}
+  .mlist button.dgr.armed small{color:rgba(255,255,255,.8)}
   .mlist button.dgr small{color:rgba(210,100,60,.75)}
 
   #bag{position:fixed;inset:0;z-index:1500;background:var(--cream);color:var(--ink);display:none;flex-direction:column}
   #bag.on{display:flex}
-  #bagTop{flex:none;display:flex;align-items:center;gap:10px;background:var(--deep);color:var(--cream);
-    padding:calc(11px + env(safe-area-inset-top)) 14px 11px}
-  #bagTop h2{margin:0;font:600 17px/1.1 var(--serif);flex:1}
+  #bagTop{flex:none;display:flex;align-items:center;gap:12px;background:var(--deep);color:var(--cream);
+    padding:calc(13px + env(safe-area-inset-top)) 15px 13px}
+  #bagTop h2{margin:0;font:600 19px/1.1 var(--serif);flex:1}
   #bagBody{flex:1;overflow-y:auto;padding:14px}
   #presets{display:flex;gap:6px;margin:10px 0 16px}
   #presets button{flex:1;appearance:none;border:1px solid rgba(18,58,41,.2);background:#fff;color:var(--ink);
     border-radius:10px;padding:11px 6px;font:500 11px/1.3 var(--sans);cursor:pointer}
   #presets button:active{background:var(--gold-soft)}
-  .club{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(18,58,41,.09)}
-  .club .ic{flex:none;width:30px;height:38px}
+  .club{display:flex;align-items:center;gap:11px;padding:7px 0;border-bottom:1px solid rgba(18,58,41,.09)}
+  .club .ic{flex:none;width:38px;height:46px;border-radius:10px;background:var(--ink);display:grid;place-items:center}
   .club .ic svg{width:30px;height:38px;display:block}
   .club .nm{flex:1;font-size:14px;font-weight:500}
-  .club input[type=number]{width:78px;background:#fff;border:1px solid rgba(18,58,41,.18);color:var(--ink);
+  .club input[type=number]{width:76px;background:#fff;border:1px solid rgba(18,58,41,.18);color:var(--ink);
     font:600 15px/1 var(--sans);padding:10px;border-radius:10px;text-align:right;font-variant-numeric:tabular-nums}
   .club .u{font-size:11px;color:rgba(18,58,41,.45);width:12px}
   .club.off{opacity:.38}
@@ -208,9 +205,9 @@
   #iCard{background:var(--cream);color:var(--ink);border-radius:18px;padding:18px}
   #iCard p{margin:10px 0 0;font-size:13.5px;line-height:1.55}
   #iCard p:first-child{margin:0}
-  #iBrand{display:flex;align-items:center;gap:11px}
-  #iBrand h3{margin:0;font:500 15px/1.1 var(--serif)}
-  #iBrand p{margin:2px 0 0;font:600 9px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--mint)}
+  #iBrand{display:flex;align-items:center;gap:12px}
+  #iBrand h3{margin:0;font:500 17px/1.1 var(--serif)}
+  #iBrand p{margin:3px 0 0;font:600 9px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--mint)}
   .pill{margin-left:auto;padding:6px 13px;border-radius:999px;background:rgba(143,192,161,.14);color:var(--mint);
     font:600 9px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -220,12 +217,12 @@
 
 <header id="top">
   <div class="mk" id="logo" aria-hidden="true">
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M6 21V3.5l11 4.2L6 12" stroke="#F1EDE2" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="17" cy="16" r="2" fill="#C9A227"/></svg>
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M6 21V3.5l11 4.2L6 12" stroke="#F1EDE2" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="17" cy="16" r="2" fill="#C9A227"/></svg>
   </div>
   <div id="ttl"><h1>Greens</h1><p id="courseName">Carte de score</p></div>
   <div id="chips">
     <span class="chip" id="acc">GPS —</span>
-    <button class="chip on" id="compet" aria-pressed="true">Compét.</button>
+    <button class="chip" id="compet" aria-pressed="false">Compét.</button>
   </div>
 </header>
 
@@ -238,8 +235,9 @@
       <span id="rotLab">NORD</span>
     </button>
     <button class="tool" id="bMe" title="Me recentrer">MOI</button>
-    <button class="tool" id="bDetect" title="Détecter un green">DÉTECT</button>
-    <button class="tool" id="bDraw" title="Tracer un green">TRACER</button>
+    <button class="tool" id="bDetect" title="Détecter un green par la couleur">DÉTECT</button>
+    <button class="tool" id="bDraw" title="Tracer un contour à la main">TRACER</button>
+    <button class="tool" id="bPoint" title="Poser un point et régler son rayon">POINT</button>
     <button class="tool" id="bLoad" title="Recharger les greens" aria-label="Recharger les greens">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>
     </button>
@@ -249,7 +247,16 @@
     <div id="banner"></div>
     <div id="bar">
       <p id="barMsg"></p>
-      <div id="tolWrap"><span class="eyebrow" style="color:var(--mint)">Étendue</span><input type="range" id="tol" min="10" max="70" step="2" value="34" aria-label="Sensibilité"></div>
+      <div class="slide" id="tolWrap">
+        <span class="eyebrow" style="color:var(--mint)">Tolérance</span>
+        <input type="range" id="tol" min="6" max="80" step="2" value="30" aria-label="Tolérance de couleur">
+        <span class="val" id="tolLab">30</span>
+      </div>
+      <div class="slide" id="radWrap">
+        <span class="eyebrow" style="color:var(--mint)">Rayon</span>
+        <input type="range" id="rad" min="4" max="45" step="1" value="14" aria-label="Rayon du green">
+        <span class="val" id="radLab">14 m</span>
+      </div>
       <div id="barRow">
         <button class="mini ghost" id="bAgain">Refaire</button>
         <button class="mini" id="bKeep">Garder</button>
@@ -288,12 +295,11 @@
   </div>
 </footer>
 
-<!-- ============ nommer ============ -->
 <div class="modal mid" id="ask" role="dialog" aria-modal="true" aria-labelledby="askTitle">
   <div class="mcard">
     <p class="eyebrow">Green</p>
     <h3 id="askTitle">Comment s'appelle <em>ce green ?</em></h3>
-    <p class="msub" id="askSub">Un nom court se lit mieux sur la carte.</p>
+    <p class="msub">Un nom court se lit mieux sur la carte.</p>
     <input id="askInput" type="text" maxlength="28" autocomplete="off" spellcheck="false" placeholder="Trou 7">
     <div id="askChips"></div>
     <div class="mrow">
@@ -303,22 +309,15 @@
   </div>
 </div>
 
-<!-- ============ appui long ============ -->
 <div class="modal bottom" id="ctx" role="dialog" aria-modal="true" aria-labelledby="ctxName">
   <div class="mcard">
     <p class="eyebrow" id="ctxKind">Green tracé</p>
     <h3 id="ctxName">—</h3>
     <p class="msub" id="ctxSub"></p>
     <div class="mlist">
-      <button id="ctxRename"><span class="gl">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-      </span><span>Renommer<small>Changer le nom affiché sur la carte</small></span></button>
-      <button id="ctxRedraw"><span class="gl">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
-      </span><span>Retracer le contour<small>Reposer les points à la main</small></span></button>
-      <button id="ctxDel" class="dgr"><span class="gl">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg>
-      </span><span id="ctxDelLbl">Supprimer<small>Retirer ce green de la carte</small></span></button>
+      <button id="ctxRename"><span class="gl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span><span>Renommer<small>Changer le nom affiché sur la carte</small></span></button>
+      <button id="ctxRedraw"><span class="gl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></span><span>Retracer le contour<small>Reposer les points à la main</small></span></button>
+      <button id="ctxDel" class="dgr"><span class="gl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg></span><span id="ctxDelLbl">Supprimer<small>Retirer ce green de la carte</small></span></button>
     </div>
     <div class="mrow"><button class="mbtn sec" id="ctxClose">Fermer</button></div>
   </div>
@@ -326,8 +325,8 @@
 
 <div id="bag" role="dialog" aria-label="Mon sac">
   <div id="bagTop">
-    <div class="mk" style="width:30px;height:30px;border-radius:9px" aria-hidden="true">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none"><path d="M6 21V3.5l11 4.2L6 12" stroke="#F1EDE2" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/></svg>
+    <div class="mk" style="width:36px;height:36px;border-radius:11px" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M6 21V3.5l11 4.2L6 12" stroke="#F1EDE2" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/></svg>
     </div>
     <h2>Mon sac</h2>
     <button class="chip" id="bagClose" style="cursor:pointer">Fermer</button>
@@ -348,8 +347,8 @@
 
 <div id="intro">
   <div id="iBrand">
-    <div class="mk" style="width:42px;height:42px;border-radius:13px" aria-hidden="true">
-      <svg viewBox="0 0 24 24" width="21" height="21" fill="none"><path d="M6 21V3.5l11 4.2L6 12" stroke="#F1EDE2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="17" cy="16" r="2" fill="#C9A227"/></svg>
+    <div class="mk" style="width:48px;height:48px;border-radius:15px" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><path d="M6 21V3.5l11 4.2L6 12" stroke="#F1EDE2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="17" cy="16" r="2" fill="#C9A227"/></svg>
     </div>
     <div><h3>Greens</h3><p>Carte de score</p></div>
     <span class="pill">Bêta</span>
@@ -358,7 +357,7 @@
   <div id="iCard">
     <p class="eyebrow">Sur n'importe quel parcours</p>
     <p>Touchez un green : distances à ses quatre bords, dénivelé, et le club conseillé. Tournez la carte à deux doigts.</p>
-    <p><b>Appui long</b> sur un green pour le renommer, le retracer ou le supprimer.</p>
+    <p>Trois façons d'ajouter un green : <b>DÉTECT</b> par la couleur, <b>TRACER</b> point par point, ou <b>POINT</b> avec un simple rayon.</p>
   </div>
   <button class="cta" id="go">Ouvrir la carte <span aria-hidden="true">→</span></button>
 </div>
@@ -391,7 +390,9 @@ function clubShape(name){
   if (n.startsWith("lob"))      return { kind:"wedge", loft:60, scale:1 };
   return { kind:"iron", loft:34, scale:1 };
 }
-function clubSvg(name, gold, mint){
+/* Une seule fonction pour toute l'app : le sac et la fiche de conseil
+   affichent donc rigoureusement la même silhouette. */
+function clubSvg(name){
   const s = clubShape(name);
   const head = s.kind === "wood" ? '<path d="M25 40 C25 54 14 61 7 55 C0 49 4 39 14 39 Z"/>'
     : s.kind === "hyb" ? '<path d="M25 40 C25 51 16 57 10 52 C4 47 7 39 15 39 Z"/>'
@@ -401,14 +402,14 @@ function clubSvg(name, gold, mint){
     : '<path d="M12 44 C16 42 20 42 23 44" stroke="#3A2C00" stroke-width="1.1" fill="none" opacity=".4"/>';
   const tilt = (s.loft*0.55 - 12).toFixed(1);
   return '<svg viewBox="0 0 44 64" role="img" aria-label="' + name + '">'
-    + '<path d="M38 5 L34 16" stroke="' + mint + '" stroke-width="5.4" stroke-linecap="round" opacity=".45"/>'
-    + '<path d="M37 8 L25.5 40" stroke="' + mint + '" stroke-width="2.5" stroke-linecap="round"/>'
-    + '<g transform="rotate(' + tilt + ' 25 40) translate(25 40) scale(' + s.scale + ') translate(-25 -40)" fill="' + gold + '">'
+    + '<path d="M38 5 L34 16" stroke="#8FC0A1" stroke-width="5.4" stroke-linecap="round" opacity=".45"/>'
+    + '<path d="M37 8 L25.5 40" stroke="#8FC0A1" stroke-width="2.5" stroke-linecap="round"/>'
+    + '<g transform="rotate(' + tilt + ' 25 40) translate(25 40) scale(' + s.scale + ') translate(-25 -40)" fill="#C9A227">'
     + head + grooves + '</g></svg>';
 }
 
 const S = { pos:null, acc:null, heading:null, greens:[], sel:null, ctx:null, replaceId:null,
-            mode:null, draft:[], detect:null, alti:null, altiKey:"", altiBusy:false,
+            mode:null, draft:[], detect:null, point:null, alti:null, altiKey:"", altiBusy:false,
             france:null, target:"centre", bag:loadBag(), over:loadOver() };
 let map, base, meMarker, accRing, spokes, gLayer, tagLayer, tmpLayer, follow = true;
 let rot = 0, rotMode = "north", rotAnim = null, askResolve = null;
@@ -427,11 +428,21 @@ const unloc = (x,y,la0,lo0)   => [ la0 + (y/R_E)*R2D, lo0 + (x/(R_E*Math.cos(la0
 const brg   = (x,y) => (Math.atan2(x,y)*R2D + 360) % 360;
 const wrap  = a => { a=(a+180)%360; return (a<0?a+360:a)-180; };
 const ctr   = cs => [ cs.reduce((s,c)=>s+c[0],0)/cs.length, cs.reduce((s,c)=>s+c[1],0)/cs.length ];
+const ringAt = (lat, lon, r) => {
+  const out = [];
+  for (let a=0;a<360;a+=7.5){ const b=a*D2R; out.push(unloc(Math.sin(b)*r, Math.cos(b)*r, lat, lon)); }
+  return out;
+};
 function segD(ax,ay,bx,by){
   const vx=bx-ax, vy=by-ay, L=vx*vx+vy*vy;
   let t = L>0 ? -(ax*vx+ay*vy)/L : 0; t = t<0?0:t>1?1:t;
   const cx=ax+t*vx, cy=ay+t*vy;
   return { d:Math.hypot(cx,cy), x:cx, y:cy };
+}
+function polyArea(P){
+  let a = 0;
+  for (let i=0;i<P.length;i++){ const b=P[(i+1)%P.length]; a += P[i][0]*b[1] - b[0]*P[i][1]; }
+  return Math.abs(a/2);
 }
 function measure(g, pos){
   const P = g.coords.map(c => loc(c[0],c[1],pos.lat,pos.lon));
@@ -454,11 +465,6 @@ function measure(g, pos){
   return { axis, front, back, left, right, centre:{ d:Math.hypot(cx,cy), x:cx, y:cy },
            width:Math.hypot(left.x-right.x, left.y-right.y), area:polyArea(P),
            ll:p => unloc(p.x,p.y,pos.lat,pos.lon) };
-}
-function polyArea(P){
-  let a = 0;
-  for (let i=0;i<P.length;i++){ const b=P[(i+1)%P.length]; a += P[i][0]*b[1] - b[0]*P[i][1]; }
-  return Math.abs(a/2);
 }
 function pickClub(target){
   const list = S.bag.filter(c => c.on && c.d > 0).sort((a,b) => b.d - a.d);
@@ -515,6 +521,7 @@ function applyRot(){
   if (nd) nd.style.transform = "rotate(" + rot.toFixed(2) + "deg)";
 }
 function setRot(d){ rot = wrap(d); applyRot(); }
+function snapNorth(){ if (rotAnim){ cancelAnimationFrame(rotAnim); rotAnim = null; } rotMode = "north"; $("rotLab").textContent = "NORD"; $("bRot").classList.remove("follow"); setRot(0); }
 function animRotTo(t){
   if (rotAnim) cancelAnimationFrame(rotAnim);
   const step = () => {
@@ -539,10 +546,7 @@ function screenToLatLng(x, y){
   const s = map.getSize();
   return map.containerPointToLatLng(L.point(s.x/2 + ux, s.y/2 + uy));
 }
-function unrotate(dx, dy){
-  const a = rot*D2R;
-  return [ dx*Math.cos(a) + dy*Math.sin(a), -dx*Math.sin(a) + dy*Math.cos(a) ];
-}
+const unrotate = (dx,dy) => { const a = rot*D2R; return [ dx*Math.cos(a)+dy*Math.sin(a), -dx*Math.sin(a)+dy*Math.cos(a) ]; };
 
 /* ---------- gestes ---------- */
 function bindGestures(){
@@ -624,6 +628,7 @@ function tap(ll){
   if (S.mode === "pos"){ setPos(ll.lat, ll.lng, 5, true); closeBar(); return; }
   if (S.mode === "draw"){ pushDraft(ll); return; }
   if (S.mode === "detect"){ runDetect(ll); return; }
+  if (S.mode === "point"){ S.point = { lat:ll.lat, lon:ll.lng }; applyPoint(); return; }
   const hit = hitTest(ll);
   if (hit){ S.sel = hit; refresh(); }
 }
@@ -738,11 +743,9 @@ async function loadCourse(){
       else if (t.golf === "hole") holes.push({ ref:t.ref||null, end:cs[cs.length-1] });
     }
     if (!greens.length && holes.length){
-      for (const h of holes){
-        const ring = [];
-        for (let a=0;a<360;a+=20){ const b=a*D2R; ring.push(unloc(Math.sin(b)*14, Math.cos(b)*14, h.end[0], h.end[1])); }
-        greens.push({ id:"h"+(h.ref||ring[0][0]), name:h.ref?("Trou "+h.ref):null, coords:ring, src:"approx" });
-      }
+      for (const h of holes)
+        greens.push({ id:"h"+(h.ref||h.end[0]), name:h.ref?("Trou "+h.ref):null,
+                      coords:ringAt(h.end[0], h.end[1], 14), src:"approx" });
     }
     for (const g of greens){
       if (g.name) continue;
@@ -755,7 +758,7 @@ async function loadCourse(){
   S.greens = greens.filter(g => S.over.hidden.indexOf(g.id) < 0).concat(readCustom());
   for (const g of S.greens) if (S.over.names[g.id]) g.name = S.over.names[g.id];
   $("courseName").textContent = name || (S.greens.length ? "Parcours non nommé" : "Parcours inconnu");
-  if (!greens.length) warn("Parcours absent d'OpenStreetMap. Utilisez <b>DÉTECT</b> au centre d'un green, ou <b>TRACER</b>.");
+  if (!greens.length) warn("Parcours absent d'OpenStreetMap. Ajoutez les greens avec <b>DÉTECT</b>, <b>TRACER</b> ou <b>POINT</b>.");
   drawGreens(); refresh();
 }
 function drawGreens(){
@@ -770,40 +773,64 @@ function drawGreens(){
 }
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
 
-/* ---------- détection ---------- */
+/* =========================================================
+   Capture des tuiles.
+   Les positions viennent des rectangles réels des images, ce qui
+   reste exact même en zoom fractionnaire (la couche entière est
+   alors mise à l'échelle par transformation CSS).
+   Suppose la carte au nord, ce que les modes de cartographie forcent.
+   ========================================================= */
 const mpp = (lat,z) => 156543.03392 * Math.cos(lat*D2R) / Math.pow(2,z);
 function grab(ll, halfM){
+  if (Math.abs(rot) > 0.5) snapNorth();
   const z = map.getZoom(), m = mpp(ll.lat, z);
-  const half = Math.min(Math.round(halfM/m), 260), size = half*2;
+  const half = Math.min(Math.max(Math.round(halfM/m), 40), 300), size = half*2;
   const cv = document.createElement("canvas"); cv.width = cv.height = size;
   const cx = cv.getContext("2d", { willReadFrequently:true });
-  const c = map.latLngToContainerPoint(ll), ts = base.getTileSize().x;
+  const inner = $("mapInner").getBoundingClientRect();
+  const cp = map.latLngToContainerPoint(ll);
+  const sx = inner.left + cp.x, sy = inner.top + cp.y;
   let n = 0;
   for (const k in base._tiles){
     const t = base._tiles[k];
     if (!t.el || !t.el.complete || !t.el.naturalWidth) continue;
-    const lp = L.point(t.coords.x*ts, t.coords.y*ts).subtract(map.getPixelOrigin());
-    const cp = map.layerPointToContainerPoint(lp);
-    cx.drawImage(t.el, cp.x - (c.x - half), cp.y - (c.y - half), ts, ts); n++;
+    const r = t.el.getBoundingClientRect();
+    if (r.width < 1 || r.right < sx-half || r.left > sx+half || r.bottom < sy-half || r.top > sy+half) continue;
+    cx.drawImage(t.el, r.left - (sx - half), r.top - (sy - half), r.width, r.height);
+    n++;
   }
   if (!n) return null;
   try{ return { data:cx.getImageData(0,0,size,size).data, size, half, m }; }
   catch(e){ return { tainted:true }; }
 }
+/* Couleur de départ : médiane d'un carré de 7 px, bien plus stable
+   qu'un pixel isolé sur une image satellite bruitée. */
+function seedColor(data, size){
+  const c = size/2|0, R=[], G=[], B=[];
+  for (let dy=-3;dy<=3;dy++) for (let dx=-3;dx<=3;dx++){
+    const i = ((c+dy)*size + (c+dx))*4;
+    R.push(data[i]); G.push(data[i+1]); B.push(data[i+2]);
+  }
+  const med = a => { a.sort((x,y)=>x-y); return a[a.length>>1]; };
+  return [med(R), med(G), med(B)];
+}
 function grow(px, tol){
-  const { data, size } = px, seed = (size/2|0)*size + (size/2|0);
-  const r0=data[seed*4], g0=data[seed*4+1], b0=data[seed*4+2];
-  const mask = new Uint8Array(size*size), q=[seed]; mask[seed]=1;
-  let n=1; const cap = size*size*0.6, lim = size/2 - 2;
+  const { data, size } = px;
+  const [r0,g0,b0] = seedColor(data, size);
+  const seed = (size/2|0)*size + (size/2|0);
+  const mask = new Uint8Array(size*size), q = [seed]; mask[seed] = 1;
+  let n = 1;
+  const cap = size*size*0.7, lim = size/2 - 2, thr = tol*3;
   while (q.length && n < cap){
     const i = q.pop(), x = i%size, y = (i/size)|0;
-    for (const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+    for (let dy=-1;dy<=1;dy++) for (let dx=-1;dx<=1;dx++){
+      if (!dx && !dy) continue;
       const nx=x+dx, ny=y+dy;
       if (nx<1||ny<1||nx>=size-1||ny>=size-1) continue;
       const ni = ny*size+nx;
       if (mask[ni] || Math.hypot(nx-size/2, ny-size/2) > lim) continue;
       const j = ni*4;
-      if (Math.abs(data[j]-r0)+Math.abs(data[j+1]-g0)+Math.abs(data[j+2]-b0) > tol*3) continue;
+      if (Math.abs(data[j]-r0)+Math.abs(data[j+1]-g0)+Math.abs(data[j+2]-b0) > thr) continue;
       mask[ni]=1; n++; q.push(ni);
     }
   }
@@ -813,7 +840,7 @@ function contour(px, reg, ll){
   const { size, m } = px, { mask, lim } = reg;
   let sx=0, sy=0, n=0;
   for (let i=0;i<mask.length;i++) if (mask[i]){ sx+=i%size; sy+=(i/size)|0; n++; }
-  if (n < 60) return null;
+  if (n < 50) return null;
   sx/=n; sy/=n;
   const N = 72, rad = new Float32Array(N); let leak = 0;
   for (let k=0;k<N;k++){
@@ -843,23 +870,39 @@ function contour(px, reg, ll){
   return { ring, area: area*m*m, leak: leak/N > 0.25 };
 }
 function runDetect(ll){
-  if (map.getZoom() < 18){ msg("Zoomez au niveau 18 minimum pour détecter."); return; }
-  const px = grab(ll, 55);
-  if (!px){ msg("Tuiles pas encore chargées. Attendez puis retouchez."); return; }
-  if (px.tainted){ msg("Ce fond interdit la lecture des pixels. Passez par TRACER."); return; }
+  if (map.getZoom() < 17.5){ msg("Zoomez davantage : la détection demande le niveau 18."); return; }
+  const px = grab(ll, 60);
+  if (!px){ msg("Tuiles pas encore chargées. Attendez une seconde et retouchez."); return; }
+  if (px.tainted){ msg("Ce fond interdit la lecture des pixels. Utilisez TRACER ou POINT."); return; }
   S.detect = { px, ll }; applyDetect();
 }
 function applyDetect(){
+  if (!S.detect || !S.detect.px) return;
   const { px, ll } = S.detect, c = contour(px, grow(px, +$("tol").value), ll);
-  tmpLayer.clearLayers(); $("tolWrap").classList.add("on");
-  if (!c){ msg("Rien de cohérent ici. Visez le centre du green ou montez l'étendue."); return; }
+  tmpLayer.clearLayers();
+  $("tolWrap").classList.add("on");
+  if (!c){ msg("Rien de cohérent ici. Visez le centre du green ou montez la tolérance."); return; }
   S.detect.ring = c.ring;
   L.polygon(c.ring, { color:"#C9A227", weight:2.5, fillColor:"#C9A227", fillOpacity:.28, interactive:false }).addTo(tmpLayer);
   const dia = Math.round(Math.sqrt(c.area/Math.PI)*2), a = Math.round(c.area);
-  msg(c.leak ? "Le contour déborde — baissez l'étendue."
-     : a < 200 ? a + " m², " + dia + " m — un peu petit pour un green, montez l'étendue."
+  msg(c.leak ? "Le contour déborde — baissez la tolérance."
+     : a < 200 ? a + " m², " + dia + " m — un peu petit, montez la tolérance."
      : a + " m², " + dia + " m de diamètre.");
 }
+
+/* ---------- point + rayon ---------- */
+function applyPoint(){
+  if (!S.point) return;
+  const r = +$("rad").value;
+  $("radLab").textContent = r + " m";
+  S.point.ring = ringAt(S.point.lat, S.point.lon, r);
+  tmpLayer.clearLayers();
+  L.polygon(S.point.ring, { color:"#C9A227", weight:2.5, fillColor:"#C9A227", fillOpacity:.26, interactive:false }).addTo(tmpLayer);
+  L.circleMarker([S.point.lat, S.point.lon], { radius:4, color:"#C9A227", fillOpacity:1, interactive:false }).addTo(tmpLayer);
+  $("radWrap").classList.add("on");
+  msg("Rayon " + r + " m · " + Math.round(Math.PI*r*r) + " m². Ajustez puis Garder.");
+}
+
 const msg = t => { $("barMsg").innerHTML = t; $("bar").classList.add("on"); };
 
 /* ---------- tracé et stockage ---------- */
@@ -872,7 +915,6 @@ function pushDraft(ll){
 }
 function readCustom(){ try{ return (JSON.parse(localStorage.getItem(KEY))||[]).map(g=>({...g, src:"draw"})); }catch(e){ return []; } }
 function writeCustom(){ try{ localStorage.setItem(KEY, JSON.stringify(S.greens.filter(g=>g.src==="draw").map(g=>({id:g.id,name:g.name,coords:g.coords})))); }catch(e){} }
-
 async function saveGreen(coords){
   const replacing = S.replaceId ? S.greens.find(g => g.id === S.replaceId) : null;
   const name = await askName(replacing ? replacing.name : "", replacing ? "Nouveau contour pour <em>ce green</em>" : null);
@@ -897,13 +939,14 @@ function renameGreen(g, name){
   drawGreens(); refresh();
 }
 function closeBar(){
-  S.mode = null; S.detect = null; S.draft = []; S.replaceId = null;
+  S.mode = null; S.detect = null; S.draft = []; S.point = null; S.replaceId = null;
   tmpLayer.clearLayers();
-  $("bar").classList.remove("on"); $("tolWrap").classList.remove("on");
-  ["bDetect","bDraw","bPos"].forEach(i => $(i).classList.remove("armed"));
+  $("bar").classList.remove("on");
+  $("tolWrap").classList.remove("on"); $("radWrap").classList.remove("on");
+  ["bDetect","bDraw","bPoint","bPos"].forEach(i => $(i).classList.remove("armed"));
 }
 
-/* ---------- dialogue : nommer ---------- */
+/* ---------- dialogues ---------- */
 function buildChips(){
   const box = $("askChips"); box.innerHTML = "";
   for (let i=1;i<=18;i++){
@@ -935,20 +978,14 @@ $("askNo").addEventListener("click", () => closeAsk(null));
 $("askInput").addEventListener("keydown", e => { if (e.key === "Enter") $("askYes").click(); });
 $("ask").addEventListener("click", e => { if (e.target === $("ask")) closeAsk(null); });
 
-/* ---------- dialogue : appui long ---------- */
 let delArmed = false;
 function openCtx(g){
   S.ctx = g; delArmed = false;
-  $("ctxKind").textContent = g.src === "osm" ? "Green OpenStreetMap"
-    : g.src === "approx" ? "Green estimé" : "Green tracé";
+  $("ctxKind").textContent = g.src === "osm" ? "Green OpenStreetMap" : g.src === "approx" ? "Green estimé" : "Green tracé";
   $("ctxName").textContent = g.name;
   const m = S.pos ? measure(g, S.pos) : null;
-  $("ctxSub").textContent = m
-    ? Math.round(m.area) + " m² · " + Math.round(m.width) + " m de large · bord avant à " + Math.round(m.front.d) + " m"
-    : "";
-  $("ctxDelLbl").innerHTML = "Supprimer<small>" + (g.src === "draw"
-    ? "Efface définitivement ce tracé"
-    : "Masque ce green sur cet appareil") + "</small>";
+  $("ctxSub").textContent = m ? Math.round(m.area) + " m² · " + Math.round(m.width) + " m de large · bord avant à " + Math.round(m.front.d) + " m" : "";
+  $("ctxDelLbl").innerHTML = "Supprimer<small>" + (g.src === "draw" ? "Efface définitivement ce tracé" : "Masque ce green sur cet appareil") + "</small>";
   $("ctxDel").classList.remove("armed");
   $("ctx").classList.add("on");
 }
@@ -961,10 +998,9 @@ $("ctxRename").addEventListener("click", async () => {
   if (n !== null) renameGreen(g, n);
 });
 $("ctxRedraw").addEventListener("click", () => {
-  const g = S.ctx; closeCtx();
-  closeBar();
+  const g = S.ctx; closeCtx(); closeBar();
   S.mode = "draw"; S.replaceId = g.id; $("bDraw").classList.add("armed");
-  if (Math.abs(rot) > 0.5 || rotMode !== "north") setRotMode("north");
+  snapNorth();
   msg("Reposez le contour de <b>" + esc(g.name) + "</b>. L'ancien sera remplacé.");
 });
 $("ctxDel").addEventListener("click", () => {
@@ -1048,7 +1084,7 @@ function render(m){
     $("clubIcon").innerHTML = ""; $("clubName").textContent = "Sac vide";
     $("clubMeta").textContent = "Réglez vos distances dans SAC"; return;
   }
-  $("clubIcon").innerHTML = clubSvg(p.club.n, "#C9A227", "#8FC0A1");
+  $("clubIcon").innerHTML = clubSvg(p.club.n);
   $("clubName").textContent = p.club.n;
   if (p.short){
     $("clubMeta").textContent = "Hors de portée : " + Math.round(target) + " m " + where + ", il manque " + Math.round(p.gap) + " m";
@@ -1069,7 +1105,7 @@ function renderBag(){
     row.innerHTML = '<span class="ic"></span><span class="nm"></span>'
       + '<input type="number" min="0" max="400" step="1" inputmode="numeric">'
       + '<span class="u">m</span><span class="tg"><input type="checkbox"><i></i></span>';
-    row.querySelector(".ic").innerHTML = clubSvg(c.n, "#2D6A4F", "#123A29");
+    row.querySelector(".ic").innerHTML = clubSvg(c.n);
     row.querySelector(".nm").textContent = c.n;
     const num = row.querySelector('input[type=number]');
     num.value = c.d;
@@ -1097,31 +1133,39 @@ const armTool = (id, mode, text) => $(id).addEventListener("click", () => {
   const on = S.mode !== mode; closeBar();
   if (!on) return;
   S.mode = mode; $(id).classList.add("armed");
-  if (Math.abs(rot) > 0.5 || rotMode !== "north"){ setRotMode("north"); msg("Carte remise au nord pour cartographier. " + text); }
-  else msg(text);
+  const turned = Math.abs(rot) > 0.5 || rotMode !== "north";
+  snapNorth();
+  msg((turned ? "Carte remise au nord. " : "") + text);
 });
-armTool("bDetect","detect","Touchez le centre du green à détecter.");
+armTool("bDetect","detect","Touchez le centre du green : la zone s'étend par similarité de couleur.");
 armTool("bDraw","draw","Touchez la carte pour poser les points du contour.");
+armTool("bPoint","point","Touchez le centre du green, puis réglez le rayon.");
 armTool("bPos","pos","Touchez la carte à l'endroit où vous vous trouvez.");
 $("bRot").addEventListener("click", () => setRotMode(rotMode === "north" ? "free" : rotMode === "free" ? "compass" : "north"));
 $("bLoad").addEventListener("click", loadCourse);
 $("bMe").addEventListener("click", () => { follow = true; if (S.pos) map.setView([S.pos.lat,S.pos.lon], 18); });
 $("bCancel").addEventListener("click", closeBar);
 $("bAgain").addEventListener("click", () => {
-  tmpLayer.clearLayers(); S.detect = null; S.draft = []; $("tolWrap").classList.remove("on");
-  msg(S.mode === "draw" ? "Points effacés. Touchez la carte pour recommencer." : "Touchez à nouveau le centre du green.");
+  tmpLayer.clearLayers(); S.detect = null; S.draft = []; S.point = null;
+  $("tolWrap").classList.remove("on"); $("radWrap").classList.remove("on");
+  msg(S.mode === "draw" ? "Points effacés. Touchez la carte pour recommencer."
+    : S.mode === "point" ? "Touchez à nouveau le centre du green."
+    : "Touchez à nouveau le centre du green.");
 });
 $("bKeep").addEventListener("click", async () => {
   let ok = false;
   if (S.mode === "draw"){
     if (S.draft.length < 3){ msg("Il faut au moins trois points."); return; }
     ok = await saveGreen(S.draft.slice());
+  } else if (S.mode === "point" && S.point && S.point.ring){
+    ok = await saveGreen(S.point.ring);
   } else if (S.detect && S.detect.ring){
     ok = await saveGreen(S.detect.ring);
   } else { msg("Rien à garder pour l'instant."); return; }
   if (ok) closeBar();
 });
-$("tol").addEventListener("input", () => { if (S.detect && S.detect.px) applyDetect(); });
+$("tol").addEventListener("input", () => { $("tolLab").textContent = $("tol").value; applyDetect(); });
+$("rad").addEventListener("input", applyPoint);
 $("compet").addEventListener("click", () => {
   const on = $("compet").classList.toggle("on");
   $("compet").setAttribute("aria-pressed", on); refresh();
