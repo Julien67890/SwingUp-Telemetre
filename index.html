@@ -646,8 +646,12 @@ function tap(ll){
   if (S.mode === "detect"){ runDetect(ll); return; }
   if (S.mode === "point"){ S.point = { lat:ll.lat, lon:ll.lng }; applyPoint(); return; }
   if (S.mode === "measure"){ S.meas = { lat:ll.lat, lon:ll.lng }; drawMeas(); return; }
+  /* Un appui dans le vide relâche la sélection : les rayons et le
+     conseil de club disparaissent au lieu de rester sur un green
+     qu'on ne joue plus. */
   const hit = hitTest(ll);
   if (hit){ S.sel = hit; refresh(); }
+  else if (S.sel){ S.sel = null; refresh(); }
 }
 function longPress(ll){
   if (S.mode) return;
