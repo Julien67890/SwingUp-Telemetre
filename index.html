@@ -870,24 +870,32 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">"
 /* ---------- capture des tuiles ---------- */
 const mpp = (lat,z) => 156543.03392 * Math.cos(lat*D2R) / Math.pow(2,z);
 function grab(ll, halfM){
-  if (Math.abs(rot) > 0.5) snapNorth();
-  const z = map.getZoom(), m = mpp(ll.lat, z);
-  const half = Math.min(Math.max(Math.round(halfM/m), 40), 300), size = half*2;
+  /* Tout se fait dans le repère pixel du niveau de tuile réellement chargé.
+     map.project() et les coordonnées de tuile partagent ce repère, donc le
+     résultat ne dépend ni du zoom fractionnaire, ni de la rotation, ni de
+     la densité d'écran — c'était la source du décalage. */
+  const tz = base._tileZoom;
+  if (tz == null) return null;
+  const ts = base.getTileSize().x;
+  const m = mpp(ll.lat, tz);
+  const half = Math.min(Math.max(Math.round(halfM / m), 40), 320), size = half * 2;
+  const c = map.project(ll, tz);
+  const ox = c.x - half, oy = c.y - half;
+
   const cv = document.createElement("canvas"); cv.width = cv.height = size;
   const cx = cv.getContext("2d", { willReadFrequently:true });
-  const inner = $("mapInner").getBoundingClientRect();
-  const cp = map.latLngToContainerPoint(ll);
-  const sx = inner.left + cp.x, sy = inner.top + cp.y;
-  let n = 0;
+  let n = 0, centreCovered = false;
   for (const k in base._tiles){
     const t = base._tiles[k];
     if (!t.el || !t.el.complete || !t.el.naturalWidth) continue;
-    const r = t.el.getBoundingClientRect();
-    if (r.width < 1 || r.right < sx-half || r.left > sx+half || r.bottom < sy-half || r.top > sy+half) continue;
-    cx.drawImage(t.el, r.left - (sx - half), r.top - (sy - half), r.width, r.height);
+    if (!t.coords || t.coords.z !== tz) continue;
+    const tx = t.coords.x * ts, ty = t.coords.y * ts;
+    if (tx > ox + size || tx + ts < ox || ty > oy + size || ty + ts < oy) continue;
+    cx.drawImage(t.el, tx - ox, ty - oy, ts, ts);
     n++;
+    if (c.x >= tx && c.x < tx + ts && c.y >= ty && c.y < ty + ts) centreCovered = true;
   }
-  if (!n) return null;
+  if (!n || !centreCovered) return null;
   try{ return { data:cx.getImageData(0,0,size,size).data, size, half, m }; }
   catch(e){ return { tainted:true }; }
 }
@@ -958,7 +966,7 @@ function contour(px, reg, ll){
 function runDetect(ll){
   if (map.getZoom() < 17.5){ msg("Zoomez davantage : la détection demande le niveau 18."); return; }
   const px = grab(ll, 60);
-  if (!px){ msg("Tuiles pas encore chargées. Attendez une seconde et retouchez."); return; }
+  if (!px){ msg("Image satellite pas encore chargée à cet endroit. Attendez une seconde et retouchez."); return; }
   if (px.tainted){ msg("Ce fond interdit la lecture des pixels. Utilisez TRACER ou POINTER."); return; }
   S.detect = { px, ll }; applyDetect();
 }
@@ -1139,7 +1147,6 @@ $("ctxRename").addEventListener("click", async () => {
 });
 $("ctxRedraw").addEventListener("click", () => {
   const g = S.ctx; closeCtx(); closeBar();
-  snapNorth();
   /* L'ancien contour disparaît tout de suite : on repart d'une carte
      propre et c'est l'utilisateur qui choisit l'outil de reprise. */
   S.replaceId = g.id; S.hideId = g.id;
@@ -1281,8 +1288,6 @@ const armTool = (id, mode, text) => $(id).addEventListener("click", () => {
   closeBar(resuming);
   if (!on){ if (resuming) msg("Choisissez <b>DÉTECT</b>, <b>TRACER</b> ou <b>POINTER</b>, ou Fermer pour rétablir l'ancien contour."); return; }
   S.mode = mode; $(id).classList.add("armed");
-  const turned = Math.abs(rot) > 0.5 || rotMode !== "north";
-  snapNorth();
   const old = resuming ? S.greens.find(g => g.id === S.replaceId) : null;
   if (mode === "point" && old && old.mk === "point" && old.c){
     S.point = { lat:old.c[0], lon:old.c[1] };
@@ -1290,7 +1295,7 @@ const armTool = (id, mode, text) => $(id).addEventListener("click", () => {
     applyPoint();
     return;
   }
-  msg((turned ? "Carte remise au nord. " : "") + (old ? "Reprise de <b>" + esc(old.name) + "</b>. " : "") + text);
+  msg((old ? "Reprise de <b>" + esc(old.name) + "</b>. " : "") + text);
 });
 armTool("bDetect","detect","Touchez le centre du green : la zone s'étend par similarité de couleur.");
 armTool("bDraw","draw","Touchez la carte pour poser les points du contour.");
