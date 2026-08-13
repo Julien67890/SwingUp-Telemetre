@@ -491,14 +491,13 @@ body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
    ▼▼▼  CONFIGURATION FIREBASE — projet PROPRE au télémètre  ▼▼▼
    Ne réutilise pas celui de la carte de score : bases distinctes.
    ======================================================================= */
-
-  const firebaseConfig = {
-  apiKey: "AIzaSyABxRqI8tH_H8zTblxYv7hspfWqKziuBYA",
-  authDomain: "swingup-telemetre.firebaseapp.com",
-  projectId: "swingup-telemetre",
-  storageBucket: "swingup-telemetre.firebasestorage.app",
-  messagingSenderId: "287840826427",
-  appId: "1:287840826427:web:ee44e50af226be3bb8181e",
+const firebaseConfig = {
+  apiKey: "A_REMPLIR",
+  authDomain: "A_REMPLIR.firebaseapp.com",
+  projectId: "A_REMPLIR",
+  storageBucket: "A_REMPLIR.firebasestorage.app",
+  messagingSenderId: "A_REMPLIR",
+  appId: "A_REMPLIR"
 };
 
 /* =======================================================================
@@ -781,7 +780,10 @@ function erreurAuth(e){
     'auth/email-already-in-use':'Cette adresse est déjà utilisée.',
     'auth/weak-password':'Mot de passe trop court : 6 caractères minimum.',
     'auth/network-request-failed':'Réseau indisponible.',
-    'auth/popup-closed-by-user':'Connexion annulée.'}[c];
+    'auth/popup-closed-by-user':'Connexion annulée.',
+    'auth/popup-blocked':'Fenêtre bloquée par le navigateur.',
+    'auth/unauthorized-domain':'Ce domaine n\'est pas autorisé dans Firebase Authentication.',
+    'auth/account-exists-with-different-credential':'Un compte existe déjà avec cette adresse, connecte-toi par e-mail.'}[c];
   const el=$id('authErr');
   el.textContent=T(m||'Connexion impossible pour le moment.');
   el.classList.remove('hidden');
@@ -802,10 +804,49 @@ async function lancerAuth(){
   }catch(e){ erreurAuth(e); }
   b.classList.remove('loading');
 }
+/* Sur mobile et en application installée, la fenêtre surgissante est
+   fermée par le navigateur avant d'avoir rendu la main : on redirige.
+   Le résultat est récupéré au retour par getRedirectResult(). */
+function popupPossible(){
+  const standalone = matchMedia('(display-mode: standalone)').matches
+    || matchMedia('(display-mode: fullscreen)').matches
+    || navigator.standalone === true;
+  const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  return !standalone && !mobile;
+}
 async function authGoogle(){
   if(!fbReady){erreurAuth({code:'x'});return;}
-  try{ await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-  catch(e){ erreurAuth(e); }
+  const prov=new firebase.auth.GoogleAuthProvider();
+  prov.setCustomParameters({prompt:'select_account'});
+  $id('btnGoogle').classList.add('loading');
+  try{
+    if(popupPossible()){
+      await auth.signInWithPopup(prov);
+    }else{
+      Store.set('gRedirect','1');
+      await auth.signInWithRedirect(prov);   /* la page se recharge ici */
+      return;
+    }
+  }catch(e){
+    /* Dernier recours : si la fenêtre a été bloquée ou fermée, on redirige. */
+    if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/popup-closed-by-user'
+        ||e.code==='auth/cancelled-popup-request'||e.code==='auth/operation-not-supported-in-this-environment')){
+      try{ Store.set('gRedirect','1'); await auth.signInWithRedirect(prov); return; }catch(e2){ erreurAuth(e2); }
+    }else erreurAuth(e);
+  }
+  $id('btnGoogle').classList.remove('loading');
+}
+
+/* Retour de redirection : on récupère le résultat ou l'erreur réelle. */
+async function verifierRedirection(){
+  if(!fbReady)return;
+  try{
+    const r=await auth.getRedirectResult();
+    if(r&&r.user)Store.del('gRedirect');
+  }catch(e){
+    Store.del('gRedirect');
+    erreurAuth(e);
+  }
 }
 async function resetPass(){
   const em=$id('auEmail').value.trim();
@@ -918,20 +959,27 @@ document.addEventListener('DOMContentLoaded',()=>{
     /* Sans projet Firebase renseigné, l'app tourne en local sans compte. */
     invite=true; entrerDansApp(); return;
   }
+  verifierRedirection();
+  /* Au retour d'une redirection Google, on n'affiche pas l'écran de
+     connexion : onAuthStateChanged va basculer dans l'app tout seul. */
+  const enRetour=Store.get('gRedirect')==='1';
   if(Store.get('invite')==='1'){ invite=true; entrerDansApp(); }
-  else $id('auth').classList.remove('hidden');
+  else if(!enRetour) $id('auth').classList.remove('hidden');
 
   auth.onAuthStateChanged(async u=>{
     currentUser=u||null;
     if(u){
       invite=false; Store.del('invite');
+      Store.del('gRedirect');
       profileName=(u.displayName||profileName||(u.email||'').split('@')[0]||'').slice(0,14);
       await pullProfil(); await pullPremium();
       entrerDansApp(); afterCheckout();
       if(typeof pullGreens==='function')await pullGreens();
     }else if(!invite){
+      Store.del('gRedirect');
       $id('app').classList.add('hidden');
       $id('auth').classList.remove('hidden');
+      $id('btnGoogle').classList.remove('loading');
     }
     majCompteUI();
   });
