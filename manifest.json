@@ -1,0 +1,40 @@
+{
+  "name": "SwingUp - Télémètre",
+  "short_name": "Télémètre",
+  "description": "Golf rangefinder: distances to the front, back, left and right edges of the green, elevation change and suggested club, on satellite imagery. Works offline.",
+  "id": "/SwingUpTelemetre/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait",
+  "background_color": "#13361f",
+  "theme_color": "#1b4332",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": [
+    "sports",
+    "utilities",
+    "navigation"
+  ],
+  "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "icons": [
+    { "src": "icons/icon-32.png",  "sizes": "32x32",   "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-48.png",  "sizes": "48x48",   "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-64.png",  "sizes": "64x64",   "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-120.png", "sizes": "120x120", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-180.png", "sizes": "180x180", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-256.png", "sizes": "256x256", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
