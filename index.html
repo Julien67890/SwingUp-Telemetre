@@ -6,10 +6,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="SwingUp Télémètre">
+<meta name="apple-mobile-web-app-title" content="SwingUp - Télémètre">
 <meta name="theme-color" content="#1b4332">
 <meta name="description" content="Télémètre de golf : distances aux greens, dénivelé et club conseillé, sur vue satellite.">
-<title>SwingUp — Télémètre</title>
+<title>SwingUp - Télémètre</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
@@ -35,7 +35,7 @@ body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
 .hidden{display:none!important}
 .mark{border-radius:6px;flex:0 0 auto;display:grid;place-items:center;overflow:hidden;
   background:linear-gradient(145deg,#52b788,#1b4332);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 10px 22px -10px rgba(0,0,0,.6)}
-.mark img{width:100%;height:100%;object-fit:cover;display:block}
+.mark svg{width:60%;height:60%}
 
 /* ================= connexion ================= */
 #auth{position:fixed;inset:0;z-index:900;overflow-y:auto;display:flex;flex-direction:column;justify-content:center;
@@ -72,18 +72,23 @@ body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
 
 /* ================= application ================= */
 #app{height:100dvh;display:flex;flex-direction:column;max-width:560px;margin:0 auto;position:relative}
-.topbar{flex:0 0 auto;display:flex;align-items:center;gap:12px;
-  padding:calc(12px + env(safe-area-inset-top)) 16px 12px;
-  background:linear-gradient(180deg,rgba(15,42,26,.97) 0%,rgba(15,42,26,.9) 70%,rgba(15,42,26,.82) 100%);
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.topbar .mark{width:42px;height:42px}
-.tbmeta{flex:1;min-width:0}
-.tbmeta .l1{color:var(--cream);font-family:var(--serif);font-weight:600;font-size:1.02rem;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tbmeta .l2{color:var(--green-glow);font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.acctbtn{flex:0 0 auto;display:flex;align-items:center;gap:8px;background:rgba(246,243,233,.12);border:none;border-radius:999px;padding:5px 5px 5px 11px;cursor:pointer;color:var(--cream);font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;max-width:132px}
+header{flex:0 0 auto;padding:calc(14px + env(safe-area-inset-top)) 14px 12px;display:flex;align-items:center;gap:12px}
+header .mark{width:46px;height:46px}
+.brand{flex:1;min-width:0}
+.brand h1{font-family:var(--serif);font-weight:900;color:var(--cream);font-size:1.32rem;line-height:1;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand p{color:var(--green-glow);font-size:.72rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.betapill{flex:0 0 auto;align-self:center;margin-left:2px;font-size:.58rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--green-deep);background:var(--green-glow);padding:3px 8px;border-radius:999px}
+.betapill.hidden{display:none}
+.acctbtn{flex:0 0 auto;display:flex;align-items:center;gap:8px;background:rgba(246,243,233,.12);border:none;border-radius:999px;padding:6px 6px 6px 12px;cursor:pointer;color:var(--cream);font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;max-width:150px}
 .acctbtn .who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.acctbtn .av{width:28px;height:28px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;background:linear-gradient(145deg,#52b788,#1b4332);font-family:var(--serif);font-weight:900;font-size:.85rem;color:#fff}
-.propill{font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(201,162,39,.24);color:#f0d878;padding:3px 7px;border-radius:999px}
+.acctbtn .av{width:30px;height:30px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;background:linear-gradient(145deg,#52b788,#1b4332);font-family:var(--serif);font-weight:900;font-size:.9rem;color:#fff}
+.propill{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(201,162,39,.22);color:#8a6f00;padding:3px 8px;border-radius:999px;margin-left:2px}
+.accbtns{display:grid;gap:8px;margin-top:14px}
+.accbtns .btn{width:100%}
+.hintsm{font-size:.74rem;color:#8b8770;line-height:1.4;margin-top:10px}
+.modpriv{text-align:center;margin-top:14px;font-size:.76rem}
+.modpriv a{color:#8b8770;text-decoration:underline;text-underline-offset:3px}
 
 /* ---------- carte ---------- */
 #map{flex:1 1 auto;min-height:0;position:relative;overflow:hidden;background:#0b1f16;touch-action:none}
@@ -287,7 +292,7 @@ body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
 <section id="auth" class="hidden">
   <div class="auth-wrap">
     <div class="auth-head">
-      <div class="mark"><img src="icons/icon-192.png" alt=""></div>
+      <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/><circle cx="14" cy="19" r="2.6" fill="#d62828"/></svg></div>
       <h1 data-t>Télémètre</h1>
       <p data-t id="authTagline">Connecte-toi pour retrouver tes parcours</p>
     </div>
@@ -328,14 +333,12 @@ body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
 <!-- ====================== APPLICATION ====================== -->
 <div id="app" class="hidden">
 
-  <div class="topbar">
-    <div class="mark"><img src="icons/icon-192.png" alt=""></div>
-    <div class="tbmeta">
-      <div class="l1" data-t>Télémètre</div>
-      <div class="l2" id="courseName" data-t>Chargement des parcours…</div>
-    </div>
-    <button class="acctbtn" id="btnAcct"><span class="who" id="acctWho">—</span><span class="av" id="acctAv">?</span></button>
-  </div>
+  <header>
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/><circle cx="14" cy="19" r="2.6" fill="#d62828"/></svg></div>
+    <div class="brand"><h1 data-t>Télémètre</h1><p id="courseName" data-t>Chargement des parcours…</p></div>
+    <span class="betapill hidden" id="betaPill">Bêta</span>
+    <button class="acctbtn" id="btnAcct" aria-label="Mon compte"><span class="who" id="acctWho">—</span><span class="av" id="acctAv">?</span></button>
+  </header>
 
   <div id="map">
     <div id="mapInner"></div>
@@ -428,7 +431,7 @@ body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
 <!-- ====================== SAC ====================== -->
 <div id="bag" role="dialog">
   <div id="bagTop">
-    <div class="mark"><img src="icons/icon-192.png" alt=""></div>
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/><circle cx="14" cy="19" r="2.6" fill="#d62828"/></svg></div>
     <h2 data-t>Mon sac</h2>
     <button class="tbtn" id="bagClose" data-t>Fermer</button>
   </div>
@@ -493,7 +496,7 @@ body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-14-b';
+const BUILD = 'tel-2026-08-14-d';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -550,7 +553,26 @@ const ARCGIS = { key:'A_REMPLIR' };
    Laisser A_REMPLIR retombe sur l'ancien circuit (fenêtre / redirection).
    ======================================================================= */
 const GOOGLE = { clientId:'287840826427-4vmhf2pgan0v5hqhab66hhmuivvmil7d.apps.googleusercontent.com' };
-const gisPret = () => GOOGLE.clientId && GOOGLE.clientId.indexOf('A_REMPLIR') < 0;
+
+/* =======================================================================
+   ▼▼▼  MÉTHODE DE CONNEXION GOOGLE  ▼▼▼
+
+   'firebase' — identique à SwingUpPro : signInWithPopup, puis redirection
+                si la fenêtre est refusée. Rien à configurer côté Google
+                Cloud. En revanche tout transite par firebaseapp.com, que
+                Chrome cloisonne : la connexion Google échoue dans
+                l'application installée sur mobile.
+
+   'google'   — Google Identity Services. Fonctionne partout, y compris en
+                application installée, mais impose de renseigner l'écran de
+                consentement OAuth (Branding + Audience) dans Google Cloud.
+
+   Dans les deux cas, la connexion par e-mail fonctionne sans restriction.
+   ======================================================================= */
+const AUTH_MODE = 'firebase';
+
+const gisPret = () => AUTH_MODE === 'google'
+  && GOOGLE.clientId && GOOGLE.clientId.indexOf('A_REMPLIR') < 0;
 
 /* =======================================================================
    ▼▼▼  ABONNEMENT PREMIUM — compte Stripe PROPRE au télémètre  ▼▼▼
@@ -591,7 +613,7 @@ en:{
 'Adresse e-mail':'Email address','Mot de passe':'Password','ou':'or',
 'Continuer avec Google':'Continue with Google','Mot de passe oublié ?':'Forgot your password?',
 'Continuer sans compte':'Continue without an account',
-'Sans compte, tes greens restent sur cet appareil.':'Without an account, your greens stay on this device.',
+'Sans abonnement, les greens ne sont pas conservés.':'Without an account, your greens stay on this device.',
 'Avec un compte Premium, ils te suivent partout.':'With a Premium account, they follow you everywhere.',
 'Politique de confidentialité':'Privacy policy','Chargement des parcours…':'Loading courses…',
 'Parcours chargés':'Courses loaded','Aucun parcours trouvé':'No course found',
@@ -619,13 +641,20 @@ en:{
 'Gérer mon abonnement':'Manage my subscription','Premium activé':'Premium activated',
 'Greens synchronisés':'Greens synced','Hors ligne : synchro différée':'Offline: sync deferred',
 'Le paiement arrive bientôt.':'Payment is coming soon.',
-'Tes greens sont enregistrés sur cet appareil uniquement.':'Your greens are saved on this device only.',
+'Tes greens ne sont pas conservés.':'Your greens are not kept.',
 'Tes greens sont sauvegardés sur ton compte.':'Your greens are backed up to your account.',
 'Sauvegarde et synchronisation':'Backup and sync',
-'Tes greens tracés te suivent sur tous tes appareils, et rien ne se perd si tu changes de téléphone.':'Your greens follow you on every device, and nothing is lost if you change phone.',
+'Sans abonnement, les greens que tu traces disparaissent à la fermeture. Avec Premium, ils sont conservés et te suivent sur tous tes appareils.':'Without a subscription, the greens you map are lost when you close the app. With Premium they are kept and follow you on every device.',
 'Parcours illimités':'Unlimited courses','Cartographie sans limite de nombre de greens.':'Map as many greens as you like.',
 'Mesure et création restent gratuites':'Measuring and mapping stay free',
 "L'abonnement ne porte que sur la sauvegarde en ligne.":'The subscription only covers online backup.',
+'Accès complet offert':'Full access included',"jusqu'au":'until','Offre gratuite':'Free plan',
+'Greens non sauvegardés':'Greens are not saved','Découvrir Premium':'Discover Premium',
+'Connecté·e en tant que':'Signed in as','Ton nom':'Your name','Nom mis à jour':'Name updated',
+'Accès bêta-testeur':'Beta tester access',"Accès complet conservé, sans abonnement. Merci d'avoir été là au début.":'Full access kept, no subscription. Thank you for being there at the start.',
+"Période d'essai":'Trial period','Mode invité':'Guest mode',
+"Ton compte utilise la connexion Google : l'adresse e-mail et le mot de passe se gèrent depuis ton compte Google.":'Your account uses Google sign-in: email and password are managed from your Google account.',
+'{n} green(s) tracé(s) — non sauvegardés. Ils disparaîtront à la fermeture.':'{n} green(s) mapped — not saved. They will be lost when you close the app.',
 'Créer un compte pour sauvegarder':'Create an account to save'
 },
 
@@ -667,9 +696,9 @@ const Store=(()=>{let mem={},ok=true;
          del(k){try{ok?localStorage.removeItem(k):delete mem[k]}catch(e){delete mem[k]}}};
 })();
 
+/* La langue suit celle du téléphone, comme dans SwingUpPro :
+   aucun sélecteur, aucun réglage à mémoriser. */
 function langueParDefaut(){
-  const choisi=Store.get('lang');
-  if(choisi&&LANGUES.indexOf(choisi)>=0)return choisi;
   const n=((navigator.languages&&navigator.languages[0])||navigator.language||LANGUE_DEFAUT).slice(0,2).toLowerCase();
   return LANGUES.indexOf(n)>=0?n:LANGUE_DEFAUT;
 }
@@ -783,9 +812,9 @@ function ecranPremium(origine){
   openModal('<h3>'+esc(PREMIUM.name)+'</h3>'
     +'<p class="txt">'+esc(origine||T("L'abonnement ne porte que sur la sauvegarde en ligne."))+'</p>'
     +'<div class="plan">'
-    +feat(T('Sauvegarde et synchronisation'),T('Tes greens tracés te suivent sur tous tes appareils, et rien ne se perd si tu changes de téléphone.'))
+    +feat(T('Sauvegarde et synchronisation'),T('Sans abonnement, les greens que tu traces disparaissent à la fermeture. Avec Premium, ils sont conservés et te suivent sur tous tes appareils.'))
     +feat(T('Parcours illimités'),T('Cartographie sans limite de nombre de greens.'))
-    +feat(T('Mesure et création restent gratuites'),T("L'abonnement ne porte que sur la sauvegarde en ligne."))
+    +feat(T('Mesure et cartographie restent gratuites'),T("L'abonnement ne porte que sur la conservation de tes tracés."))
     +'<div class="price">'+esc(PREMIUM.price)+'</div><p class="pnote">'+esc(PREMIUM.note)+'</p></div>'
     +(BETA.actif?'<div class="subline on"><b>'+esc(T('Version bêta'))+'</b><span>'+esc(T('Tout est ouvert jusqu\'au {d}.',{d:BETA.fin}))+'</span></div>':'')
     +'<div class="row">'
@@ -896,9 +925,13 @@ function initGIS(){
    fermée par le navigateur avant d'avoir rendu la main : on redirige.
    Le résultat est récupéré au retour par getRedirectResult(). */
 function popupPossible(){
+  /* En mode 'firebase', on reproduit SwingUpPro : la fenêtre surgissante
+     est tentée en premier, sauf en application installée où elle n'existe
+     pas et où seule la redirection peut aboutir. */
   const standalone = matchMedia('(display-mode: standalone)').matches
     || matchMedia('(display-mode: fullscreen)').matches
     || navigator.standalone === true;
+  if (AUTH_MODE === 'firebase') return !standalone;
   const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
   return !standalone && !mobile;
 }
@@ -938,7 +971,7 @@ async function verifierRedirection(){
       Store.del('gRedirect');
       $id('auth').classList.remove('hidden');
       const el=$id('authErr');
-      el.textContent=T("Ton navigateur a bloqué le retour de Google. Utilise l'adresse e-mail.");
+      el.textContent=T("Ton navigateur a bloqué le retour de Google. Connecte-toi avec ton adresse e-mail.");
       el.classList.remove('hidden');
     }
   }catch(e){
@@ -972,41 +1005,58 @@ async function pullProfil(){
   }catch(e){ console.warn('Lecture profil échouée :',e); }
 }
 function majCompteUI(){
+  const bp=$id('betaPill'); if(bp)bp.classList.toggle('hidden',!BETA.actif);
   const nom=invite?T('Invité'):(profileName||T('Compte'));
   $id('acctWho').textContent=nom;
   $id('acctAv').textContent=(nom[0]||'?').toUpperCase();
 }
 function ecranCompte(){
-  const cloud=peutSauvegarderCloud();
-  let h='<h3>'+esc(T('Mon compte'))+'</h3>';
-  h+='<p class="txt">'+esc(invite?T('Mode invité'):(currentUser?currentUser.email||profileName:''))+'</p>';
-  h+='<div class="subline'+(cloud?' on':'')+'"><b>'+esc(cloud?T('Tes greens sont sauvegardés sur ton compte.'):T('Tes greens sont enregistrés sur cet appareil uniquement.'))+'</b>'
-    +'<span>'+esc(BETA.actif?T('Version bêta')+' · '+BETA.fin:PREMIUM.priceShort)+'</span></div>';
-  h+='<div class="list">';
-  h+='<button id="acLang"><span class="gl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg></span><span><b>'+esc(T('Langue'))+'</b><small>'+esc(NOMS_LANGUES[LANG])+'</small></span></button>';
-  h+='<button id="acPrem"><span class="gl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6 6 .9-4.5 4.3 1.1 6.3L12 16.5 6.4 19.5l1.1-6.3L3 8.9 9 8z"/></svg></span><span><b>'+esc(PREMIUM.name)+'</b><small>'+esc(T('Sauvegarde dans le cloud'))+'</small></span></button>';
-  h+='<button id="acPriv"><span class="gl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6z"/></svg></span><span><b>'+esc(T('Politique de confidentialité'))+'</b></span></button>';
-  if(currentUser)h+='<button id="acOut" class="dgr"><span class="gl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></span><span><b>'+esc(T('Se déconnecter'))+'</b></span></button>';
-  else h+='<button id="acIn"><span class="gl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg></span><span><b>'+esc(T('Créer un compte pour sauvegarder'))+'</b></span></button>';
-  h+='</div><div class="row"><button class="btn btn-ghost" id="mClose">'+esc(T('Fermer'))+'</button></div>';
-  openModal(h);
-  $id('mClose').onclick=closeModal;
-  $id('acLang').onclick=ecranLangue;
-  $id('acPrem').onclick=()=>ecranPremium();
-  $id('acPriv').onclick=()=>window.open(PAGE_POLITIQUE(),'_blank','noopener');
-  if($id('acOut'))$id('acOut').onclick=async()=>{closeModal();try{await auth.signOut();}catch(e){}location.reload();};
-  if($id('acIn'))$id('acIn').onclick=()=>{closeModal();invite=false;Store.del('invite');$id('app').classList.add('hidden');$id('auth').classList.remove('hidden');};
-}
-function ecranLangue(){
-  let h='<h3>'+esc(T('Langue'))+'</h3><div class="list">';
-  LANGUES.forEach(l=>{h+='<button data-l="'+l+'"><span><b>'+esc(NOMS_LANGUES[l])+'</b></span></button>';});
-  h+='</div><div class="row"><button class="btn btn-ghost" id="mClose">'+esc(T('Fermer'))+'</button></div>';
-  openModal(h);
-  $id('mClose').onclick=closeModal;
-  document.querySelectorAll('#overlay [data-l]').forEach(b=>b.onclick=async()=>{
-    LANG=b.dataset.l;Store.set('lang',LANG);appliquerLangue();majOngletsAuth();closeModal();
-    if(fbReady&&currentUser){try{await fs.collection('users').doc(currentUser.uid).set({lang:LANG},{merge:true});}catch(e){}}
-  });
+  const ok=isPremium(), betaTesteur=!BETA.actif&&accountCreated&&BETA.limite&&accountCreated<=BETA.limite;
+  const jusqu=premium&&premium.until?' · '+T("jusqu'au")+' '+new Date(premium.until).toLocaleDateString():'';
+  let abo;
+  if(BETA.actif){
+    abo='<div class="subline on"><b>'+esc(T('Version bêta'))+'</b><span>'+esc(T('Accès complet offert'))+' '+esc(T("jusqu'au"))+' '+esc(BETA.fin)+'</span></div>';
+  }else if(betaTesteur){
+    abo='<div class="subline on"><b>'+esc(T('Accès bêta-testeur'))+'</b><span>'+esc(T("Accès complet conservé, sans abonnement. Merci d'avoir été là au début."))+'</span></div>';
+  }else if(ok){
+    abo='<div class="subline on"><b>'+esc(PREMIUM.name)+'</b><span>'+esc(premium&&premium.status==='trialing'?T("Période d'essai"):T('Abonnement actif'))+esc(jusqu)+'</span></div>'
+      +(PREMIUM.portalUrl?'<button class="btn btn-ghost" id="mPortal" style="margin-top:10px">'+esc(T('Gérer mon abonnement'))+'</button>':'');
+  }else{
+    abo='<div class="subline"><b>'+esc(T('Offre gratuite'))+'</b><span>'+esc(T('Greens non sauvegardés'))+'</span></div>'
+      +'<button class="btn btn-primary" id="mUp" style="margin-top:10px">'+esc(T('Découvrir Premium'))+'</button>';
+  }
+  const parMdp=!!(currentUser&&currentUser.providerData&&currentUser.providerData.some(p=>p&&p.providerId==='password'));
+  openModal('<h3>'+esc(T('Mon compte'))+'</h3>'
+    +'<p class="txt">'+(invite||!currentUser
+        ? esc(T('Mode invité'))
+        : esc(T('Connecté·e en tant que'))+' <b>'+esc(currentUser.email||'')+'</b>'+(parMdp?'':' <span class="propill">Google</span>'))+'</p>'
+    +abo
+    +(currentUser?'<input id="mName" type="text" maxlength="14" value="'+esc(profileName)+'" placeholder="'+esc(T('Ton nom'))+'">':'')
+    +'<div class="accbtns">'
+    +(currentUser&&!parMdp?'<p class="hintsm">'+esc(T("Ton compte utilise la connexion Google : l'adresse e-mail et le mot de passe se gèrent depuis ton compte Google."))+'</p>':'')
+    +'</div>'
+    +'<div class="row">'
+    +(currentUser
+        ? '<button class="btn btn-ghost" id="mLogout">'+esc(T('Se déconnecter'))+'</button><button class="btn btn-primary" id="mOk">'+esc(T('Enregistrer'))+'</button>'
+        : '<button class="btn btn-ghost" id="mClose">'+esc(T('Fermer'))+'</button><button class="btn btn-primary" id="mIn">'+esc(T('Créer un compte'))+'</button>')
+    +'</div>'
+    +'<p class="modpriv"><a href="'+PAGE_POLITIQUE()+'" target="_blank" rel="noopener">'+esc(T('Politique de confidentialité'))+'</a></p>');
+  const up=$id('mUp'); if(up)up.onclick=()=>{closeModal();ecranPremium();};
+  const po=$id('mPortal'); if(po)po.onclick=openPortal;
+  const cl=$id('mClose'); if(cl)cl.onclick=closeModal;
+  const si=$id('mIn'); if(si)si.onclick=()=>{closeModal();invite=false;Store.del('invite');$id('app').classList.add('hidden');$id('auth').classList.remove('hidden');};
+  const lo=$id('mLogout'); if(lo)lo.onclick=async()=>{closeModal();try{await auth.signOut();}catch(e){}location.reload();};
+  const okb=$id('mOk');
+  if(okb)okb.onclick=async()=>{
+    const v=($id('mName')||{}).value?$id('mName').value.trim():'';
+    if(v&&v!==profileName){
+      profileName=v.slice(0,14);
+      try{ await currentUser.updateProfile({displayName:profileName}); }catch(e){}
+      if(fbReady)fs.collection('users').doc(currentUser.uid).set({name:profileName},{merge:true}).catch(()=>{});
+      majCompteUI(); toast(T('Nom mis à jour'));
+    }
+    closeModal();
+  };
 }
 
 /* ---------- mesure d'audience ---------- */
@@ -1766,14 +1816,29 @@ function pushDraft(ll){
   S.draft.forEach(p => L.circleMarker(p, { radius:4, color:"#C9A227", fillOpacity:1, interactive:false }).addTo(tmpLayer));
   msg(L_("{n} point(s) — 3 minimum, puis Garder.",{n:S.draft.length}));
 }
-function readCustom(){ try{ return (JSON.parse(Store.get(KEY))||[]).map(g=>({...g, src:"draw", mk:g.mk||"draw"})); }catch(e){ return []; } }
+/* La conservation des greens — sur l'appareil comme dans le cloud — est
+   une fonction Premium. Sans abonnement, ils vivent le temps de la session
+   et disparaissent à la fermeture : rien n'est écrit sur le téléphone. */
+function readCustom(){
+  if (!peutSauvegarderCloud()){ Store.del(KEY); return []; }
+  try{ return (JSON.parse(Store.get(KEY))||[]).map(g=>({...g, src:"draw", mk:g.mk||"draw"})); }catch(e){ return []; }
+}
 function serialiserGreens(){
   return S.greens.filter(g=>g.src==="draw")
     .map(g => ({ id:g.id, name:g.name, coords:g.coords, mk:g.mk||"draw", c:g.c||null, r:g.r||null }));
 }
 function writeCustom(){
+  if (!peutSauvegarderCloud()){ Store.del(KEY); majBandeauFree(); return; }
   try{ Store.set(KEY, JSON.stringify(serialiserGreens())); }catch(e){}
   pushGreens();
+}
+
+/* Un rappel discret tant que les greens ne sont pas conservés. */
+function majBandeauFree(){
+  if (peutSauvegarderCloud()){ hideWarn(); return; }
+  const n = S.greens.filter(g => g.src === "draw").length;
+  if (!n) return;
+  warn(L_("{n} green(s) tracé(s) — non sauvegardés. Ils disparaîtront à la fermeture.",{n:n}));
 }
 
 /* ---------- synchronisation cloud ----------
@@ -1786,7 +1851,7 @@ function parcoursId(){
   return "c" + Math.round(S.pos.lat*50) + "_" + Math.round(S.pos.lon*50);
 }
 function pushGreens(){
-  if (!peutSauvegarderCloud()) return;
+  if (!peutSauvegarderCloud()){ majBandeauFree(); return; }
   clearTimeout(pushT);
   pushT = setTimeout(async () => {
     if (pushEnCours) return;
