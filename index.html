@@ -513,7 +513,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-14-e';
+const BUILD = 'tel-2026-08-14-f';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -586,7 +586,7 @@ const GOOGLE = { clientId:'287840826427-4vmhf2pgan0v5hqhab66hhmuivvmil7d.apps.go
 
    Dans les deux cas, la connexion par e-mail fonctionne sans restriction.
    ======================================================================= */
-const AUTH_MODE = 'firebase';
+const AUTH_MODE = 'google';
 
 const gisPret = () => AUTH_MODE === 'google'
   && GOOGLE.clientId && GOOGLE.clientId.indexOf('A_REMPLIR') < 0;
@@ -946,8 +946,17 @@ function initGIS(){
       }
     }catch(e){ console.warn('GIS indisponible :',e); }
   };
-  sc.onerror=()=>console.warn('GIS non chargé');
+  sc.onerror=()=>{ console.warn('GIS non chargé'); $id('btnGoogle').classList.remove('hidden'); };
   document.head.appendChild(sc);
+  /* Si Google n'a rien rendu au bout de quatre secondes — script bloqué,
+     origine non autorisée — on remet le bouton classique plutôt que rien. */
+  setTimeout(()=>{
+    const box=$id('gBtn');
+    if(box&&!box.querySelector('iframe')&&!box.querySelector('div')){
+      box.classList.add('hidden');
+      $id('btnGoogle').classList.remove('hidden');
+    }
+  },4000);
 }
 
 /* Sur mobile et en application installée, la fenêtre surgissante est
@@ -991,6 +1000,7 @@ async function authGoogle(){
 async function verifierRedirection(){
   if(!fbReady)return;
   const enRetour=Store.get('gRedirect')==='1';
+  Store.del('gRedirect');
   try{
     const r=await auth.getRedirectResult();
     if(r&&r.user){Store.del('gRedirect');return;}
