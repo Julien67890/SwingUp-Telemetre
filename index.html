@@ -38,11 +38,12 @@ body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
 .mark svg{width:60%;height:60%}
 
 /* ================= connexion ================= */
-#auth{position:fixed;inset:0;z-index:900;overflow-y:auto;display:flex;flex-direction:column;justify-content:center;
+#auth{position:fixed;inset:0;z-index:900;overflow-y:auto}
+.auth-wrap{min-height:100dvh;max-width:560px;margin:0 auto;display:flex;flex-direction:column;justify-content:center;
   padding:calc(24px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom))}
-.auth-wrap{width:100%;max-width:560px;margin:0 auto}
 .auth-head{text-align:center;margin-bottom:22px}
 .auth-head .mark{width:60px;height:60px;margin:0 auto 16px;border-radius:8px}
+.auth-head .mark svg{width:34px;height:34px}
 .auth-head h1{font-family:var(--serif);font-weight:900;color:var(--cream);font-size:1.7rem;line-height:1.05;letter-spacing:-.02em}
 .auth-head p{color:var(--green-glow);font-size:.82rem;margin-top:8px}
 .surface{background:linear-gradient(180deg,var(--cream),#efebdd);border-radius:6px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.4);overflow:hidden}
@@ -55,8 +56,8 @@ body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
 .field input{width:100%;border:1.5px solid #e6e0cd;border-radius:6px;background:#fff;padding:14px;font-family:'Outfit',sans-serif;font-size:1rem;color:var(--green-deep);outline:none}
 .field input:focus{border-color:var(--green-mid)}
 .autherr{font-size:.82rem;color:var(--bad);background:var(--bad-bg);border-radius:6px;padding:11px 13px;margin-bottom:14px;line-height:1.45}
-.authsep{display:flex;align-items:center;gap:12px;margin:18px 0;color:#a8a390;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
-.authsep::before,.authsep::after{content:"";flex:1;height:1px;background:#e0dac6}
+.authsep{display:flex;align-items:center;gap:12px;margin:15px 0 13px;color:#a8a390;font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.authsep::before,.authsep::after{content:'';flex:1;height:1px;background:#e0dac6}
 .authlink{display:block;text-align:center;background:none;border:none;color:var(--green-mid);font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;margin-top:14px;text-decoration:underline;width:100%}
 .btn{width:100%;border:none;border-radius:6px;padding:16px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:1rem;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s,box-shadow .2s,opacity .2s}
 .btn:active{transform:scale(.98)}
@@ -67,8 +68,8 @@ body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
 .btn-google svg{width:19px;height:19px}
 .btn.loading{opacity:.7;pointer-events:none}
 .btn svg{width:18px;height:18px}
-.footnote{color:rgba(246,243,233,.55);font-size:.72rem;text-align:center;margin-top:18px;line-height:1.5}
-.footnote a{color:rgba(116,198,157,.9)}
+.footnote{color:rgba(246,243,233,.55);font-size:.72rem;text-align:center;margin-top:20px;line-height:1.5}
+.privlink,.footnote a{color:rgba(116,198,157,.85);text-decoration:underline;text-underline-offset:3px}
 
 /* ================= application ================= */
 #app{height:100dvh;display:flex;flex-direction:column;max-width:560px;margin:0 auto;position:relative}
@@ -165,6 +166,18 @@ header .mark{width:46px;height:46px}
 #strip{flex:0 0 auto;background:linear-gradient(180deg,var(--cream),#efebdd);
   padding:10px 12px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -18px 40px -18px rgba(8,30,18,.6)}
 #sHead{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+#freeBar{display:flex;align-items:center;gap:11px;width:100%;text-align:left;cursor:pointer;
+  background:linear-gradient(145deg,#fffdf3,#fff);border:1.5px solid var(--gold);border-radius:6px;
+  padding:10px 12px;margin-bottom:9px;font-family:'Outfit',sans-serif}
+#freeBar.hidden{display:none}
+#freeBar:active{transform:scale(.995)}
+#freeBar .fic{width:30px;height:30px;flex:0 0 auto;border-radius:6px;display:grid;place-items:center;
+  background:rgba(201,162,39,.2);color:#8a6f00}
+#freeBar .fic svg{width:16px;height:16px}
+#freeBar .ftx{flex:1;min-width:0}
+#freeBar .ftx b{display:block;font-family:var(--serif);font-weight:900;font-size:.92rem;color:var(--green-deep);line-height:1.15}
+#freeBar .ftx span{display:block;font-size:.72rem;color:#8b8770;line-height:1.35;margin-top:2px}
+#freeBar .farr{flex:0 0 auto;color:var(--gold);font-size:1.3rem;line-height:1}
 #gName{font-family:var(--serif);font-weight:900;font-size:1rem;color:var(--green-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hidden#gBtn{display:none}
 #gBtn{display:flex;justify-content:center;margin-bottom:4px;min-height:44px}
@@ -294,7 +307,7 @@ header .mark{width:46px;height:46px}
     <div class="auth-head">
       <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/><circle cx="14" cy="19" r="2.6" fill="#d62828"/></svg></div>
       <h1 data-t>Télémètre</h1>
-      <p data-t id="authTagline">Connecte-toi pour retrouver tes parcours</p>
+      <p id="authTagline" data-t>Connecte-toi pour retrouver tes parcours</p>
     </div>
     <div class="surface auth-card">
       <div class="auth-tabs">
@@ -322,11 +335,10 @@ header .mark{width:46px;height:46px}
         <span data-t>Continuer avec Google</span>
       </button>
       <button class="authlink" id="btnReset" data-t>Mot de passe oublié ?</button>
-      <button class="authlink" id="btnSkip" data-t>Continuer sans compte</button>
+      <button class="authlink" id="btnSkip" data-t>Essayer sans compte</button>
     </div>
-    <p class="footnote"><span data-t>Sans compte, tes greens restent sur cet appareil.</span><br>
-      <span data-t>Avec un compte Premium, ils te suivent partout.</span></p>
-    <p class="footnote"><a id="privLink" href="confidentialite.html" target="_blank" rel="noopener" data-t>Politique de confidentialité</a></p>
+    <p class="footnote"><span data-t>Tes greens tracés sont enregistrés sur ton compte</span><br><span data-t>et te suivent sur tous tes appareils.</span></p>
+    <p class="footnote"><a class="privlink" id="privLink" href="confidentialite.html" target="_blank" rel="noopener" data-t>Politique de confidentialité</a></p>
   </div>
 </section>
 
@@ -398,6 +410,11 @@ header .mark{width:46px;height:46px}
   </div>
 
   <div id="strip">
+    <button id="freeBar" class="hidden">
+      <span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+      <span class="ftx"><b data-t>Greens non conservés</b><span id="freeSub" data-t>Passe en Premium pour garder tes tracés</span></span>
+      <span class="farr">›</span>
+    </button>
     <div id="sHead">
       <span id="gName" data-t>En attente de position</span>
       <span id="blind" data-t>Coup aveugle</span>
@@ -496,7 +513,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-14-d';
+const BUILD = 'tel-2026-08-14-e';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -655,6 +672,18 @@ en:{
 "Période d'essai":'Trial period','Mode invité':'Guest mode',
 "Ton compte utilise la connexion Google : l'adresse e-mail et le mot de passe se gèrent depuis ton compte Google.":'Your account uses Google sign-in: email and password are managed from your Google account.',
 '{n} green(s) tracé(s) — non sauvegardés. Ils disparaîtront à la fermeture.':'{n} green(s) mapped — not saved. They will be lost when you close the app.',
+'Supprimer mon compte':'Delete my account','Supprimer':'Delete',
+'Ton compte, tes greens et ton sac seront effacés définitivement. Cette action est irréversible.':'Your account, your greens and your bag will be permanently erased. This cannot be undone.',
+'Si tu as un abonnement en cours, résilie-le avant de supprimer ton compte.':'If you have an active subscription, cancel it before deleting your account.',
+'Reconnecte-toi puis recommence.':'Sign in again, then retry.',
+'Essayer sans compte':'Try without an account',
+'Tes greens tracés sont enregistrés sur ton compte':'Your mapped greens are saved to your account',
+'et te suivent sur tous tes appareils.':'and follow you on every device.',
+'Connecte-toi pour retrouver tes parcours':'Sign in to find your courses',
+'Greens non conservés':'Greens are not kept',
+'{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.':'{n} outline(s) will be lost on close. Premium keeps them.',
+'Les greens que tu traces ne sont pas conservés.':'The greens you map are not being kept.',
+'Passe en Premium pour garder tes tracés':'Go Premium to keep your outlines',
 'Créer un compte pour sauvegarder':'Create an account to save'
 },
 
@@ -1040,7 +1069,9 @@ function ecranCompte(){
         ? '<button class="btn btn-ghost" id="mLogout">'+esc(T('Se déconnecter'))+'</button><button class="btn btn-primary" id="mOk">'+esc(T('Enregistrer'))+'</button>'
         : '<button class="btn btn-ghost" id="mClose">'+esc(T('Fermer'))+'</button><button class="btn btn-primary" id="mIn">'+esc(T('Créer un compte'))+'</button>')
     +'</div>'
+    +(currentUser?'<button class="authlink" id="mDel" style="color:var(--bad)">'+esc(T('Supprimer mon compte'))+'</button>':'')
     +'<p class="modpriv"><a href="'+PAGE_POLITIQUE()+'" target="_blank" rel="noopener">'+esc(T('Politique de confidentialité'))+'</a></p>');
+  const del=$id('mDel'); if(del)del.onclick=ecranSuppression;
   const up=$id('mUp'); if(up)up.onclick=()=>{closeModal();ecranPremium();};
   const po=$id('mPortal'); if(po)po.onclick=openPortal;
   const cl=$id('mClose'); if(cl)cl.onclick=closeModal;
@@ -1056,6 +1087,33 @@ function ecranCompte(){
       majCompteUI(); toast(T('Nom mis à jour'));
     }
     closeModal();
+  };
+}
+
+function ecranSuppression(){
+  openModal('<h3>'+esc(T('Supprimer mon compte'))+'</h3>'
+    +'<p class="txt">'+esc(T('Ton compte, tes greens et ton sac seront effacés définitivement. Cette action est irréversible.'))+'</p>'
+    +'<p class="warn">'+esc(T('Si tu as un abonnement en cours, résilie-le avant de supprimer ton compte.'))+'</p>'
+    +'<div class="row"><button class="btn btn-ghost" id="mNo">'+esc(T('Annuler'))+'</button>'
+    +'<button class="btn btn-primary" id="mYes" style="background:var(--bad);box-shadow:none">'+esc(T('Supprimer'))+'</button></div>');
+  $id('mNo').onclick=closeModal;
+  $id('mYes').onclick=async()=>{
+    try{
+      const uid=currentUser.uid;
+      const snap=await fs.collection('users').doc(uid).collection('courses').get();
+      await Promise.all(snap.docs.map(d=>d.ref.delete()));
+      await fs.collection('users').doc(uid).delete();
+      await currentUser.delete();
+      Store.del(premKey());
+      location.reload();
+    }catch(e){
+      if(e&&e.code==='auth/requires-recent-login'){
+        closeModal();
+        toast(T('Reconnecte-toi puis recommence.'));
+        try{ await auth.signOut(); }catch(_){}
+        location.reload();
+      }else erreurAuth(e);
+    }
   };
 }
 
@@ -1081,6 +1139,7 @@ function initConsentement(){
 
 /* ---------- démarrage ---------- */
 function entrerDansApp(){
+  if(typeof majBandeauFree==='function')setTimeout(majBandeauFree,50);
   $id('auth').classList.add('hidden');
   $id('app').classList.remove('hidden');
   majCompteUI();
@@ -1101,6 +1160,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   $id('btnReset').onclick=resetPass;
   $id('btnSkip').onclick=()=>{invite=true;Store.set('invite','1');entrerDansApp();};
   $id('btnAcct').onclick=ecranCompte;
+  $id('freeBar').onclick=()=>ecranPremium(T('Les greens que tu traces ne sont pas conservés.'));
   $id('overlay').addEventListener('click',e=>{if(e.target.id==='overlay')closeModal();});
   montrerErreurBloquante();
 
@@ -1132,6 +1192,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       profileName=(u.displayName||profileName||(u.email||'').split('@')[0]||'').slice(0,14);
       await pullProfil(); await pullPremium();
       entrerDansApp(); afterCheckout();
+      if(typeof majBandeauFree==='function')majBandeauFree();
       if(typeof pullGreens==='function')await pullGreens();
     }else if(!invite){
       Store.del('gRedirect');
@@ -1833,13 +1894,19 @@ function writeCustom(){
   pushGreens();
 }
 
-/* Un rappel discret tant que les greens ne sont pas conservés. */
+/* Rappel permanent tant que les tracés ne sont pas conservés : il reste
+   affiché sous la carte au lieu de disparaître avec les autres messages. */
 function majBandeauFree(){
-  if (peutSauvegarderCloud()){ hideWarn(); return; }
+  const bar = $("freeBar");
+  if (!bar) return;
+  if (peutSauvegarderCloud()){ bar.classList.add("hidden"); return; }
   const n = S.greens.filter(g => g.src === "draw").length;
-  if (!n) return;
-  warn(L_("{n} green(s) tracé(s) — non sauvegardés. Ils disparaîtront à la fermeture.",{n:n}));
+  bar.classList.remove("hidden");
+  $("freeSub").textContent = n
+    ? L_("{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.",{n:n})
+    : L_("Passe en Premium pour garder tes tracés");
 }
+window.majBandeauFree = majBandeauFree;
 
 /* ---------- synchronisation cloud ----------
    Un document par parcours sous users/{uid}/courses/{id} : le document
@@ -2039,6 +2106,7 @@ function refresh(){
     updateAlti(m);
   }
   drawMeas();
+  majBandeauFree();
   render(m);
 }
 function render(m){
