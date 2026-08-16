@@ -563,10 +563,11 @@ header .mark{width:46px;height:46px}
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="leaflet/leaflet.js"></script>
+<script src="fr-poly.js"></script>
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-16-d';
+const BUILD = 'tel-2026-08-16-e';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -628,7 +629,7 @@ const firebaseConfig = {
    Restreindre la clé par référent HTTP dans le tableau de bord ArcGIS.
    Tant qu'elle vaut A_REMPLIR, seule la France est couverte (IGN).
    ======================================================================= */
-const ARCGIS = { key:'AAPTaKjaBLBUYAF-qEKYeKVzesg..eG21Nq2Zj3B4VkUm09aEOTi2D1qFBkUIExFw315T13mKQrDXQv4bp4WQC2qglqVcjLaSDbmYlpOKRMQ9RxqCswT99Vxm4Dn6wNGPVO45wO2u84Ys-hOGERbWe3plcbzQQSWiyik3Sz7lF50kbjSXA1GNyP5rCbuz2Ul9IZS91JumsPljacw9aJr9SbsgjA6I22s-S5f86zkP73v8L-uo7y8n7Jyn-6jPLXWF-XJHSxImE25co7vOaw..AT1_UGpst60w' };
+const ARCGIS = { key:'A_REMPLIR' };
 
 /* =======================================================================
    ▼▼▼  CONNEXION GOOGLE  ▼▼▼
@@ -1344,7 +1345,25 @@ const ESRI = () => hasArc() ? ESRI_KEY + encodeURIComponent(ARCGIS.key) : ESRI_A
 const IGN  = "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0"
            + "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg"
            + "&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}";
-const inFR = p => p && p.lat>41 && p.lat<51.6 && p.lon>-5.5 && p.lon<10;
+/* Un simple rectangle englobant classait à tort le nord de l'Espagne,
+   Andorre, la Suisse ou Monaco comme « France » — le fond IGN n'y couvre
+   rien, d'où une carte vide dans ces zones. On teste maintenant l'appartenance
+   réelle au contour du pays (fr-poly.js), avec le rectangle en pré-filtre
+   rapide et en repli si ce fichier n'a pas pu charger. */
+function ptDansAnneau(lat, lon, ring){
+  let dedans = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++){
+    const yi = ring[i][0], xi = ring[i][1], yj = ring[j][0], xj = ring[j][1];
+    if (((yi > lat) !== (yj > lat)) && (lon < (xj - xi) * (lat - yi) / (yj - yi) + xi)) dedans = !dedans;
+  }
+  return dedans;
+}
+const inFR = p => {
+  if (!p) return false;
+  if (p.lat < 41 || p.lat > 51.2 || p.lon < -5.2 || p.lon > 9.6) return false;
+  if (typeof FR_POLY === "undefined") return true; /* fr-poly.js absent : on retombe sur le rectangle */
+  return FR_POLY.some(ring => ptDansAnneau(p.lat, p.lon, ring));
+};
 function setBase(fr){
   if (S.france === fr) return;
   S.france = fr;
