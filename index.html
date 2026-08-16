@@ -464,7 +464,7 @@ header .mark{width:46px;height:46px}
         <p id="barMsg"></p>
         <div class="slide" id="tolWrap">
           <span class="lb" data-t>Tolérance</span>
-          <input type="range" id="tol" min="6" max="80" step="2" value="30" aria-label="Tolérance">
+          <input type="range" id="tol" min="0" max="80" step="2" value="30" aria-label="Tolérance">
           <span class="val" id="tolLab">30</span>
         </div>
         <div class="slide" id="radWrap">
@@ -587,7 +587,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-16-q';
+const BUILD = 'tel-2026-08-16-r';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -774,6 +774,7 @@ en:{
 'Parcours absent d\'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.':'Course missing from OpenStreetMap. Add greens with DETECT, DRAW or POINT.',
 'Points effacés. Touchez la carte pour recommencer.':'Points cleared. Tap the map to start again.',
 'Rayon {r} m · {a} m². Ajustez puis Garder.':'Radius {r} m · {a} m². Adjust then Keep.',
+'Rayon {r} m · {a} m². Glissez les points dorés ou changez le rayon, puis Garder.':'Radius {r} m · {a} m². Drag the gold points or change the radius, then Keep.',
 'Reprise de {n}.':'Resuming {n}.',
 'Repère effacé. Touchez un point pour mesurer.':'Marker cleared. Tap a point to measure.',
 'Rien de cohérent ici. Visez le centre du green ou montez la tolérance.':'Nothing consistent detected here. Aim for the center of the green or raise the tolerance.',
@@ -898,6 +899,7 @@ es:{
 'Parcours absent d\'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.':'Campo ausente de OpenStreetMap. Añade los greens con DETECT, TRAZAR o PUNTO.',
 'Points effacés. Touchez la carte pour recommencer.':'Puntos borrados. Toca el mapa para empezar de nuevo.',
 'Rayon {r} m · {a} m². Ajustez puis Garder.':'Radio {r} m · {a} m². Ajusta y pulsa Conservar.',
+'Rayon {r} m · {a} m². Glissez les points dorés ou changez le rayon, puis Garder.':'Radio {r} m · {a} m². Arrastra los puntos dorados o cambia el radio, y pulsa Conservar.',
 'Reprise de {n}.':'Reanudando {n}.',
 'Repère effacé. Touchez un point pour mesurer.':'Marca borrada. Toca un punto para medir.',
 'Rien de cohérent ici. Visez le centre du green ou montez la tolérance.':'Nada coherente detectado aquí. Apunta al centro del green o sube la tolerancia.',
@@ -1024,6 +1026,7 @@ de:{
 'Parcours absent d\'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.':'Platz fehlt bei OpenStreetMap. Füge Greens mit ERKENN, ZEICHN oder PUNKT hinzu.',
 'Points effacés. Touchez la carte pour recommencer.':'Punkte gelöscht. Tippe auf die Karte, um erneut zu beginnen.',
 'Rayon {r} m · {a} m². Ajustez puis Garder.':'Radius {r} m · {a} m². Anpassen und dann Behalten.',
+'Rayon {r} m · {a} m². Glissez les points dorés ou changez le rayon, puis Garder.':'Radius {r} m · {a} m². Ziehe die goldenen Punkte oder ändere den Radius, dann Behalten.',
 'Reprise de {n}.':'{n} wird fortgesetzt.',
 'Repère effacé. Touchez un point pour mesurer.':'Markierung gelöscht. Tippe auf einen Punkt, um zu messen.',
 'Rien de cohérent ici. Visez le centre du green ou montez la tolérance.':'Hier nichts Einheitliches erkannt. Ziele auf die Mitte des Greens oder erhöhe die Toleranz.',
@@ -1560,9 +1563,10 @@ function clubSvg(name){
 
 const S = { pos:null, acc:null, heading:null, greens:[], sel:null, ctx:null, replaceId:null,
             mode:null, draft:[], detect:null, point:null, meas:null, hideId:null, alti:null, altiKey:"", altiBusy:false,
-            france:null, target:"centre", bag:loadBag(), over:loadOver() };
+            france:null, target:"centre", bag:loadBag(), over:loadOver(),
+            editRing:null, editDirty:false, resumeOriginal:null };
 let map, base, meMarker, accRing, spokes, gLayer, tagLayer, tmpLayer, measLayer, follow = true;
-let detectPoly = null, detectHandles = [];
+let editPoly = null, editHandles = [];
 let rot = 0, rotMode = "north", rotAnim = null, askResolve = null;
 
 function loadBag(){
@@ -2313,17 +2317,23 @@ function ringArea(ring){
   }
   return Math.abs(a)/2;
 }
-function drawDetectPoly(){
-  if (detectPoly) detectPoly.remove();
-  detectPoly = L.polygon(S.detect.ring, { color:"#C9A227", weight:2.5, fillColor:"#C9A227", fillOpacity:.28, interactive:false }).addTo(tmpLayer);
+/* ---------- édition générique d'un contour par poignées ----------
+   Moteur commun à DÉTECT, POINTER et à la reprise d'un green existant
+   (« Retracer le contour ») : S.editRing est le contour actuellement
+   affiché/éditable (réduit à une quinzaine de points), quel que soit
+   l'outil qui l'a produit. */
+function drawEditPoly(){
+  if (editPoly) editPoly.remove();
+  editPoly = L.polygon(S.editRing, { color:"#C9A227", weight:2.5, fillColor:"#C9A227", fillOpacity:.28, interactive:false }).addTo(tmpLayer);
 }
-function detectMsg(prefix){
-  const area = ringArea(S.detect.ring), dia = Math.round(Math.sqrt(area/Math.PI)*2), a = Math.round(area);
+function editMsg(prefix){
+  const area = ringArea(S.editRing), dia = Math.round(Math.sqrt(area/Math.PI)*2), a = Math.round(area);
   msg((prefix ? prefix + " " : "") + L_("{a} m², {d} m. Glissez les points dorés pour ajuster, puis Garder.",{a:a,d:dia}));
 }
 /* Poignées glissables sur chaque sommet du contour réduit : la correction
-   manuelle qui manquait à DÉTECT — au lieu de rejouer tout l'algorithme,
-   on retouche juste l'endroit qui ne va pas.
+   manuelle qui manquait à DÉTECT (et maintenant POINTER et la reprise) —
+   au lieu de rejouer tout l'algorithme, on retouche juste l'endroit qui
+   ne va pas.
    La carte gère elle-même tous ses gestes (pan, pincement, rotation,
    tap) via ses propres écouteurs pointerdown/move/up posés sur le
    conteneur (voir bindGestures) plutôt que par les interactions
@@ -2332,8 +2342,8 @@ function detectMsg(prefix){
    déplacement des poignées à la main, et on arrête la propagation du
    pointerdown dès la poignée pour que le conteneur ne le voie jamais
    (sinon un relâchement après un léger mouvement serait interprété
-   comme un tap et relancerait la détection, effaçant la retouche). */
-function armHandleDrag(mk, i){
+   comme un tap et relancerait l'outil actif, effaçant la retouche). */
+function armHandleDrag(mk, i, onMove){
   const el = mk.getElement();
   if (!el) return;
   el.addEventListener("pointerdown", ev => {
@@ -2345,8 +2355,9 @@ function armHandleDrag(mk, i){
       const r = $("map").getBoundingClientRect();
       const ll2 = screenToLatLng(mv.clientX - r.left, mv.clientY - r.top);
       mk.setLatLng(ll2);
-      S.detect.ring[i] = [ll2.lat, ll2.lng];
-      drawDetectPoly(); detectMsg();
+      S.editRing[i] = [ll2.lat, ll2.lng];
+      S.editDirty = true;
+      drawEditPoly(); (onMove || editMsg)();
     };
     const end = up => {
       if (up.pointerId !== ev.pointerId) return;
@@ -2361,46 +2372,60 @@ function armHandleDrag(mk, i){
     window.addEventListener("pointercancel", end);
   });
 }
-function drawDetectHandles(){
-  detectHandles.forEach(m => m.remove()); detectHandles = [];
-  S.detect.ring.forEach((p, i) => {
+function drawEditHandles(onMove){
+  editHandles.forEach(m => m.remove()); editHandles = [];
+  S.editRing.forEach((p, i) => {
     const mk = L.marker(p, {
       icon: L.divIcon({ className:"handle", html:"<i></i>", iconSize:[24,24], iconAnchor:[12,12] }),
       keyboard:false, zIndexOffset:1000, interactive:true
     }).addTo(tmpLayer);
-    armHandleDrag(mk, i);
-    detectHandles.push(mk);
+    armHandleDrag(mk, i, onMove);
+    editHandles.push(mk);
   });
 }
 function applyDetect(){
   if (!S.detect || !S.detect.px) return;
   const { px, ll } = S.detect, c = contour(px, grow(px, +$("tol").value), ll);
-  tmpLayer.clearLayers(); detectHandles = []; detectPoly = null;
+  tmpLayer.clearLayers(); editHandles = []; editPoly = null;
   $("tolWrap").classList.add("on");
   /* Repère du point exact où le doigt a touché l'écran : sans lui, un tap
      qui manque le green de quelques mètres donne un contour propre mais
      ailleurs, sans que rien ne le signale — l'utilisateur ne peut pas
      savoir que c'est le TAP qui était mal placé plutôt que la détection. */
   L.circleMarker(ll, { radius:5, color:"#fff", weight:2, fillColor:"#C9A227", fillOpacity:1, interactive:false }).addTo(tmpLayer);
-  if (!c){ msg(L_("Rien de cohérent ici. Visez le centre du green ou montez la tolérance.")); return; }
-  S.detect.ring = reduceRing(c.ring, 14);
-  drawDetectPoly();
-  drawDetectHandles();
-  detectMsg(c.leak ? L_("Le contour déborde — baissez la tolérance ou glissez les points dorés vers l'intérieur.") : null);
+  if (!c){ S.editRing = null; msg(L_("Rien de cohérent ici. Visez le centre du green ou montez la tolérance.")); return; }
+  S.editRing = reduceRing(c.ring, 14);
+  S.editDirty = false;
+  drawEditPoly();
+  drawEditHandles();
+  editMsg(c.leak ? L_("Le contour déborde — baissez la tolérance ou glissez les points dorés vers l'intérieur.") : null);
 }
 
 /* ---------- pointer ---------- */
+/* Message dédié à POINTER : rappelle le rayon (réglable au curseur) en
+   plus de l'aire réelle du contour affiché — celle-ci ne correspond plus
+   à π·r² dès qu'une poignée a été déplacée à la main. */
+function pointMsg(prefix){
+  const area = ringArea(S.editRing);
+  msg((prefix ? prefix + " " : "") + L_("Rayon {r} m · {a} m². Glissez les points dorés ou changez le rayon, puis Garder.",{r:S.point.r,a:Math.round(area)}));
+}
 function applyPoint(){
   if (!S.point) return;
   const r = +$("rad").value;
   $("radLab").textContent = r + " m";
   S.point.r = r;
+  /* Cercle plein (beaucoup de points) gardé à part pour l'enregistrement
+     tant qu'aucune poignée n'a été bougée à la main ; l'affichage/édition
+     se fait sur une version réduite (voir reduceRing) comme pour DÉTECT. */
   S.point.ring = ringAt(S.point.lat, S.point.lon, r);
-  tmpLayer.clearLayers();
-  L.polygon(S.point.ring, { color:"#C9A227", weight:2.5, fillColor:"#C9A227", fillOpacity:.26, interactive:false }).addTo(tmpLayer);
+  tmpLayer.clearLayers(); editHandles = []; editPoly = null;
   L.circleMarker([S.point.lat, S.point.lon], { radius:4, color:"#C9A227", fillOpacity:1, interactive:false }).addTo(tmpLayer);
   $("radWrap").classList.add("on");
-  msg(L_("Rayon {r} m · {a} m². Ajustez puis Garder.",{r:r,a:Math.round(Math.PI*r*r)}));
+  S.editRing = reduceRing(S.point.ring, 14);
+  S.editDirty = false;
+  drawEditPoly();
+  drawEditHandles(pointMsg);
+  pointMsg();
 }
 const msg = t => { $("barMsg").innerHTML = t; $("bar").classList.add("on"); };
 
@@ -2546,10 +2571,11 @@ function renameGreen(g, name){
 }
 function closeBar(keepReplace){
   S.mode = null; S.detect = null; S.draft = []; S.point = null;
+  S.editRing = null; S.editDirty = false; S.resumeOriginal = null;
   if (!keepReplace){
     if (S.replaceId || S.hideId){ S.replaceId = null; S.hideId = null; drawGreens(); }
   }
-  tmpLayer.clearLayers(); detectHandles = []; detectPoly = null;
+  tmpLayer.clearLayers(); editHandles = []; editPoly = null;
   $("bar").classList.remove("on");
   $("tolWrap").classList.remove("on"); $("radWrap").classList.remove("on");
   $("measWrap").classList.remove("on");
@@ -2617,13 +2643,27 @@ $("ctxRename").addEventListener("click", async () => {
 });
 $("ctxRedraw").addEventListener("click", () => {
   const g = S.ctx; closeCtx(); closeBar();
-  /* L'ancien contour disparaît tout de suite : on repart d'une carte
-     propre et c'est l'utilisateur qui choisit l'outil de reprise. */
+  /* Le contour existant réapparaît tout de suite avec ses points, prêt à
+     être retouché au doigt — plus besoin de tout retracer à la main.
+     Choisir DÉTECT, TRACER ou POINTER reste possible pour repartir de
+     zéro : closeBar() (appelé par armTool en resuming) efface alors
+     S.editRing et S.resumeOriginal. */
   S.replaceId = g.id; S.hideId = g.id;
   map.setView(ctr(g.coords), Math.max(map.getZoom(), 18), { animate:false });
   drawGreens();
   openCarto();
-  msg(L_("Ancien contour de {n} effacé. Choisissez DÉTECT, TRACER ou POINTER pour le refaire.",{n:esc(g.name)}));
+  if (g.mk === "point" && g.c){
+    S.point = { lat:g.c[0], lon:g.c[1] };
+    $("rad").value = g.r || 14;
+    applyPoint();
+    return;
+  }
+  S.resumeOriginal = g.coords.map(p => [p[0], p[1]]);
+  S.editRing = reduceRing(g.coords, 14);
+  S.editDirty = false;
+  drawEditPoly();
+  drawEditHandles();
+  editMsg(L_("Reprise de {n}.",{n:esc(g.name)}));
 });
 $("ctxDel").addEventListener("click", () => {
   if (!delArmed){
@@ -2799,8 +2839,18 @@ $("bAgain").addEventListener("click", () => {
     msg(L_("Repère effacé. Touchez un point pour mesurer."));
     return;
   }
+  /* Reprise d'un green existant (Retracer le contour) sans outil choisi :
+     Refaire annule les retouches et remet le contour d'origine, plutôt
+     que d'effacer et forcer à recommencer de zéro. */
+  if (!S.mode && S.resumeOriginal){
+    S.editRing = reduceRing(S.resumeOriginal, 14);
+    S.editDirty = false;
+    drawEditPoly(); drawEditHandles();
+    editMsg();
+    return;
+  }
   tmpLayer.clearLayers(); S.detect = null; S.draft = []; S.point = null;
-  detectHandles = []; detectPoly = null;
+  editHandles = []; editPoly = null; S.editRing = null; S.resumeOriginal = null;
   $("tolWrap").classList.remove("on"); $("radWrap").classList.remove("on");
   msg(S.mode === "draw" ? L_("Points effacés. Touchez la carte pour recommencer.") : L_("Touchez à nouveau le centre du green."));
 });
@@ -2809,10 +2859,13 @@ $("bKeep").addEventListener("click", async () => {
   if (S.mode === "draw"){
     if (S.draft.length < 3){ msg(L_("Il faut au moins trois points.")); return; }
     ok = await saveGreen(S.draft.slice(), { mk:"draw" });
-  } else if (S.mode === "point" && S.point && S.point.ring){
+  } else if (S.mode === "point" && S.point && !S.editDirty && S.point.ring){
     ok = await saveGreen(S.point.ring, { mk:"point", c:[S.point.lat, S.point.lon], r:S.point.r });
-  } else if (S.detect && S.detect.ring){
-    ok = await saveGreen(S.detect.ring, { mk:"detect" });
+  } else if (S.editRing){
+    /* DÉTECT retouché ou non, POINTER retouché à la main, ou reprise d'un
+       green existant : dans tous ces cas le contour affiché (S.editRing)
+       est la source de vérité à enregistrer. */
+    ok = await saveGreen(S.editRing.slice(), { mk: S.mode === "detect" ? "detect" : "draw" });
   } else { msg(L_("Rien à garder pour l'instant.")); return; }
   if (ok) closeBar();
 });
