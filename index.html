@@ -581,7 +581,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-16-j';
+const BUILD = 'tel-2026-08-16-k';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -634,7 +634,8 @@ const firebaseConfig = {
   projectId: "swingup-telemetre",
   storageBucket: "swingup-telemetre.firebasestorage.app",
   messagingSenderId: "287840826427",
-  appId: "1:287840826427:web:ee44e50af226be3bb8181e"
+  appId: "1:287840826427:web:ee44e50af226be3bb8181e",
+  measurementId: "G-FCS3VQQJSZ"
 };
 
 /* =======================================================================
@@ -679,7 +680,7 @@ const BETA = {
 };
 
 /* Mesure d'audience. Tant que id est vide, aucun script, aucune bannière. */
-const ANALYTICS = { id:'' };
+const ANALYTICS = { id:'G-FCS3VQQJSZ' };
 
 /* ======================= DICTIONNAIRES =======================
    La clé est le texte français. Une entrée absente laisse le
