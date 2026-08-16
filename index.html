@@ -581,7 +581,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-16-k';
+const BUILD = 'tel-2026-08-16-m';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -675,8 +675,8 @@ const PREMIUM = {
    « limite » gardent leur accès à vie. */
 const BETA = {
   actif:true,
-  fin:'31 décembre 2026',
-  limite:Date.parse('2026-12-31T23:59:59+01:00')
+  fin:'27 septembre 2026',
+  limite:Date.parse('2026-09-27T23:59:59+02:00')
 };
 
 /* Mesure d'audience. Tant que id est vide, aucun script, aucune bannière. */
@@ -720,6 +720,9 @@ en:{
 'Sans abonnement, les greens que tu traces disparaissent à la fermeture. Avec Premium, ils sont conservés et te suivent sur tous tes appareils.':'Without a subscription, the greens you map are lost when you close the app. With Premium they are kept and follow you on every device.',
 'Parcours illimités':'Unlimited courses',
 'Cartographie sans limite de nombre de greens.':'Map as many greens as you like.',
+'Vue satellite illimitée':'Unlimited satellite view',
+'300 tuiles gratuites par mois hors France, à volonté avec Premium.':'300 free tiles per month outside France, unlimited with Premium.',
+'Limite satellite gratuite du mois atteinte. Passe en Premium pour continuer en vue aérienne.':'Free monthly satellite limit reached. Go Premium to keep the aerial view.',
 'Mesure et création restent gratuites':'Measuring and mapping stay free',
 'Mesure et cartographie restent gratuites':'Measuring and mapping stay free',
 'L\'abonnement ne porte que sur la sauvegarde en ligne.':'The subscription only covers online backup.',
@@ -758,6 +761,8 @@ en:{
 'Rouvrir le point et son curseur':'Reopen the point and its slider',
 'Image satellite pas encore chargée à cet endroit. Attendez une seconde et retouchez.':'Satellite image not loaded here yet. Wait a second and tap again.',
 'Le contour déborde — baissez la tolérance.':'The outline overflows — lower the tolerance.',
+'{a} m², {d} m — un peu petit, montez la tolérance.':'{a} m², {d} m — a bit small, raise the tolerance.',
+'{a} m², {d} m de diamètre. Pas le bon endroit ? Retouchez le centre du green.':'{a} m², {d} m across. Wrong spot? Tap the center of the green again.',
 'Parcours absent d\'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.':'Course missing from OpenStreetMap. Add greens with DETECT, DRAW or POINT.',
 'Points effacés. Touchez la carte pour recommencer.':'Points cleared. Tap the map to start again.',
 'Rayon {r} m · {a} m². Ajustez puis Garder.':'Radius {r} m · {a} m². Adjust then Keep.',
@@ -773,7 +778,7 @@ en:{
 'Touchez un point : la distance se met à jour en marchant.':'Tap a point: the distance updates as you walk.',
 'Touchez à nouveau le centre du green.':'Tap the center of the green again.',
 'Touchez à nouveau pour valider':'Tap again to confirm',
-'Zoomez davantage : la détection demande le niveau 18.':'Zoom in further: detection requires level 18.',
+'Zoomez davantage : la détection demande le niveau 19.':'Zoom in further: detection requires level 19.',
 'Page non servie en HTTPS : le navigateur bloque GPS et boussole. Touchez POS. pour vous placer à la main.':'Page not served over HTTPS: the browser blocks GPS and compass. Tap POS. to place yourself manually.',
 'Position inaccessible. Utilisez POS.':'Position unavailable. Use POS.',
 'Position indisponible.':'Position unavailable.','Pos. manuelle':'Manual position',
@@ -835,6 +840,9 @@ es:{
 'Sans abonnement, les greens que tu traces disparaissent à la fermeture. Avec Premium, ils sont conservés et te suivent sur tous tes appareils.':'Sin suscripción, los greens que trazas desaparecen al cerrar la app. Con Premium, se conservan y te siguen en todos tus dispositivos.',
 'Parcours illimités':'Campos ilimitados',
 'Cartographie sans limite de nombre de greens.':'Cartografía sin límite en el número de greens.',
+'Vue satellite illimitée':'Vista satelital ilimitada',
+'300 tuiles gratuites par mois hors France, à volonté avec Premium.':'300 tuiles gratuitas al mes fuera de Francia, ilimitadas con Premium.',
+'Limite satellite gratuite du mois atteinte. Passe en Premium pour continuer en vue aérienne.':'Límite satelital gratuito del mes alcanzado. Pasa a Premium para seguir con la vista aérea.',
 'Mesure et création restent gratuites':'Medir y crear siguen siendo gratis',
 'Mesure et cartographie restent gratuites':'Medir y cartografiar siguen siendo gratis',
 'L\'abonnement ne porte que sur la sauvegarde en ligne.':'La suscripción solo cubre la copia de seguridad en línea.',
@@ -875,6 +883,8 @@ es:{
 'Rouvrir le point et son curseur':'Reabrir el punto y su control deslizante',
 'Image satellite pas encore chargée à cet endroit. Attendez une seconde et retouchez.':'La imagen satelital aún no se ha cargado aquí. Espera un segundo y vuelve a tocar.',
 'Le contour déborde — baissez la tolérance.':'El contorno se desborda — reduce la tolerancia.',
+'{a} m², {d} m — un peu petit, montez la tolérance.':'{a} m², {d} m — un poco pequeño, sube la tolerancia.',
+'{a} m², {d} m de diamètre. Pas le bon endroit ? Retouchez le centre du green.':'{a} m², {d} m de diámetro. ¿No es el sitio correcto? Vuelve a tocar el centro del green.',
 'Parcours absent d\'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.':'Campo ausente de OpenStreetMap. Añade los greens con DETECT, TRAZAR o PUNTO.',
 'Points effacés. Touchez la carte pour recommencer.':'Puntos borrados. Toca el mapa para empezar de nuevo.',
 'Rayon {r} m · {a} m². Ajustez puis Garder.':'Radio {r} m · {a} m². Ajusta y pulsa Conservar.',
@@ -890,7 +900,7 @@ es:{
 'Touchez un point : la distance se met à jour en marchant.':'Toca un punto: la distancia se actualiza mientras caminas.',
 'Touchez à nouveau le centre du green.':'Vuelve a tocar el centro del green.',
 'Touchez à nouveau pour valider':'Vuelve a tocar para confirmar',
-'Zoomez davantage : la détection demande le niveau 18.':'Acerca más el zoom: la detección requiere el nivel 18.',
+'Zoomez davantage : la détection demande le niveau 19.':'Acerca más el zoom: la detección requiere el nivel 19.',
 'Page non servie en HTTPS : le navigateur bloque GPS et boussole. Touchez POS. pour vous placer à la main.':'Página no servida por HTTPS: el navegador bloquea el GPS y la brújula. Toca POS. para ubicarte manualmente.',
 'Position inaccessible. Utilisez POS.':'Posición no disponible. Usa POS.',
 'Position indisponible.':'Posición no disponible.','Pos. manuelle':'Posición manual',
@@ -954,6 +964,9 @@ de:{
 'Sans abonnement, les greens que tu traces disparaissent à la fermeture. Avec Premium, ils sont conservés et te suivent sur tous tes appareils.':'Ohne Abo verschwinden die von dir erfassten Greens beim Schließen der App. Mit Premium bleiben sie erhalten und begleiten dich auf all deinen Geräten.',
 'Parcours illimités':'Unbegrenzte Plätze',
 'Cartographie sans limite de nombre de greens.':'Kartierung ohne Begrenzung der Anzahl an Greens.',
+'Vue satellite illimitée':'Unbegrenzte Satellitenansicht',
+'300 tuiles gratuites par mois hors France, à volonté avec Premium.':'300 kostenlose Kacheln pro Monat außerhalb Frankreichs, unbegrenzt mit Premium.',
+'Limite satellite gratuite du mois atteinte. Passe en Premium pour continuer en vue aérienne.':'Kostenloses Satelliten-Monatslimit erreicht. Wechsle zu Premium, um die Luftansicht zu behalten.',
 'Mesure et création restent gratuites':'Messen und Erstellen bleiben kostenlos',
 'Mesure et cartographie restent gratuites':'Messen und Kartieren bleiben kostenlos',
 'L\'abonnement ne porte que sur la sauvegarde en ligne.':'Das Abo deckt nur die Online-Sicherung ab.',
@@ -994,6 +1007,8 @@ de:{
 'Rouvrir le point et son curseur':'Den Punkt und seinen Regler erneut öffnen',
 'Image satellite pas encore chargée à cet endroit. Attendez une seconde et retouchez.':'Satellitenbild an dieser Stelle noch nicht geladen. Warte eine Sekunde und tippe erneut.',
 'Le contour déborde — baissez la tolérance.':'Die Kontur läuft über — verringere die Toleranz.',
+'{a} m², {d} m — un peu petit, montez la tolérance.':'{a} m², {d} m — etwas klein, erhöhe die Toleranz.',
+'{a} m², {d} m de diamètre. Pas le bon endroit ? Retouchez le centre du green.':'{a} m², {d} m Durchmesser. Falsche Stelle? Tippe erneut die Mitte des Greens an.',
 'Parcours absent d\'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.':'Platz fehlt bei OpenStreetMap. Füge Greens mit ERKENN, ZEICHN oder PUNKT hinzu.',
 'Points effacés. Touchez la carte pour recommencer.':'Punkte gelöscht. Tippe auf die Karte, um erneut zu beginnen.',
 'Rayon {r} m · {a} m². Ajustez puis Garder.':'Radius {r} m · {a} m². Anpassen und dann Behalten.',
@@ -1009,7 +1024,7 @@ de:{
 'Touchez un point : la distance se met à jour en marchant.':'Tippe einen Punkt an: Die Entfernung aktualisiert sich beim Gehen.',
 'Touchez à nouveau le centre du green.':'Tippe erneut die Mitte des Greens an.',
 'Touchez à nouveau pour valider':'Erneut tippen zum Bestätigen',
-'Zoomez davantage : la détection demande le niveau 18.':'Weiter hineinzoomen: Die Erkennung erfordert Stufe 18.',
+'Zoomez davantage : la détection demande le niveau 19.':'Weiter hineinzoomen: Die Erkennung erfordert Stufe 19.',
 'Page non servie en HTTPS : le navigateur bloque GPS et boussole. Touchez POS. pour vous placer à la main.':'Seite wird nicht über HTTPS bereitgestellt: Der Browser blockiert GPS und Kompass. Tippe auf POS., um dich manuell zu positionieren.',
 'Position inaccessible. Utilisez POS.':'Position nicht verfügbar. Verwende POS.',
 'Position indisponible.':'Position nicht verfügbar.','Pos. manuelle':'Manuelle Position',
@@ -1169,6 +1184,7 @@ function ecranPremium(origine){
     +'<div class="plan">'
     +feat(T('Sauvegarde et synchronisation'),T('Sans abonnement, les greens que tu traces disparaissent à la fermeture. Avec Premium, ils sont conservés et te suivent sur tous tes appareils.'))
     +feat(T('Parcours illimités'),T('Cartographie sans limite de nombre de greens.'))
+    +feat(T('Vue satellite illimitée'),T('300 tuiles gratuites par mois hors France, à volonté avec Premium.'))
     +feat(T('Mesure et cartographie restent gratuites'),T("L'abonnement ne porte que sur la conservation de tes tracés."))
     +'<div class="price">'+esc(PREMIUM.price)+'</div><p class="pnote">'+esc(PREMIUM.note)+'</p></div>'
     +(BETA.actif?'<div class="subline on"><b>'+esc(T('Version bêta'))+'</b><span>'+esc(T('Tout est ouvert jusqu\'au {d}.',{d:BETA.fin}))+'</span></div>':'')
@@ -1642,11 +1658,46 @@ const inFR = p => {
   if (typeof FR_POLY === "undefined") return true; /* fr-poly.js absent : on retombe sur le rectangle */
   return FR_POLY.some(ring => ptDansAnneau(p.lat, p.lon, ring));
 };
-function setBase(fr){
-  if (S.france === fr) return;
-  S.france = fr;
+
+/* ---------- quota satellite mensuel (gratuit) ----------
+   Hors France, le satellite Esri est limité à SAT_QUOTA_MAX tuiles
+   DISTINCTES par mois civil pour les comptes non-Premium : rejouer
+   le même green plusieurs fois ne compte qu'une fois grâce au cache
+   du service worker et à cette liste de tuiles déjà vues. Une fois
+   la limite atteinte, on bascule sur OpenStreetMap (gratuit, illimité,
+   pas de photo aérienne) jusqu'au mois suivant. Premium n'a aucune
+   limite : « à volonté ». */
+const OSM_FALLBACK = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+const SAT_QUOTA_MAX = 300;
+const moisCourant = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); };
+const quotaSatCle = () => "sat.quota." + moisCourant();
+function quotaSatVues(){
+  try { return JSON.parse(Store.get(quotaSatCle()) || "[]"); } catch (e) { return []; }
+}
+function quotaSatDispo(){ return isPremium() || quotaSatVues().length < SAT_QUOTA_MAX; }
+function quotaSatCompter(coords){
+  if (isPremium()) return;
+  const cle = coords.z + "/" + coords.x + "/" + coords.y;
+  const vues = quotaSatVues();
+  if (vues.indexOf(cle) >= 0) return;
+  vues.push(cle);
+  try { Store.set(quotaSatCle(), JSON.stringify(vues)); } catch (e) {}
+  if (vues.length >= SAT_QUOTA_MAX){
+    warn(L_("Limite satellite gratuite du mois atteinte. Passe en Premium pour continuer en vue aérienne."));
+    setTimeout(() => setBase(S.france, true), 0);
+  }
+}
+function baseKind(fr){ return fr ? "fr" : (quotaSatDispo() ? "sat" : "osm"); }
+function baseUrl(kind){ return kind === "fr" ? IGN : kind === "sat" ? ESRI() : OSM_FALLBACK; }
+function setBase(fr, force){
+  const kind = baseKind(fr);
+  if (S.france === fr && S.baseKind === kind && !force) return;
+  S.france = fr; S.baseKind = kind;
   if (base) map.removeLayer(base);
-  base = L.tileLayer(fr ? IGN : ESRI(), { maxNativeZoom:19, maxZoom:21, crossOrigin:"anonymous" }).addTo(map);
+  const opts = { maxNativeZoom:19, maxZoom:19, crossOrigin:"anonymous" };
+  if (kind !== "osm") opts.maxZoom = 21;
+  if (kind === "osm") opts.subdomains = "abc";
+  base = L.tileLayer(baseUrl(kind), opts).addTo(map);
   base.bringToBack();
   let tuileAvertie = false;
   base.on("tileerror", () => {
@@ -1654,11 +1705,16 @@ function setBase(fr){
     tuileAvertie = true;
     warn(L_("Imagerie satellite temporairement indisponible."));
   });
-  base.on("tileload", () => { tuileAvertie = false; });
-  $("attrib").innerHTML = fr
+  base.on("tileload", e => {
+    tuileAvertie = false;
+    if (kind === "sat") quotaSatCompter(e.coords);
+  });
+  $("attrib").innerHTML = kind === "fr"
     ? 'Ortho &amp; RGE ALTI © <a href="https://www.ign.fr" target="_blank" rel="noopener">IGN</a> · greens © OpenStreetMap · Leaflet'
-    : 'Powered by <a href="https://www.esri.com" target="_blank" rel="noopener">Esri</a> · altitudes Copernicus · greens © OpenStreetMap · Leaflet';
-  if (!fr && !hasArc()) warn(L_("Fond satellite mondial non configuré : clé ArcGIS manquante."));
+    : kind === "sat"
+    ? 'Powered by <a href="https://www.esri.com" target="_blank" rel="noopener">Esri</a> · altitudes Copernicus · greens © OpenStreetMap · Leaflet'
+    : 'Fond © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · greens © OpenStreetMap · Leaflet';
+  if (kind === "sat" && !hasArc()) warn(L_("Fond satellite mondial non configuré : clé ArcGIS manquante."));
 }
 async function elevations(pts){
   if (!pts.length) return [];
@@ -2071,10 +2127,13 @@ function grow(px, tol){
   const mask = new Uint8Array(size*size), q = [seed]; mask[seed] = 1;
   let n = 1;
   const cap = size*size*0.7, lim = size/2 - 2, thr = tol*3;
+  /* 4-connexité (pas de diagonales) : un contour qui ne passe que par un
+     coin de pixel (bord de chemin, ombre) ne suffit plus à faire fuir le
+     remplissage vers la zone voisine — c'était la cause la plus fréquente
+     d'un contour qui saute sur le terrain d'à côté. */
   while (q.length && n < cap){
     const i = q.pop(), x = i%size, y = (i/size)|0;
-    for (let dy=-1;dy<=1;dy++) for (let dx=-1;dx<=1;dx++){
-      if (!dx && !dy) continue;
+    for (const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
       const nx=x+dx, ny=y+dy;
       if (nx<1||ny<1||nx>=size-1||ny>=size-1) continue;
       const ni = ny*size+nx;
@@ -2120,7 +2179,7 @@ function contour(px, reg, ll){
   return { ring, area: area*m*m, leak: leak/N > 0.25 };
 }
 function runDetect(ll){
-  if (map.getZoom() < 17.5){ msg(L_("Zoomez davantage : la détection demande le niveau 18.")); return; }
+  if (map.getZoom() < 18.5){ msg(L_("Zoomez davantage : la détection demande le niveau 19.")); return; }
   const px = grab(ll, 60);
   if (!px){ msg(L_("Image satellite pas encore chargée à cet endroit. Attendez une seconde et retouchez.")); return; }
   if (px.tainted){ msg(L_("Ce fond interdit la lecture des pixels. Utilisez TRACER ou POINTER.")); return; }
@@ -2131,13 +2190,18 @@ function applyDetect(){
   const { px, ll } = S.detect, c = contour(px, grow(px, +$("tol").value), ll);
   tmpLayer.clearLayers();
   $("tolWrap").classList.add("on");
+  /* Repère du point exact où le doigt a touché l'écran : sans lui, un tap
+     qui manque le green de quelques mètres donne un contour propre mais
+     ailleurs, sans que rien ne le signale — l'utilisateur ne peut pas
+     savoir que c'est le TAP qui était mal placé plutôt que la détection. */
+  L.circleMarker(ll, { radius:5, color:"#fff", weight:2, fillColor:"#C9A227", fillOpacity:1, interactive:false }).addTo(tmpLayer);
   if (!c){ msg(L_("Rien de cohérent ici. Visez le centre du green ou montez la tolérance.")); return; }
   S.detect.ring = c.ring;
   L.polygon(c.ring, { color:"#C9A227", weight:2.5, fillColor:"#C9A227", fillOpacity:.28, interactive:false }).addTo(tmpLayer);
   const dia = Math.round(Math.sqrt(c.area/Math.PI)*2), a = Math.round(c.area);
   msg(c.leak ? L_("Le contour déborde — baissez la tolérance.")
-     : a < 200 ? a + " m², " + dia + " m — un peu petit, montez la tolérance."
-     : a + " m², " + dia + " m de diamètre.");
+     : a < 200 ? L_("{a} m², {d} m — un peu petit, montez la tolérance.",{a:a,d:dia})
+     : L_("{a} m², {d} m de diamètre. Pas le bon endroit ? Retouchez le centre du green.",{a:a,d:dia}));
 }
 
 /* ---------- pointer ---------- */
