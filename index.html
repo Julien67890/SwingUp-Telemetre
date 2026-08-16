@@ -587,7 +587,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-16-r';
+const BUILD = 'tel-2026-08-16-s';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -1564,7 +1564,7 @@ function clubSvg(name){
 const S = { pos:null, acc:null, heading:null, greens:[], sel:null, ctx:null, replaceId:null,
             mode:null, draft:[], detect:null, point:null, meas:null, hideId:null, alti:null, altiKey:"", altiBusy:false,
             france:null, target:"centre", bag:loadBag(), over:loadOver(),
-            editRing:null, editDirty:false, resumeOriginal:null };
+            editRing:null, editDirty:false, resumeOriginal:null, resumeNoReduce:false };
 let map, base, meMarker, accRing, spokes, gLayer, tagLayer, tmpLayer, measLayer, follow = true;
 let editPoly = null, editHandles = [];
 let rot = 0, rotMode = "north", rotAnim = null, askResolve = null;
@@ -2323,7 +2323,11 @@ function ringArea(ring){
    affiché/éditable (réduit à une quinzaine de points), quel que soit
    l'outil qui l'a produit. */
 function drawEditPoly(){
-  if (editPoly) editPoly.remove();
+  if (editPoly) editPoly.remove(); editPoly = null;
+  /* TRACER peut n'avoir qu'un seul point posé : pas de polygone visible
+     avant le deuxième (comme avant), mais les poignées, elles,
+     s'affichent dès le premier point. */
+  if (!S.editRing || S.editRing.length < 2) return;
   editPoly = L.polygon(S.editRing, { color:"#C9A227", weight:2.5, fillColor:"#C9A227", fillOpacity:.28, interactive:false }).addTo(tmpLayer);
 }
 function editMsg(prefix){
@@ -2462,12 +2466,23 @@ function drawMeas(){
 }
 
 /* ---------- tracé et stockage ---------- */
+function draftMsg(){
+  msg(L_("{n} point(s) — 3 minimum, puis Garder.",{n:S.draft.length}));
+}
+/* Chaque point tapé devient directement une poignée déplaçable — pas de
+   réduction (reduceRing) ici, contrairement à DÉTECT/POINTER : chaque
+   point de TRACER est un tap exact de l'utilisateur, pas un point
+   rééchantillonné sur une courbe, donc aucun n'est à sacrifier. Un tap
+   à côté d'une poignée ajoute un nouveau point comme avant ; un tap sur
+   une poignée la déplace (armHandleDrag stoppe la propagation avant
+   que le tap n'atteigne la carte). */
 function pushDraft(ll){
   S.draft.push([ll.lat, ll.lng]);
-  tmpLayer.clearLayers();
-  if (S.draft.length > 1) L.polygon(S.draft, { color:"#C9A227", weight:2, fillColor:"#C9A227", fillOpacity:.2, interactive:false }).addTo(tmpLayer);
-  S.draft.forEach(p => L.circleMarker(p, { radius:4, color:"#C9A227", fillOpacity:1, interactive:false }).addTo(tmpLayer));
-  msg(L_("{n} point(s) — 3 minimum, puis Garder.",{n:S.draft.length}));
+  S.editRing = S.draft;
+  S.editDirty = false;
+  drawEditPoly();
+  drawEditHandles(draftMsg);
+  draftMsg();
 }
 /* La conservation des greens — sur l'appareil comme dans le cloud — est
    une fonction Premium. Sans abonnement, ils vivent le temps de la session
@@ -2571,7 +2586,7 @@ function renameGreen(g, name){
 }
 function closeBar(keepReplace){
   S.mode = null; S.detect = null; S.draft = []; S.point = null;
-  S.editRing = null; S.editDirty = false; S.resumeOriginal = null;
+  S.editRing = null; S.editDirty = false; S.resumeOriginal = null; S.resumeNoReduce = false;
   if (!keepReplace){
     if (S.replaceId || S.hideId){ S.replaceId = null; S.hideId = null; drawGreens(); }
   }
@@ -2659,7 +2674,11 @@ $("ctxRedraw").addEventListener("click", () => {
     return;
   }
   S.resumeOriginal = g.coords.map(p => [p[0], p[1]]);
-  S.editRing = reduceRing(g.coords, 14);
+  /* Un contour TRACER, c'est des taps exacts posés à la main : on garde
+     chaque point tel quel plutôt que de le réduire à 14 poignées comme
+     pour un contour DÉTECT (issu d'une courbe rééchantillonnable). */
+  S.resumeNoReduce = g.mk === "draw";
+  S.editRing = S.resumeNoReduce ? S.resumeOriginal.slice() : reduceRing(g.coords, 14);
   S.editDirty = false;
   drawEditPoly();
   drawEditHandles();
@@ -2843,14 +2862,14 @@ $("bAgain").addEventListener("click", () => {
      Refaire annule les retouches et remet le contour d'origine, plutôt
      que d'effacer et forcer à recommencer de zéro. */
   if (!S.mode && S.resumeOriginal){
-    S.editRing = reduceRing(S.resumeOriginal, 14);
+    S.editRing = S.resumeNoReduce ? S.resumeOriginal.slice() : reduceRing(S.resumeOriginal, 14);
     S.editDirty = false;
     drawEditPoly(); drawEditHandles();
     editMsg();
     return;
   }
   tmpLayer.clearLayers(); S.detect = null; S.draft = []; S.point = null;
-  editHandles = []; editPoly = null; S.editRing = null; S.resumeOriginal = null;
+  editHandles = []; editPoly = null; S.editRing = null; S.resumeOriginal = null; S.resumeNoReduce = false;
   $("tolWrap").classList.remove("on"); $("radWrap").classList.remove("on");
   msg(S.mode === "draw" ? L_("Points effacés. Touchez la carte pour recommencer.") : L_("Touchez à nouveau le centre du green."));
 });
