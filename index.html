@@ -581,7 +581,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-16-o';
+const BUILD = 'tel-2026-08-16-p';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -2112,9 +2112,17 @@ function grab(ll, halfM){
   catch(e){ return { tainted:true }; }
 }
 function seedColor(data, size){
-  const c = size/2|0, R=[], G=[], B=[];
-  for (let dy=-3;dy<=3;dy++) for (let dx=-3;dx<=3;dx++){
-    const i = ((c+dy)*size + (c+dx))*4;
+  /* Fenêtre élargie à la vraie « zone touchée » (quelques mètres autour du
+     doigt) plutôt qu'un minuscule carré de 7×7 px : moins sensible à une
+     rayure de tondeuse, une ombre ou un artefact de compression tombés
+     pile sous le point exact. La médiane (déjà plus robuste qu'une simple
+     moyenne face à quelques pixels aberrants) reste utilisée par canal. */
+  const c = size/2|0, rad = Math.max(5, Math.min(14, Math.round(size*0.045)));
+  const R=[], G=[], B=[];
+  for (let dy=-rad;dy<=rad;dy++) for (let dx=-rad;dx<=rad;dx++){
+    const y = c+dy, x = c+dx;
+    if (y<0||x<0||y>=size||x>=size) continue;
+    const i = (y*size + x)*4;
     R.push(data[i]); G.push(data[i+1]); B.push(data[i+2]);
   }
   const med = a => { a.sort((x,y)=>x-y); return a[a.length>>1]; };
@@ -2146,19 +2154,25 @@ function dilateInto(mask, raw, size){
   return out;
 }
 function compProcheSeed(mask, size, seed){
+  /* Priorité absolue à la composante qui contient encore le pixel tapé :
+     c'est la seule qui garantit que le point touché reste dans la zone
+     rendue. On ne retombe sur « la plus proche du centre » que si le tap
+     lui-même a été rongé par l'érosion (green minuscule). */
   const seen = new Uint8Array(size*size), cx = seed % size, cy = (seed/size)|0;
   let best = null, bestD = Infinity;
   for (let s=0;s<mask.length;s++){
     if (!mask[s] || seen[s]) continue;
     const stack=[s]; seen[s]=1; const pix=[s];
+    let hasSeed = (s === seed);
     while (stack.length){
       const i = stack.pop(), x=i%size, y=(i/size)|0;
       for (const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
         const nx=x+dx, ny=y+dy; if (nx<0||ny<0||nx>=size||ny>=size) continue;
         const ni = ny*size+nx;
-        if (mask[ni] && !seen[ni]){ seen[ni]=1; stack.push(ni); pix.push(ni); }
+        if (mask[ni] && !seen[ni]){ seen[ni]=1; stack.push(ni); pix.push(ni); if (ni===seed) hasSeed=true; }
       }
     }
+    if (hasSeed) return pix;
     let sx=0, sy=0;
     for (const i of pix){ sx+=i%size; sy+=(i/size)|0; }
     const d = Math.hypot(sx/pix.length-cx, sy/pix.length-cy);
@@ -2205,17 +2219,25 @@ function grow(px, tol){
     let clean = new Uint8Array(size*size);
     for (const i of comp) clean[i] = 1;
     for (let i=0;i<k;i++) clean = dilateInto(clean, raw, size);
+    clean[seed] = 1; /* garantie : le point tapé fait toujours partie de la zone rendue */
     let cn = 0; for (let i=0;i<clean.length;i++) cn += clean[i];
-    return { mask: clean, n: cn, lim };
+    return { mask: clean, n: cn, lim, seed };
   }
-  return { mask: raw, n, lim };
+  return { mask: raw, n, lim, seed };
 }
 function contour(px, reg, ll){
-  const { size, m } = px, { mask, lim } = reg;
-  let sx=0, sy=0, n=0;
-  for (let i=0;i<mask.length;i++) if (mask[i]){ sx+=i%size; sy+=(i/size)|0; n++; }
-  if (n < 50) return null;
-  sx/=n; sy/=n;
+  /* Le rayon part toujours du point tapé (et non du centre de gravité de
+     la tache détectée) : pour une forme irrégulière ou en haltère, le
+     barycentre peut tomber hors zone, voire de l'autre côté d'un
+     étranglement, et produire un contour qui ne contient plus le point
+     que l'utilisateur a réellement touché — exactement le bug remonté.
+     Partir du point tapé garantit qu'il reste systématiquement dans le
+     polygone rendu. */
+  const { size, m } = px, { mask, lim, seed } = reg;
+  let n = 0;
+  for (let i=0;i<mask.length;i++) if (mask[i]) n++;
+  if (n < 50 || !mask[seed]) return null;
+  const sx = size/2, sy = size/2;
   const N = 72, rad = new Float32Array(N); let leak = 0;
   for (let k=0;k<N;k++){
     const t = k*(360/N)*D2R, ux = Math.sin(t), uy = -Math.cos(t);
