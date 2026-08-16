@@ -172,6 +172,12 @@ header .mark{width:46px;height:46px}
 .mtag{background:none!important;border:0!important}
 .mtag span{display:block;transform:translate(-50%,-50%) rotate(var(--cr));padding:4px 10px;border-radius:6px;
   background:var(--gold);color:#3a2c00;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4)}
+.handle{background:none!important;border:0!important;cursor:grab;touch-action:none}
+.handle i{position:absolute;left:50%;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;
+  border-radius:50%;background:transparent}
+.handle i::after{content:"";position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;
+  border-radius:50%;background:var(--gold);border:2.5px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.5)}
+.handle.dragging i::after{background:#fff}
 
 #mtools{position:absolute;right:10px;top:10px;z-index:800;display:flex;flex-direction:column;gap:6px}
 #carto{display:none;flex-direction:column;gap:6px}
@@ -581,7 +587,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-16-p';
+const BUILD = 'tel-2026-08-16-q';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -763,6 +769,8 @@ en:{
 'Le contour déborde — baissez la tolérance.':'The outline overflows — lower the tolerance.',
 '{a} m², {d} m — un peu petit, montez la tolérance.':'{a} m², {d} m — a bit small, raise the tolerance.',
 '{a} m², {d} m de diamètre. Pas le bon endroit ? Retouchez le centre du green.':'{a} m², {d} m across. Wrong spot? Tap the center of the green again.',
+'Le contour déborde — baissez la tolérance ou glissez les points dorés vers l\'intérieur.':'The outline overflows — lower the tolerance or drag the gold points inward.',
+'{a} m², {d} m. Glissez les points dorés pour ajuster, puis Garder.':'{a} m², {d} m. Drag the gold points to adjust, then Keep.',
 'Parcours absent d\'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.':'Course missing from OpenStreetMap. Add greens with DETECT, DRAW or POINT.',
 'Points effacés. Touchez la carte pour recommencer.':'Points cleared. Tap the map to start again.',
 'Rayon {r} m · {a} m². Ajustez puis Garder.':'Radius {r} m · {a} m². Adjust then Keep.',
@@ -885,6 +893,8 @@ es:{
 'Le contour déborde — baissez la tolérance.':'El contorno se desborda — reduce la tolerancia.',
 '{a} m², {d} m — un peu petit, montez la tolérance.':'{a} m², {d} m — un poco pequeño, sube la tolerancia.',
 '{a} m², {d} m de diamètre. Pas le bon endroit ? Retouchez le centre du green.':'{a} m², {d} m de diámetro. ¿No es el sitio correcto? Vuelve a tocar el centro del green.',
+'Le contour déborde — baissez la tolérance ou glissez les points dorés vers l\'intérieur.':'El contorno se desborda — reduce la tolerancia o arrastra los puntos dorados hacia dentro.',
+'{a} m², {d} m. Glissez les points dorés pour ajuster, puis Garder.':'{a} m², {d} m. Arrastra los puntos dorados para ajustar y pulsa Conservar.',
 'Parcours absent d\'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.':'Campo ausente de OpenStreetMap. Añade los greens con DETECT, TRAZAR o PUNTO.',
 'Points effacés. Touchez la carte pour recommencer.':'Puntos borrados. Toca el mapa para empezar de nuevo.',
 'Rayon {r} m · {a} m². Ajustez puis Garder.':'Radio {r} m · {a} m². Ajusta y pulsa Conservar.',
@@ -1009,6 +1019,8 @@ de:{
 'Le contour déborde — baissez la tolérance.':'Die Kontur läuft über — verringere die Toleranz.',
 '{a} m², {d} m — un peu petit, montez la tolérance.':'{a} m², {d} m — etwas klein, erhöhe die Toleranz.',
 '{a} m², {d} m de diamètre. Pas le bon endroit ? Retouchez le centre du green.':'{a} m², {d} m Durchmesser. Falsche Stelle? Tippe erneut die Mitte des Greens an.',
+'Le contour déborde — baissez la tolérance ou glissez les points dorés vers l\'intérieur.':'Die Kontur läuft über — verringere die Toleranz oder ziehe die goldenen Punkte nach innen.',
+'{a} m², {d} m. Glissez les points dorés pour ajuster, puis Garder.':'{a} m², {d} m. Ziehe die goldenen Punkte zum Anpassen, dann Behalten.',
 'Parcours absent d\'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.':'Platz fehlt bei OpenStreetMap. Füge Greens mit ERKENN, ZEICHN oder PUNKT hinzu.',
 'Points effacés. Touchez la carte pour recommencer.':'Punkte gelöscht. Tippe auf die Karte, um erneut zu beginnen.',
 'Rayon {r} m · {a} m². Ajustez puis Garder.':'Radius {r} m · {a} m². Anpassen und dann Behalten.',
@@ -1550,6 +1562,7 @@ const S = { pos:null, acc:null, heading:null, greens:[], sel:null, ctx:null, rep
             mode:null, draft:[], detect:null, point:null, meas:null, hideId:null, alti:null, altiKey:"", altiBusy:false,
             france:null, target:"centre", bag:loadBag(), over:loadOver() };
 let map, base, meMarker, accRing, spokes, gLayer, tagLayer, tmpLayer, measLayer, follow = true;
+let detectPoly = null, detectHandles = [];
 let rot = 0, rotMode = "north", rotAnim = null, askResolve = null;
 
 function loadBag(){
@@ -2277,10 +2290,92 @@ function runDetect(ll){
   if (px.tainted){ msg(L_("Ce fond interdit la lecture des pixels. Utilisez TRACER ou POINTER.")); return; }
   S.detect = { px, ll }; applyDetect();
 }
+/* Un contour à 72 points (une par angle de rayon) est trop dense pour être
+   corrigé au doigt un par un ; on le ramène à une quinzaine de poignées
+   réparties tout autour, largement suffisant pour suivre la forme d'un
+   green tout en restant maniable sur un écran de téléphone. */
+function reduceRing(ring, k){
+  if (ring.length <= k) return ring.map(p => [p[0], p[1]]);
+  const out = [];
+  for (let i=0;i<k;i++){ const p = ring[Math.floor(i*ring.length/k) % ring.length]; out.push([p[0], p[1]]); }
+  return out;
+}
+/* Aire d'un polygone lat/lng via une projection plane locale (mêmes
+   formules loc()/D2R que le reste de l'app) : reste juste après un
+   glisser-déposer de poignée, sans dépendre du calcul de détection. */
+function ringArea(ring){
+  const [la0, lo0] = ring[0];
+  const pts = ring.map(([la,lo]) => loc(la, lo, la0, lo0));
+  let a = 0;
+  for (let i=0;i<pts.length;i++){
+    const [x1,y1] = pts[i], [x2,y2] = pts[(i+1)%pts.length];
+    a += x1*y2 - x2*y1;
+  }
+  return Math.abs(a)/2;
+}
+function drawDetectPoly(){
+  if (detectPoly) detectPoly.remove();
+  detectPoly = L.polygon(S.detect.ring, { color:"#C9A227", weight:2.5, fillColor:"#C9A227", fillOpacity:.28, interactive:false }).addTo(tmpLayer);
+}
+function detectMsg(prefix){
+  const area = ringArea(S.detect.ring), dia = Math.round(Math.sqrt(area/Math.PI)*2), a = Math.round(area);
+  msg((prefix ? prefix + " " : "") + L_("{a} m², {d} m. Glissez les points dorés pour ajuster, puis Garder.",{a:a,d:dia}));
+}
+/* Poignées glissables sur chaque sommet du contour réduit : la correction
+   manuelle qui manquait à DÉTECT — au lieu de rejouer tout l'algorithme,
+   on retouche juste l'endroit qui ne va pas.
+   La carte gère elle-même tous ses gestes (pan, pincement, rotation,
+   tap) via ses propres écouteurs pointerdown/move/up posés sur le
+   conteneur (voir bindGestures) plutôt que par les interactions
+   intégrées de Leaflet. Le drag « draggable:true » natif de Leaflet
+   entrerait donc en conflit avec ce système : on implémente le
+   déplacement des poignées à la main, et on arrête la propagation du
+   pointerdown dès la poignée pour que le conteneur ne le voie jamais
+   (sinon un relâchement après un léger mouvement serait interprété
+   comme un tap et relancerait la détection, effaçant la retouche). */
+function armHandleDrag(mk, i){
+  const el = mk.getElement();
+  if (!el) return;
+  el.addEventListener("pointerdown", ev => {
+    ev.stopPropagation(); ev.preventDefault();
+    el.classList.add("dragging");
+    const move = mv => {
+      if (mv.pointerId !== ev.pointerId) return;
+      mv.stopPropagation();
+      const r = $("map").getBoundingClientRect();
+      const ll2 = screenToLatLng(mv.clientX - r.left, mv.clientY - r.top);
+      mk.setLatLng(ll2);
+      S.detect.ring[i] = [ll2.lat, ll2.lng];
+      drawDetectPoly(); detectMsg();
+    };
+    const end = up => {
+      if (up.pointerId !== ev.pointerId) return;
+      up.stopPropagation();
+      el.classList.remove("dragging");
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", end);
+      window.removeEventListener("pointercancel", end);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", end);
+    window.addEventListener("pointercancel", end);
+  });
+}
+function drawDetectHandles(){
+  detectHandles.forEach(m => m.remove()); detectHandles = [];
+  S.detect.ring.forEach((p, i) => {
+    const mk = L.marker(p, {
+      icon: L.divIcon({ className:"handle", html:"<i></i>", iconSize:[24,24], iconAnchor:[12,12] }),
+      keyboard:false, zIndexOffset:1000, interactive:true
+    }).addTo(tmpLayer);
+    armHandleDrag(mk, i);
+    detectHandles.push(mk);
+  });
+}
 function applyDetect(){
   if (!S.detect || !S.detect.px) return;
   const { px, ll } = S.detect, c = contour(px, grow(px, +$("tol").value), ll);
-  tmpLayer.clearLayers();
+  tmpLayer.clearLayers(); detectHandles = []; detectPoly = null;
   $("tolWrap").classList.add("on");
   /* Repère du point exact où le doigt a touché l'écran : sans lui, un tap
      qui manque le green de quelques mètres donne un contour propre mais
@@ -2288,12 +2383,10 @@ function applyDetect(){
      savoir que c'est le TAP qui était mal placé plutôt que la détection. */
   L.circleMarker(ll, { radius:5, color:"#fff", weight:2, fillColor:"#C9A227", fillOpacity:1, interactive:false }).addTo(tmpLayer);
   if (!c){ msg(L_("Rien de cohérent ici. Visez le centre du green ou montez la tolérance.")); return; }
-  S.detect.ring = c.ring;
-  L.polygon(c.ring, { color:"#C9A227", weight:2.5, fillColor:"#C9A227", fillOpacity:.28, interactive:false }).addTo(tmpLayer);
-  const dia = Math.round(Math.sqrt(c.area/Math.PI)*2), a = Math.round(c.area);
-  msg(c.leak ? L_("Le contour déborde — baissez la tolérance.")
-     : a < 200 ? L_("{a} m², {d} m — un peu petit, montez la tolérance.",{a:a,d:dia})
-     : L_("{a} m², {d} m de diamètre. Pas le bon endroit ? Retouchez le centre du green.",{a:a,d:dia}));
+  S.detect.ring = reduceRing(c.ring, 14);
+  drawDetectPoly();
+  drawDetectHandles();
+  detectMsg(c.leak ? L_("Le contour déborde — baissez la tolérance ou glissez les points dorés vers l'intérieur.") : null);
 }
 
 /* ---------- pointer ---------- */
@@ -2456,7 +2549,7 @@ function closeBar(keepReplace){
   if (!keepReplace){
     if (S.replaceId || S.hideId){ S.replaceId = null; S.hideId = null; drawGreens(); }
   }
-  tmpLayer.clearLayers();
+  tmpLayer.clearLayers(); detectHandles = []; detectPoly = null;
   $("bar").classList.remove("on");
   $("tolWrap").classList.remove("on"); $("radWrap").classList.remove("on");
   $("measWrap").classList.remove("on");
@@ -2707,6 +2800,7 @@ $("bAgain").addEventListener("click", () => {
     return;
   }
   tmpLayer.clearLayers(); S.detect = null; S.draft = []; S.point = null;
+  detectHandles = []; detectPoly = null;
   $("tolWrap").classList.remove("on"); $("radWrap").classList.remove("on");
   msg(S.mode === "draw" ? L_("Points effacés. Touchez la carte pour recommencer.") : L_("Touchez à nouveau le centre du green."));
 });
