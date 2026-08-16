@@ -4,7 +4,15 @@
    la carte de score, même si les deux sont sur le même domaine.
    Incrémenter CACHE_VERSION à chaque mise en ligne.
    ========================================================= */
-const CACHE_VERSION = 'swingup-telemetre-v8';
+const CACHE_VERSION = 'swingup-telemetre-v9';
+
+/* Cache des tuiles d'imagerie : nom FIXE, volontairement en dehors de
+   CACHE_VERSION, pour survivre aux mises à jour de l'appli (sinon chaque
+   déploiement reviderait tout le cache et redemanderait les mêmes tuiles
+   à Esri/IGN pour rien). Limité en durée et en taille : voir plus bas. */
+const TILE_CACHE = 'swingup-telemetre-tiles';
+const TILE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; /* 30 jours : un green ne bouge pas */
+const TILE_MAX_ENTRIES = 4000; /* large pour plusieurs parcours, raisonnable en place disque */
 
 const APP_SHELL = [
   './',
@@ -28,14 +36,19 @@ const RUNTIME_HOSTS = [
   'www.gstatic.com'
 ];
 
-/* Fournisseurs de tuiles et d'altimétrie.
-   Volontairement NON mis en cache : les conditions d'utilisation d'Esri
-   et de l'IGN encadrent la conservation des tuiles, et une carte périmée
-   fausserait les distances. Le réseau, ou rien. */
-const TILE_HOSTS = [
+/* Imagerie aérienne/satellite : mise en cache limitée dans le temps
+   (30 jours) et en volume (TILE_MAX_ENTRIES). Rejouer le même parcours
+   ne redemande donc plus les mêmes tuiles à chaque partie — ça réduit
+   nettement la consommation du quota ArcGIS sans jamais servir une
+   image trop ancienne. */
+const IMAGERY_HOSTS = [
   'data.geopf.fr',
   'ibasemaps-api.arcgis.com',
-  'server.arcgisonline.com',
+  'server.arcgisonline.com'
+];
+
+/* Données dynamiques (altitude, POI) : toujours le réseau, jamais de cache. */
+const TILE_HOSTS = [
   'api.open-meteo.com',
   'overpass-api.de'
 ];
@@ -53,11 +66,39 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(k => k !== CACHE_VERSION).map(k => caches.delete(k))
+        keys.filter(k => k !== CACHE_VERSION && k !== TILE_CACHE).map(k => caches.delete(k))
       ))
       .then(() => self.clients.claim())
   );
 });
+
+/* Cache-first avec expiration pour les tuiles d'imagerie. */
+async function repondreTuile(req){
+  const cache = await caches.open(TILE_CACHE);
+  const hit = await cache.match(req);
+  if (hit){
+    const stamp = Number(hit.headers.get('sw-cached-at') || 0);
+    if (Date.now() - stamp < TILE_MAX_AGE_MS) return hit;
+  }
+  try {
+    const res = await fetch(req);
+    if (res && res.ok){
+      const blob = await res.clone().blob();
+      const headers = new Headers(res.headers);
+      headers.set('sw-cached-at', String(Date.now()));
+      cache.put(req, new Response(blob, { status: res.status, statusText: res.statusText, headers }));
+      trimTuiles(cache);
+    }
+    return res;
+  } catch (err) {
+    return hit || Response.error();
+  }
+}
+async function trimTuiles(cache){
+  const keys = await cache.keys();
+  const excedent = keys.length - TILE_MAX_ENTRIES;
+  for (let i = 0; i < excedent; i++) await cache.delete(keys[i]);
+}
 
 self.addEventListener('fetch', event => {
   const req = event.request;
@@ -68,8 +109,14 @@ self.addEventListener('fetch', event => {
   /* Extensions du navigateur et autres schémas : le cache les refuse. */
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
 
-  /* Tuiles, altimétrie, Overpass : on laisse passer sans intervenir. */
+  /* Altimétrie, Overpass : on laisse passer sans intervenir (données changeantes). */
   if (TILE_HOSTS.some(h => url.hostname.endsWith(h))) return;
+
+  /* Imagerie aérienne/satellite : cache-first avec expiration (30 jours). */
+  if (IMAGERY_HOSTS.some(h => url.hostname.endsWith(h))) {
+    event.respondWith(repondreTuile(req));
+    return;
+  }
 
   /* Firebase et Firestore : toujours le réseau, jamais de cache,
      sinon l'état d'abonnement serait servi périmé. */
