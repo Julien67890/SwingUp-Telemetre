@@ -581,7 +581,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-16-m';
+const BUILD = 'tel-2026-08-16-n';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -2120,30 +2120,95 @@ function seedColor(data, size){
   const med = a => { a.sort((x,y)=>x-y); return a[a.length>>1]; };
   return [med(R), med(G), med(B)];
 }
+/* Érosion 4-connexe d'une passe : un pixel ne survit que si ses 4 voisins
+   directs appartiennent aussi au masque. Répétée k fois, elle efface tout
+   corridor plus étroit qu'environ 2k pixels sur toute sa longueur — pas
+   seulement à ses extrémités — sans entamer un green plein qui fait
+   presque toujours plusieurs dizaines de pixels de large. */
+function erode(mask, size){
+  const out = new Uint8Array(size*size);
+  for (let y=1;y<size-1;y++) for (let x=1;x<size-1;x++){
+    const i = y*size+x;
+    if (mask[i] && mask[i-1] && mask[i+1] && mask[i-size] && mask[i+size]) out[i]=1;
+  }
+  return out;
+}
+/* Dilatation contrainte : ne regagne que des pixels déjà présents dans le
+   masque brut (celui d'avant érosion), pour reconstituer le bord du green
+   sans jamais retraverser un corridor qui vient d'être coupé. */
+function dilateInto(mask, raw, size){
+  const out = mask.slice();
+  for (let y=1;y<size-1;y++) for (let x=1;x<size-1;x++){
+    const i = y*size+x;
+    if (mask[i] || !raw[i]) continue;
+    if (mask[i-1] || mask[i+1] || mask[i-size] || mask[i+size]) out[i]=1;
+  }
+  return out;
+}
+function compProcheSeed(mask, size, seed){
+  const seen = new Uint8Array(size*size), cx = seed % size, cy = (seed/size)|0;
+  let best = null, bestD = Infinity;
+  for (let s=0;s<mask.length;s++){
+    if (!mask[s] || seen[s]) continue;
+    const stack=[s]; seen[s]=1; const pix=[s];
+    while (stack.length){
+      const i = stack.pop(), x=i%size, y=(i/size)|0;
+      for (const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const nx=x+dx, ny=y+dy; if (nx<0||ny<0||nx>=size||ny>=size) continue;
+        const ni = ny*size+nx;
+        if (mask[ni] && !seen[ni]){ seen[ni]=1; stack.push(ni); pix.push(ni); }
+      }
+    }
+    let sx=0, sy=0;
+    for (const i of pix){ sx+=i%size; sy+=(i/size)|0; }
+    const d = Math.hypot(sx/pix.length-cx, sy/pix.length-cy);
+    if (d < bestD){ bestD = d; best = pix; }
+  }
+  return best;
+}
 function grow(px, tol){
   const { data, size } = px;
   const [r0,g0,b0] = seedColor(data, size);
   const seed = (size/2|0)*size + (size/2|0);
-  const mask = new Uint8Array(size*size), q = [seed]; mask[seed] = 1;
+  const raw = new Uint8Array(size*size), q = [seed]; raw[seed] = 1;
   let n = 1;
   const cap = size*size*0.7, lim = size/2 - 2, thr = tol*3;
   /* 4-connexité (pas de diagonales) : un contour qui ne passe que par un
      coin de pixel (bord de chemin, ombre) ne suffit plus à faire fuir le
-     remplissage vers la zone voisine — c'était la cause la plus fréquente
-     d'un contour qui saute sur le terrain d'à côté. */
+     remplissage vers la zone voisine. */
   while (q.length && n < cap){
     const i = q.pop(), x = i%size, y = (i/size)|0;
     for (const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
       const nx=x+dx, ny=y+dy;
       if (nx<1||ny<1||nx>=size-1||ny>=size-1) continue;
       const ni = ny*size+nx;
-      if (mask[ni] || Math.hypot(nx-size/2, ny-size/2) > lim) continue;
+      if (raw[ni] || Math.hypot(nx-size/2, ny-size/2) > lim) continue;
       const j = ni*4;
       if (Math.abs(data[j]-r0)+Math.abs(data[j+1]-g0)+Math.abs(data[j+2]-b0) > thr) continue;
-      mask[ni]=1; n++; q.push(ni);
+      raw[ni]=1; n++; q.push(ni);
     }
   }
-  return { mask, n, lim };
+  /* Ouverture morphologique (érosion puis dilatation) : la 4-connexité
+     bloque une fuite par un simple coin, mais pas une fuite qui suit un
+     vrai corridor de quelques pixels de large (liseré tondu, chemin,
+     ombre continue) reliant le green à une zone voisine de teinte proche
+     — c'était la cause du contour qui « saute » sur le terrain d'à côté
+     alors même que le repère de tap reste bien sur le bon green. On
+     essaie une érosion de plus en plus légère jusqu'à obtenir une zone
+     encore assez grande autour du point tapé ; en dernier recours on
+     revient au masque brut plutôt que de perdre un petit green valide. */
+  for (const k of [3,2,1]){
+    let eroded = raw;
+    for (let i=0;i<k;i++) eroded = erode(eroded, size);
+    const comp = compProcheSeed(eroded, size, seed);
+    if (!comp || comp.length < 30) continue;
+    let clean = new Uint8Array(size*size);
+    for (const i of comp) clean[i] = 1;
+    for (let i=0;i<k;i++) clean = dilateInto(clean, raw, size);
+    let cn = 0; for (let i=0;i<clean.length;i++) cn += clean[i];
+    return { mask: clean, n: cn, lim };
+  }
+  return { mask: raw, n, lim };
 }
 function contour(px, reg, ll){
   const { size, m } = px, { mask, lim } = reg;
