@@ -513,7 +513,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-14-f';
+const BUILD = 'tel-2026-08-16-a';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -586,7 +586,7 @@ const GOOGLE = { clientId:'287840826427-4vmhf2pgan0v5hqhab66hhmuivvmil7d.apps.go
 
    Dans les deux cas, la connexion par e-mail fonctionne sans restriction.
    ======================================================================= */
-const AUTH_MODE = 'google';
+const AUTH_MODE = 'firebase';
 
 const gisPret = () => AUTH_MODE === 'google'
   && GOOGLE.clientId && GOOGLE.clientId.indexOf('A_REMPLIR') < 0;
