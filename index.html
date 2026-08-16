@@ -567,7 +567,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-16-e';
+const BUILD = 'tel-2026-08-16-f';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -1370,6 +1370,13 @@ function setBase(fr){
   if (base) map.removeLayer(base);
   base = L.tileLayer(fr ? IGN : ESRI(), { maxNativeZoom:19, maxZoom:21, crossOrigin:"anonymous" }).addTo(map);
   base.bringToBack();
+  let tuileAvertie = false;
+  base.on("tileerror", () => {
+    if (tuileAvertie) return;
+    tuileAvertie = true;
+    warn(L_("Imagerie satellite temporairement indisponible."));
+  });
+  base.on("tileload", () => { tuileAvertie = false; });
   $("attrib").innerHTML = fr
     ? 'Ortho &amp; RGE ALTI © <a href="https://www.ign.fr" target="_blank" rel="noopener">IGN</a> · greens © OpenStreetMap · Leaflet'
     : 'Powered by <a href="https://www.esri.com" target="_blank" rel="noopener">Esri</a> · altitudes Copernicus · greens © OpenStreetMap · Leaflet';
