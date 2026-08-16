@@ -179,9 +179,6 @@ header .mark{width:46px;height:46px}
 #freeBar .ftx span{display:block;font-size:.72rem;color:#8b8770;line-height:1.35;margin-top:2px}
 #freeBar .farr{flex:0 0 auto;color:var(--gold);font-size:1.3rem;line-height:1}
 #gName{font-family:var(--serif);font-weight:900;font-size:1rem;color:var(--green-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hidden#gBtn{display:none}
-#gBtn{display:flex;justify-content:center;margin-bottom:4px;min-height:44px}
-#gBtn>div{max-width:100%}
 #gSub{font-size:.66rem;color:#8b8770;white-space:nowrap}
 #blind{display:none;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
   background:rgba(201,162,39,.22);color:#8a6f00;padding:4px 8px;border-radius:999px;white-space:nowrap}
@@ -329,7 +326,6 @@ header .mark{width:46px;height:46px}
       </div>
       <button class="btn btn-primary" id="btnAuth" data-t>Se connecter</button>
       <div class="authsep"><span data-t>ou</span></div>
-      <div id="gBtn" class="hidden"></div>
       <button class="btn btn-google" id="btnGoogle">
         <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-2.8-.4-4H24v7.3h12.1c-.2 2-1.6 5-4.5 7l-.1.3 6.5 5 .5.1c4.1-3.8 6.6-9.4 6.6-15.7"/><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-6.9-5.4c-1.8 1.3-4.3 2.2-7.6 2.2-5.8 0-10.7-3.8-12.5-9.1l-.3 0-6.7 5.2-.1.2C8 40.4 15.4 46 24 46"/><path fill="#FBBC05" d="M11.5 28.4c-.5-1.4-.7-2.9-.7-4.4s.3-3 .7-4.4v-.3l-6.8-5.3-.2.1C2.9 17 2 20.4 2 24s.9 7 2.5 10.1z"/><path fill="#EA4335" d="M24 9.5c4.1 0 6.9 1.8 8.5 3.3l6.2-6C34.9 3.4 29.9 1 24 1 15.4 1 8 6.6 4.5 13.9l7 5.4c1.8-5.3 6.7-9.8 12.5-9.8"/></svg>
         <span data-t>Continuer avec Google</span>
@@ -513,7 +509,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-16-a';
+const BUILD = 'tel-2026-08-16-c';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -559,37 +555,12 @@ const firebaseConfig = {
 const ARCGIS = { key:'A_REMPLIR' };
 
 /* =======================================================================
-   ▼▼▼  CONNEXION GOOGLE — identifiant client OAuth  ▼▼▼
-   Console Google Cloud → API et services → Identifiants →
-   « Web client (auto created by Google Service) ». Copier l'ID client.
-   Ajouter https://julien67890.github.io dans « Origines JavaScript autorisées ».
-
-   Indispensable sur mobile : Chrome cloisonne le stockage des domaines
-   tiers, ce qui casse le retour par firebaseapp.com. Google Identity
-   Services rend le jeton directement, sans passer par ce domaine.
-   Laisser A_REMPLIR retombe sur l'ancien circuit (fenêtre / redirection).
+   ▼▼▼  CONNEXION GOOGLE  ▼▼▼
+   Même circuit que SwingUpPro (carte de score) : signInWithPopup, puis
+   redirection en secours si la fenêtre est refusée. Rien à configurer côté
+   Google Cloud — seul le fournisseur Google doit être activé dans
+   Firebase Authentication, et le domaine ajouté aux domaines autorisés.
    ======================================================================= */
-const GOOGLE = { clientId:'287840826427-4vmhf2pgan0v5hqhab66hhmuivvmil7d.apps.googleusercontent.com' };
-
-/* =======================================================================
-   ▼▼▼  MÉTHODE DE CONNEXION GOOGLE  ▼▼▼
-
-   'firebase' — identique à SwingUpPro : signInWithPopup, puis redirection
-                si la fenêtre est refusée. Rien à configurer côté Google
-                Cloud. En revanche tout transite par firebaseapp.com, que
-                Chrome cloisonne : la connexion Google échoue dans
-                l'application installée sur mobile.
-
-   'google'   — Google Identity Services. Fonctionne partout, y compris en
-                application installée, mais impose de renseigner l'écran de
-                consentement OAuth (Branding + Audience) dans Google Cloud.
-
-   Dans les deux cas, la connexion par e-mail fonctionne sans restriction.
-   ======================================================================= */
-const AUTH_MODE = 'firebase';
-
-const gisPret = () => AUTH_MODE === 'google'
-  && GOOGLE.clientId && GOOGLE.clientId.indexOf('A_REMPLIR') < 0;
 
 /* =======================================================================
    ▼▼▼  ABONNEMENT PREMIUM — compte Stripe PROPRE au télémètre  ▼▼▼
@@ -909,87 +880,28 @@ async function lancerAuth(){
   }catch(e){ erreurAuth(e); }
   b.classList.remove('loading');
 }
-/* ---------- Google Identity Services ----------
-   Le bouton officiel est rendu par Google. Au clic, le flux se déroule
-   entièrement sur accounts.google.com, en contexte propriétaire, puis
-   nous rend un jeton d'identité que Firebase accepte tel quel. */
-function initGIS(){
-  if(!gisPret()||!fbReady)return;
-  const sc=document.createElement('script');
-  sc.src='https://accounts.google.com/gsi/client';
-  sc.async=true;sc.defer=true;
-  sc.onload=()=>{
-    try{
-      google.accounts.id.initialize({
-        client_id:GOOGLE.clientId,
-        callback:async rep=>{
-          try{
-            $id('btnGoogle').classList.add('loading');
-            const cred=firebase.auth.GoogleAuthProvider.credential(rep.credential);
-            await auth.signInWithCredential(cred);
-          }catch(e){ erreurAuth(e); $id('btnGoogle').classList.remove('loading'); }
-        },
-        auto_select:false,
-        cancel_on_tap_outside:true,
-        use_fedcm_for_prompt:true
-      });
-      const box=$id('gBtn');
-      if(box){
-        box.innerHTML='';
-        google.accounts.id.renderButton(box,{
-          type:'standard',theme:'outline',size:'large',
-          text:'continue_with',shape:'rectangular',logo_alignment:'left',
-          width:Math.min(Math.round(box.clientWidth||320),400)
-        });
-        box.classList.remove('hidden');
-        $id('btnGoogle').classList.add('hidden');
-      }
-    }catch(e){ console.warn('GIS indisponible :',e); }
-  };
-  sc.onerror=()=>{ console.warn('GIS non chargé'); $id('btnGoogle').classList.remove('hidden'); };
-  document.head.appendChild(sc);
-  /* Si Google n'a rien rendu au bout de quatre secondes — script bloqué,
-     origine non autorisée — on remet le bouton classique plutôt que rien. */
-  setTimeout(()=>{
-    const box=$id('gBtn');
-    if(box&&!box.querySelector('iframe')&&!box.querySelector('div')){
-      box.classList.add('hidden');
-      $id('btnGoogle').classList.remove('hidden');
-    }
-  },4000);
-}
-
-/* Sur mobile et en application installée, la fenêtre surgissante est
-   fermée par le navigateur avant d'avoir rendu la main : on redirige.
-   Le résultat est récupéré au retour par getRedirectResult(). */
-function popupPossible(){
-  /* En mode 'firebase', on reproduit SwingUpPro : la fenêtre surgissante
-     est tentée en premier, sauf en application installée où elle n'existe
-     pas et où seule la redirection peut aboutir. */
-  const standalone = matchMedia('(display-mode: standalone)').matches
-    || matchMedia('(display-mode: fullscreen)').matches
-    || navigator.standalone === true;
-  if (AUTH_MODE === 'firebase') return !standalone;
-  const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-  return !standalone && !mobile;
-}
+/* ---------- Connexion Google ----------
+   Même principe que SwingUpPro (carte de score) : signInWithPopup en
+   premier essai, systématiquement — pas de pré-détection d'application
+   installée qui saute directement à la redirection. Beaucoup de contextes
+   « app installée » gèrent très bien la fenêtre surgissante ; ne la tenter
+   qu'après un vrai échec évite de forcer inutilement le chemin redirection,
+   plus fragile (stockage cloisonné vers firebaseapp.com). */
 async function authGoogle(){
   if(!fbReady){erreurAuth({code:'x'});return;}
   const prov=new firebase.auth.GoogleAuthProvider();
   prov.setCustomParameters({prompt:'select_account'});
   $id('btnGoogle').classList.add('loading');
   try{
-    if(popupPossible()){
-      await auth.signInWithPopup(prov);
-    }else{
-      Store.set('gRedirect','1');
-      await auth.signInWithRedirect(prov);   /* la page se recharge ici */
+    await auth.signInWithPopup(prov);
+  }catch(e){
+    if(e&&(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request')){
+      $id('btnGoogle').classList.remove('loading');
       return;
     }
-  }catch(e){
-    /* Dernier recours : si la fenêtre a été bloquée ou fermée, on redirige. */
-    if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/popup-closed-by-user'
-        ||e.code==='auth/cancelled-popup-request'||e.code==='auth/operation-not-supported-in-this-environment')){
+    /* Fenêtre impossible (app installée, navigateur strict) : on bascule
+       sur la redirection, qui revient sur la page une fois connecté. */
+    if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment')){
       try{ Store.set('gRedirect','1'); await auth.signInWithRedirect(prov); return; }catch(e2){ erreurAuth(e2); }
     }else erreurAuth(e);
   }
@@ -1186,7 +1098,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
     invite=true; entrerDansApp(); return;
   }
-  initGIS();
   verifierRedirection();
   /* Au retour d'une redirection Google, on n'affiche pas l'écran de
      connexion : onAuthStateChanged va basculer dans l'app tout seul. */
