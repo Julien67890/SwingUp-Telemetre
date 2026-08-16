@@ -581,7 +581,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-16-n';
+const BUILD = 'tel-2026-08-16-o';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -2245,7 +2245,12 @@ function contour(px, reg, ll){
 }
 function runDetect(ll){
   if (map.getZoom() < 18.5){ msg(L_("Zoomez davantage : la détection demande le niveau 19.")); return; }
-  const px = grab(ll, 60);
+  /* Fenêtre de recherche resserrée sur la zone tapée : au-delà d'une
+     trentaine de mètres du point touché, on est presque toujours déjà
+     sorti du green. Réduire cette fenêtre empêche physiquement le
+     remplissage d'atteindre un terrain voisin, même si sa couleur est
+     proche — la tolérance ci-dessous reste le seul réglage à ajuster. */
+  const px = grab(ll, 32);
   if (!px){ msg(L_("Image satellite pas encore chargée à cet endroit. Attendez une seconde et retouchez.")); return; }
   if (px.tainted){ msg(L_("Ce fond interdit la lecture des pixels. Utilisez TRACER ou POINTER.")); return; }
   S.detect = { px, ll }; applyDetect();
