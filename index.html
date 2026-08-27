@@ -587,7 +587,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-16-u';
+const BUILD = 'tel-2026-08-16-v';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -1333,7 +1333,7 @@ async function pullProfil(){
       const d=snap.data()||{};
       if(d.name)profileName=d.name;
       accountCreated=typeof d.created==='number'?d.created:0;
-      if(d.bag&&Array.isArray(d.bag)&&d.bag.length)S.bag=d.bag;
+      if(d.bag&&Array.isArray(d.bag)&&d.bag.length&&typeof window.applyCloudBag==='function')window.applyCloudBag(d.bag);
       if(d.lang&&LANGUES.indexOf(d.lang)>=0){LANG=d.lang;Store.set('lang',LANG);}
     }else{
       accountCreated=Date.now();
@@ -1578,6 +1578,14 @@ const saveBag = () => {
   if (peutSauvegarderCloud()){
     fs.collection("users").doc(currentUser.uid).set({ bag:S.bag }, { merge:true }).catch(()=>{});
   }
+};
+/* Appelé depuis pullProfil() (autre bloc <script>, donc sans accès direct
+   à S) pour appliquer le sac reçu du cloud à la connexion. */
+window.applyCloudBag = function(bag){
+  S.bag = bag;
+  try{ Store.set(BAG, JSON.stringify(S.bag)); }catch(e){}
+  if (typeof renderBag === "function") renderBag();
+  if (typeof refresh === "function") refresh();
 };
 function loadOver(){ try{ const o = JSON.parse(Store.get(OVER)); if (o && o.names) return o; }catch(e){} return { names:{}, hidden:[] }; }
 const saveOver = () => { try{ Store.set(OVER, JSON.stringify(S.over)); }catch(e){} };
@@ -2495,6 +2503,13 @@ function serialiserGreens(){
   return S.greens.filter(g=>g.src==="draw")
     .map(g => ({ id:g.id, name:g.name, coords:g.coords, mk:g.mk||"draw", c:g.c||null, r:g.r||null }));
 }
+/* Firestore refuse un tableau qui contient directement d'autres tableaux
+   (DocumentReference.set() : "Nested arrays are not supported") — hors,
+   coords est un tableau de paires [lat,lng]. On passe donc par des objets
+   {lat,lng} pour le cloud, et on reconvertit à la lecture. Le stockage
+   local (localStorage), lui, garde le format [lat,lng] d'origine. */
+function ptsOut(coords){ return (coords||[]).map(p => ({ lat:p[0], lng:p[1] })); }
+function ptsIn(coords){ return (coords||[]).map(p => Array.isArray(p) ? p : [p.lat, p.lng]); }
 function writeCustom(){
   if (!peutSauvegarderCloud()){ Store.del(KEY); majBandeauFree(); return; }
   try{ Store.set(KEY, JSON.stringify(serialiserGreens())); }catch(e){}
@@ -2531,9 +2546,10 @@ function pushGreens(){
     if (pushEnCours) return;
     pushEnCours = true;
     try{
+      const greens = serialiserGreens().map(g => ({ ...g, coords: ptsOut(g.coords) }));
       await fs.collection("users").doc(currentUser.uid)
         .collection("courses").doc(parcoursId())
-        .set({ greens:serialiserGreens(), name:S.courseName||null, updated:Date.now() }, { merge:true });
+        .set({ greens, name:S.courseName||null, updated:Date.now() }, { merge:true });
     }catch(e){ console.warn("Sauvegarde cloud échouée :", e); }
     pushEnCours = false;
   }, 1200);
@@ -2543,22 +2559,28 @@ async function pullGreens(){
   try{
     const snap = await fs.collection("users").doc(currentUser.uid).collection("courses").get();
     const dist = [];
-    snap.forEach(d => { const g = (d.data()||{}).greens; if (Array.isArray(g)) dist.push(...g); });
-    if (!dist.length) return;
-    /* Fusion par identifiant : le local gagne, le cloud complète. */
-    const vus = new Set(S.greens.map(g => g.id));
-    let ajout = 0;
-    for (const g of dist) if (!vus.has(g.id)){ S.greens.push({ ...g, src:"draw", mk:g.mk||"draw" }); ajout++; }
-    if (ajout){
-      try{ Store.set(KEY, JSON.stringify(serialiserGreens())); }catch(e){}
-      drawGreens(); refresh();
-      toast(L_("Greens synchronisés"));
+    snap.forEach(d => {
+      const g = (d.data()||{}).greens;
+      if (Array.isArray(g)) dist.push(...g.map(x => ({ ...x, coords: ptsIn(x.coords) })));
+    });
+    if (dist.length){
+      /* Fusion par identifiant : le local gagne, le cloud complète. */
+      const vus = new Set(S.greens.map(g => g.id));
+      let ajout = 0;
+      for (const g of dist) if (!vus.has(g.id)){ S.greens.push({ ...g, src:"draw", mk:g.mk||"draw" }); ajout++; }
+      if (ajout){
+        try{ Store.set(KEY, JSON.stringify(serialiserGreens())); }catch(e){}
+        drawGreens(); refresh();
+        toast(L_("Greens synchronisés"));
+      }
     }
     /* Republie systématiquement l'état local vers le cloud du compte
        actuellement connecté : sans ça, des greens qui n'existent que sur
        cet appareil (créés hors ligne, ou restés locaux après un
        changement d'identifiant de compte) ne remontent jamais tant que
-       l'utilisateur ne modifie pas manuellement un green. */
+       l'utilisateur ne modifie pas manuellement un green. Fait aussi sur
+       une toute première connexion (dist vide), pour pousser tout de
+       suite ce qui n'existe encore qu'en local. */
     pushGreens();
   }catch(e){ console.warn("Lecture cloud échouée :", e); }
 }
