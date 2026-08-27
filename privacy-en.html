@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — SwingUp Rangefinder</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.6; max-width: 760px; margin: 0 auto; padding: 40px 20px 80px; color: #1a2b20; background: #fbfaf5; }
+  h1 { font-size: 26px; margin-bottom: 4px; color: #1b4332; }
+  .updated { color: #667a6a; font-size: 14px; margin-bottom: 32px; }
+  h2 { font-size: 19px; margin-top: 36px; color: #1b4332; border-bottom: 1px solid #dfe6e0; padding-bottom: 6px; }
+  h3 { font-size: 15.5px; margin-top: 20px; }
+  p, li { font-size: 15px; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #e4e0d2; vertical-align: top; }
+  th { background: #f0ede0; }
+  .note { background: #eef4ef; border-left: 3px solid #1b4332; padding: 10px 14px; margin: 16px 0; font-size: 14px; }
+  a { color: #1b4332; }
+  footer { margin-top: 48px; font-size: 13px; color: #8a998c; }
+</style>
+</head>
+<body>
+<h1>Privacy Policy — SwingUp Rangefinder</h1>
+<p class="updated">Last updated: August 27, 2026</p>
+<p>SwingUp Rangefinder ("the app", "we") is published by Julien Guionie, an independent developer,
+reachable at <a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a>. This policy describes
+what data the app collects, why, and how you can control or delete it.</p>
+<h2>1. Data we collect</h2>
+<h3>1.1 User account (optional)</h3>
+<p>If you create an account to save your setup, we collect the following through Firebase Authentication (Google):</p>
+<ul>
+  <li>Your email address</li>
+  <li>Your password (never stored in plain text — handled and encrypted by Firebase Authentication)</li>
+  <li>Your first name / nickname, if provided</li>
+  <li>If you use "Sign in with Google": basic profile information (name, email, photo) provided by Google</li>
+</ul>
+<h3>1.2 Data you create in the app</h3>
+<p>Once signed in, the following is saved in our database (Firestore, hosted by Google) so it can sync across your devices:</p>
+<ul>
+  <li>Your bag setup (distance per club)</li>
+  <li>Green outlines you trace on the map</li>
+  <li>Course names and custom labels you add</li>
+</ul>
+<h3>1.3 Location</h3>
+<p>The app uses your precise GPS location, with your explicit permission, to calculate distances to the green
+(center, back, left, right) and elevation change. This location is used locally on your device for the distance
+calculation and is not stored in our database or shared with third parties for commercial purposes.</p>
+<h3>1.4 Audience measurement</h3>
+<p>With your consent (banner shown on first visit), we use Google Analytics to measure overall app usage (page views,
+traffic) and improve it. Usage data is never sold to third parties. You can decline this tracking from the consent
+banner; the app remains fully functional without it.</p>
+<h3>1.5 Payments (upcoming feature)</h3>
+<p>A payment feature via Stripe is in preparation and is not yet active. Once available, payment information
+(card number, etc.) will be processed directly by Stripe under
+<a href="https://stripe.com/privacy" target="_blank" rel="noopener">its own privacy policy</a> — we never store this
+information on our servers.</p>
+<h2>2. Third-party providers we use</h2>
+<table>
+  <tr><th>Service</th><th>Purpose</th><th>Data involved</th></tr>
+  <tr><td>Firebase (Google)</td><td>Authentication and database (Firestore)</td><td>Email, password, bag/green data</td></tr>
+  <tr><td>Esri / ArcGIS Location Platform</td><td>Satellite map imagery</td><td>IP address, geographic area viewed</td></tr>
+  <tr><td>Google Analytics</td><td>Audience measurement (with consent)</td><td>Anonymized usage data</td></tr>
+  <tr><td>Google Fonts</td><td>Display typefaces</td><td>IP address (font loading request)</td></tr>
+  <tr><td>Stripe</td><td>Payments (upcoming)</td><td>Banking data — not stored by us</td></tr>
+</table>
+<h2>3. Data retention</h2>
+<p>Account and gameplay data is kept for as long as your account exists. You can request full deletion of your
+account and associated data at any time (see section 5).</p>
+<h2>4. Your rights (GDPR)</h2>
+<p>If you live in the European Union or another territory covered by the GDPR, you have the right to access, correct,
+delete, port, and object to the processing of your personal data. You can exercise these rights by contacting us at
+<a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a>.</p>
+<h2>5. Deleting your account</h2>
+<p>To delete your account and all associated data, send a request to
+<a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a> from the email address linked to your
+account. Your request will be processed within 30 days.</p>
+<h2>6. Security</h2>
+<p>Passwords are managed and encrypted by Firebase Authentication; we never have access to them in plain text. The
+app communicates with its servers over encrypted (HTTPS) connections.</p>
+<h2>7. Intended audience</h2>
+<p>SwingUp Rangefinder is not intended for children under 13 and does not knowingly collect data from children of
+that age.</p>
+<h2>8. Changes to this policy</h2>
+<p>This policy may change, in particular when the Stripe payment feature is activated. Any material change will be
+noted in the app or on this page, with an updated date at the top of this document.</p>
+<h2>9. Contact</h2>
+<p>For any question about this policy or your data, write to us at
+<a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a>.</p>
+<footer>SwingUp Rangefinder — <a href="https://julien67890.github.io/SwingUp-Telemetre/">julien67890.github.io/SwingUp-Telemetre</a></footer>
+</body>
+</html>
