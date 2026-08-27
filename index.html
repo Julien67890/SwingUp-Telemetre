@@ -587,7 +587,7 @@ header .mark{width:46px;height:46px}
 <script>
 /* Numéro de version : à comparer avec celui affiché dans le diagnostic
    pour vérifier que le téléphone sert bien la dernière mise en ligne. */
-const BUILD = 'tel-2026-08-16-t';
+const BUILD = 'tel-2026-08-16-u';
 
 /* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
    la configuration collée casse tout le script, et sans ça l'écran reste
@@ -2554,6 +2554,12 @@ async function pullGreens(){
       drawGreens(); refresh();
       toast(L_("Greens synchronisés"));
     }
+    /* Republie systématiquement l'état local vers le cloud du compte
+       actuellement connecté : sans ça, des greens qui n'existent que sur
+       cet appareil (créés hors ligne, ou restés locaux après un
+       changement d'identifiant de compte) ne remontent jamais tant que
+       l'utilisateur ne modifie pas manuellement un green. */
+    pushGreens();
   }catch(e){ console.warn("Lecture cloud échouée :", e); }
 }
 window.pullGreens = pullGreens;
