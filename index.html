@@ -354,7 +354,7 @@ header .mark{width:46px;height:46px}
 <!-- ====================== ECRAN DE DEMARRAGE ====================== -->
 <div id="boot">
   <div class="bootin">
-    <div class="bootmark"><img src="icons/icon-ui.png" alt="SwingUp Golf Rangefinder" width="112" height="112"></div>
+    <div class="bootmark"><img src="icons/icon-192.png" alt="SwingUp Golf Rangefinder" width="112" height="112"></div>
     <h1 class="bootword">Swing<em>Up</em></h1>
     <p class="boottag">Télémètre</p>
     <div class="bootbar"><i></i></div>
@@ -365,7 +365,7 @@ header .mark{width:46px;height:46px}
 <section id="auth" class="hidden">
   <div class="auth-wrap">
     <div class="auth-head">
-      <div class="mark"><img src="icons/icon-ui.png" alt="SwingUp Golf Rangefinder"></div>
+      <div class="mark"><img src="icons/icon-192.png" alt="SwingUp Golf Rangefinder"></div>
       <h1 data-t>Télémètre</h1>
       <p id="authTagline" data-t>Connecte-toi pour retrouver tes parcours</p>
     </div>
@@ -405,7 +405,7 @@ header .mark{width:46px;height:46px}
 <div id="app" class="hidden">
 
   <header>
-    <div class="mark"><img src="icons/icon-ui.png" alt="SwingUp Golf Rangefinder"></div>
+    <div class="mark"><img src="icons/icon-192.png" alt="SwingUp Golf Rangefinder"></div>
     <div class="brand"><h1 data-t>Télémètre</h1><p id="courseName" data-t>Chargement des parcours…</p></div>
     <span class="betapill hidden" id="betaPill">Bêta</span>
     <button class="acctbtn" id="btnAcct" aria-label="Mon compte"><span class="who" id="acctWho">—</span><span class="av" id="acctAv">?</span></button>
@@ -508,7 +508,7 @@ header .mark{width:46px;height:46px}
 <!-- ====================== SAC ====================== -->
 <div id="bag" role="dialog">
   <div id="bagTop">
-    <div class="mark"><img src="icons/icon-ui.png" alt="SwingUp Golf Rangefinder"></div>
+    <div class="mark"><img src="icons/icon-192.png" alt="SwingUp Golf Rangefinder"></div>
     <h2 data-t>Mon sac</h2>
     <button class="tbtn" id="bagClose" data-t>Fermer</button>
   </div>
@@ -2070,7 +2070,13 @@ async function loadCourse(){
     }
   }catch(e){}
   $("bLoad").classList.remove("busy");
-  S.greens = greens.filter(g => S.over.hidden.indexOf(g.id) < 0).concat(readCustom());
+  /* readCustom() renvoie TOUS les greens tracés à la main, tous parcours
+     confondus (stockage local global) : sans filtre, chaque chargement de
+     parcours ajoutait aussi au rendu les greens de tous les autres
+     parcours jamais visités — calques Leaflet inutiles, invisibles à
+     l'écran mais bien présents, d'où le ralentissement systématique. */
+  S.greens = greens.filter(g => S.over.hidden.indexOf(g.id) < 0)
+    .concat(readCustom().filter(g => greenCourseId(g) === parcoursId()));
   for (const g of S.greens) if (S.over.names[g.id]) g.name = S.over.names[g.id];
   $("courseName").textContent = S.greens.length
     ? (L_("Parcours chargés") + (name ? " · " + name : ""))
@@ -2499,7 +2505,16 @@ function ptsOut(coords){ return (coords||[]).map(p => ({ lat:p[0], lng:p[1] }));
 function ptsIn(coords){ return (coords||[]).map(p => Array.isArray(p) ? p : [p.lat, p.lng]); }
 function writeCustom(){
   if (!peutSauvegarderCloud()){ Store.del(KEY); majBandeauFree(); return; }
-  try{ Store.set(KEY, JSON.stringify(serialiserGreens())); }catch(e){}
+  /* S.greens ne contient plus que le parcours courant (voir loadCourse) :
+     on ne peut donc plus écraser tout le stockage local avec son seul
+     contenu, sous peine d'effacer les greens des autres parcours à
+     chaque sauvegarde. On les préserve et on ne remplace que ceux du
+     parcours courant. */
+  try{
+    const ici = parcoursId();
+    const autres = readCustom().filter(g => greenCourseId(g) !== ici);
+    Store.set(KEY, JSON.stringify(autres.concat(serialiserGreens())));
+  }catch(e){}
   pushGreens();
 }
 
@@ -2569,12 +2584,15 @@ function pushGreens(){
 async function pullGreens(){
   if (!peutSauvegarderCloud()) return;
   try{
-    const snap = await fs.collection("users").doc(currentUser.uid).collection("courses").get();
-    const dist = [];
-    snap.forEach(d => {
-      const g = (d.data()||{}).greens;
-      if (Array.isArray(g)) dist.push(...g.map(x => ({ ...x, coords: ptsIn(x.coords) })));
-    });
+    /* On ne lit QUE le document du parcours courant, jamais toute la
+       collection : sinon chaque ouverture d'app réinjecte en local les
+       greens de tous les parcours jamais visités, ce qui expliquait le
+       ralentissement persistant même après suppression locale — au
+       redémarrage tout revenait d'un coup depuis le cloud. */
+    const doc = await fs.collection("users").doc(currentUser.uid)
+      .collection("courses").doc(parcoursId()).get();
+    const g = (doc.data()||{}).greens;
+    const dist = Array.isArray(g) ? g.map(x => ({ ...x, coords: ptsIn(x.coords) })) : [];
     if (dist.length){
       /* Fusion par identifiant : le local gagne, le cloud complète. */
       const vus = new Set(S.greens.map(g => g.id));
@@ -2586,13 +2604,14 @@ async function pullGreens(){
         toast(L_("Greens synchronisés"));
       }
     }
-    /* Republie systématiquement l'état local vers le cloud du compte
-       actuellement connecté : sans ça, des greens qui n'existent que sur
-       cet appareil (créés hors ligne, ou restés locaux après un
-       changement d'identifiant de compte) ne remontent jamais tant que
-       l'utilisateur ne modifie pas manuellement un green. Fait aussi sur
-       une toute première connexion (dist vide), pour pousser tout de
-       suite ce qui n'existe encore qu'en local. */
+    /* Republie l'état local vers le cloud du compte actuellement connecté :
+       sans ça, des greens qui n'existent que sur cet appareil (créés hors
+       ligne, ou restés locaux après un changement d'identifiant de compte)
+       ne remontent jamais tant que l'utilisateur ne modifie pas
+       manuellement un green. Fait aussi sur une toute première connexion
+       (dist vide), pour pousser tout de suite ce qui n'existe encore
+       qu'en local. pushGreens() route chaque green vers son propre
+       parcours, donc ça ne recontamine pas le document courant. */
     pushGreens();
   }catch(e){ console.warn("Lecture cloud échouée :", e); }
 }
