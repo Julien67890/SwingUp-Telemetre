@@ -2563,8 +2563,13 @@ function pushGreens(){
       /* Un envoi par parcours réellement représenté dans les greens locaux :
          set() remplace entièrement le tableau `greens` de chaque document,
          ce qui nettoie du même coup toute pollution déjà accumulée par
-         l'ancien code dans les documents des autres parcours. */
+         l'ancien code dans les documents des autres parcours. Le parcours
+         courant est TOUJOURS inclus, même sans aucun green local : sinon,
+         supprimer le dernier green d'un parcours ne poussait plus rien —
+         la suppression restait locale et l'ancien contenu ressurgissait
+         du cloud à la prochaine ouverture. */
       const groupes = new Map();
+      groupes.set(ici, []);
       for (const g of serialiserGreens()){
         const cid = greenCourseId(g);
         if (!groupes.has(cid)) groupes.set(cid, []);
