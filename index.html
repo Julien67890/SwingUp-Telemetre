@@ -354,7 +354,7 @@ header .mark{width:46px;height:46px}
 <!-- ====================== ECRAN DE DEMARRAGE ====================== -->
 <div id="boot">
   <div class="bootin">
-    <div class="bootmark"><img src="icons/icon-192.png" alt="SwingUp Golf Rangefinder" width="112" height="112"></div>
+    <div class="bootmark"><img src="icons/icon-ui.png" alt="SwingUp Golf Rangefinder" width="112" height="112"></div>
     <h1 class="bootword">Swing<em>Up</em></h1>
     <p class="boottag">Télémètre</p>
     <div class="bootbar"><i></i></div>
@@ -365,7 +365,7 @@ header .mark{width:46px;height:46px}
 <section id="auth" class="hidden">
   <div class="auth-wrap">
     <div class="auth-head">
-      <div class="mark"><img src="icons/icon-192.png" alt="SwingUp Golf Rangefinder"></div>
+      <div class="mark"><img src="icons/icon-ui.png" alt="SwingUp Golf Rangefinder"></div>
       <h1 data-t>Télémètre</h1>
       <p id="authTagline" data-t>Connecte-toi pour retrouver tes parcours</p>
     </div>
@@ -405,7 +405,7 @@ header .mark{width:46px;height:46px}
 <div id="app" class="hidden">
 
   <header>
-    <div class="mark"><img src="icons/icon-192.png" alt="SwingUp Golf Rangefinder"></div>
+    <div class="mark"><img src="icons/icon-ui.png" alt="SwingUp Golf Rangefinder"></div>
     <div class="brand"><h1 data-t>Télémètre</h1><p id="courseName" data-t>Chargement des parcours…</p></div>
     <span class="betapill hidden" id="betaPill">Bêta</span>
     <button class="acctbtn" id="btnAcct" aria-label="Mon compte"><span class="who" id="acctWho">—</span><span class="av" id="acctAv">?</span></button>
@@ -508,7 +508,7 @@ header .mark{width:46px;height:46px}
 <!-- ====================== SAC ====================== -->
 <div id="bag" role="dialog">
   <div id="bagTop">
-    <div class="mark"><img src="icons/icon-192.png" alt="SwingUp Golf Rangefinder"></div>
+    <div class="mark"><img src="icons/icon-ui.png" alt="SwingUp Golf Rangefinder"></div>
     <h2 data-t>Mon sac</h2>
     <button class="tbtn" id="bagClose" data-t>Fermer</button>
   </div>
@@ -2521,10 +2521,21 @@ window.majBandeauFree = majBandeauFree;
    Un document par parcours sous users/{uid}/courses/{id} : le document
    utilisateur unique aurait fini par heurter la limite de 1 Mo. */
 let pushT = null, pushEnCours = false;
-function parcoursId(){
-  if (!S.pos) return "libre";
+function parcoursId(lat, lon){
+  const la = lat!=null ? lat : (S.pos && S.pos.lat);
+  const lo = lon!=null ? lon : (S.pos && S.pos.lon);
+  if (la==null || lo==null) return "libre";
   /* Regroupement par carré d'environ 2 km : un parcours tient dedans. */
-  return "c" + Math.round(S.pos.lat*50) + "_" + Math.round(S.pos.lon*50);
+  return "c" + Math.round(la*50) + "_" + Math.round(lo*50);
+}
+/* Le parcours d'appartenance d'un green se déduit de SES PROPRES
+   coordonnées, jamais de la position actuelle de l'utilisateur : sinon,
+   toute synchro déclenchée depuis un parcours A pousse aussi les greens
+   des parcours B, C, D... dans le document de A (c'était le bug —
+   un document a fini par peser 1,3 Mo pour seulement 3 greens réels). */
+function greenCourseId(g){
+  const c = g.coords && g.coords[0];
+  return c ? parcoursId(c[0], c[1]) : parcoursId();
 }
 function pushGreens(){
   if (!peutSauvegarderCloud()){ majBandeauFree(); return; }
@@ -2533,10 +2544,24 @@ function pushGreens(){
     if (pushEnCours) return;
     pushEnCours = true;
     try{
-      const greens = serialiserGreens().map(g => ({ ...g, coords: ptsOut(g.coords) }));
-      await fs.collection("users").doc(currentUser.uid)
-        .collection("courses").doc(parcoursId())
-        .set({ greens, name:S.courseName||null, updated:Date.now() }, { merge:true });
+      const ici = parcoursId();
+      /* Un envoi par parcours réellement représenté dans les greens locaux :
+         set() remplace entièrement le tableau `greens` de chaque document,
+         ce qui nettoie du même coup toute pollution déjà accumulée par
+         l'ancien code dans les documents des autres parcours. */
+      const groupes = new Map();
+      for (const g of serialiserGreens()){
+        const cid = greenCourseId(g);
+        if (!groupes.has(cid)) groupes.set(cid, []);
+        groupes.get(cid).push({ ...g, coords: ptsOut(g.coords) });
+      }
+      for (const [cid, greens] of groupes){
+        const payload = { greens, updated:Date.now() };
+        if (cid === ici) payload.name = S.courseName||null;
+        await fs.collection("users").doc(currentUser.uid)
+          .collection("courses").doc(cid)
+          .set(payload, { merge:true });
+      }
     }catch(e){ console.warn("Sauvegarde cloud échouée :", e); }
     pushEnCours = false;
   }, 1200);
