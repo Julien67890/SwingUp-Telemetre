@@ -1,0 +1,2948 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SwingUp - Télémètre">
+<meta name="theme-color" content="#1b4332">
+<meta name="description" content="Télémètre de golf : distances aux greens, dénivelé et club conseillé, sur vue satellite.">
+<title>SwingUp - Télémètre | GPS golf gratuit, distances au green</title>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://julien67890.github.io/SwingUp-Telemetre/">
+<meta property="og:title" content="SwingUp - Télémètre">
+<meta property="og:description" content="Distances au green, dénivelé et club conseillé sur vue satellite. Gratuit, installation directe, sans store.">
+<meta property="og:site_name" content="SwingUp - Télémètre">
+<meta property="og:image" content="https://julien67890.github.io/SwingUp-Telemetre/icons/og-banner.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SwingUp - Télémètre">
+<meta name="twitter:description" content="Distances au green, dénivelé et club conseillé sur vue satellite. Gratuit, installation directe, sans store.">
+<meta name="twitter:image" content="https://julien67890.github.io/SwingUp-Telemetre/icons/og-banner.jpg">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,900;1,900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="leaflet/leaflet.css">
+<style>
+:root{
+  --serif:'Playfair Display',Georgia,serif;
+  --green-deep:#13361f;--green:#1b4332;--green-mid:#2d6a4f;--green-light:#52b788;--green-glow:#74c69d;
+  --sand:#e9e2cf;--cream:#f6f3e9;--ink:#10261a;--flag:#d62828;--gold:#c9a227;
+  --ok:#2d6a4f;--ok-bg:#dff0e5;--bad:#b3261e;--bad-bg:#fbe3e1;
+  --shadow:0 18px 40px -18px rgba(8,30,18,.55);
+  --cr:0deg;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%}
+body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
+  background:radial-gradient(1200px 600px at 85% -10%, rgba(116,198,157,.30), transparent 60%),radial-gradient(900px 500px at -10% 110%, rgba(45,106,79,.25), transparent 55%),linear-gradient(160deg,#0f2a1a 0%, #16402a 45%, #1b4332 100%);
+  background-attachment:fixed;height:100dvh;min-height:100%;-webkit-font-smoothing:antialiased;
+  overscroll-behavior:none;overflow:hidden}
+.hidden{display:none!important}
+.mark{border-radius:6px;flex:0 0 auto;display:grid;place-items:center;overflow:hidden;
+  background:linear-gradient(145deg,#52b788,#1b4332);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 10px 22px -10px rgba(0,0,0,.6)}
+.mark svg{width:60%;height:60%}
+
+/* ================= ecran de demarrage ================= */
+#boot{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;
+  background:radial-gradient(1200px 600px at 85% -10%, rgba(116,198,157,.30), transparent 60%),
+             radial-gradient(900px 500px at -10% 110%, rgba(45,106,79,.25), transparent 55%),
+             linear-gradient(160deg,#0f2a1a 0%,#16402a 45%,#1b4332 100%);
+  transition:opacity .55s ease,visibility .55s}
+#boot.off{opacity:0;visibility:hidden;pointer-events:none}
+.bootin{text-align:center;padding:0 24px;transform:translateY(-5%)}
+.bootmark{width:98px;height:98px;margin:0 auto 24px;border-radius:24px;display:grid;place-items:center;
+  background:linear-gradient(145deg,#52b788,#1b4332);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 28px 52px -22px rgba(0,0,0,.8);
+  animation:bootpop .65s cubic-bezier(.2,.9,.3,1.25) both}
+.bootmark svg{width:54px;height:54px;overflow:visible}
+.bootmark .pole{stroke-dasharray:60;stroke-dashoffset:60;animation:bootdraw .8s .2s cubic-bezier(.4,0,.2,1) forwards}
+.bootmark .foot{opacity:0;animation:bootfoot .3s .9s ease forwards}
+.bootmark .ball{opacity:0;transform-box:fill-box;transform-origin:center;animation:bootball .6s 1s cubic-bezier(.3,1.5,.5,1) forwards}
+@keyframes bootpop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+@keyframes bootdraw{to{stroke-dashoffset:0}}
+@keyframes bootfoot{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+@keyframes bootball{0%{opacity:0;transform:translateY(-10px) scale(.5)}55%{opacity:1}100%{opacity:1;transform:none}}
+.bootword{font-family:var(--serif);font-weight:900;font-size:2rem;line-height:1;letter-spacing:-.025em;color:var(--cream);
+  opacity:0;animation:rise .55s .45s cubic-bezier(.2,.7,.3,1) forwards}
+.bootword em{font-style:italic;color:var(--green-glow)}
+.boottag{margin-top:10px;font-size:.68rem;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:rgba(116,198,157,.85);
+  opacity:0;animation:rise .55s .62s cubic-bezier(.2,.7,.3,1) forwards}
+.bootbar{width:96px;height:2px;margin:26px auto 0;border-radius:2px;background:rgba(246,243,233,.14);overflow:hidden}
+.bootbar i{display:block;width:40%;height:100%;border-radius:2px;background:var(--green-glow);animation:bootsweep 1.25s .3s cubic-bezier(.5,0,.5,1) infinite}
+@keyframes bootsweep{from{transform:translateX(-110%)}to{transform:translateX(360%)}}
+
+/* ================= connexion ================= */
+#auth{position:fixed;inset:0;z-index:900;overflow-y:auto}
+.auth-wrap{min-height:100dvh;max-width:560px;margin:0 auto;display:flex;flex-direction:column;justify-content:center;
+  padding:calc(24px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom))}
+.auth-head{text-align:center;margin-bottom:22px}
+.auth-head .mark{width:60px;height:60px;margin:0 auto 16px;border-radius:8px}
+.auth-head .mark svg{width:34px;height:34px}
+.auth-head h1{font-family:var(--serif);font-weight:900;color:var(--cream);font-size:1.7rem;line-height:1.05;letter-spacing:-.02em}
+.auth-head p{color:var(--green-glow);font-size:.82rem;margin-top:8px}
+.surface{background:linear-gradient(180deg,var(--cream),#efebdd);border-radius:6px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.4);overflow:hidden}
+.auth-card{padding:24px 22px 22px}
+.auth-tabs{display:flex;gap:8px;background:#f0ece0;border-radius:6px;padding:5px;margin-bottom:20px}
+.auth-tabs button{flex:1;border:none;background:transparent;padding:11px;border-radius:6px;font-family:'Outfit',sans-serif;font-weight:600;font-size:.92rem;color:#8b8770;cursor:pointer;transition:all .18s}
+.auth-tabs button.on{background:#fff;color:var(--green-deep);box-shadow:0 4px 10px -6px rgba(0,0,0,.25)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--green-mid);margin-bottom:7px}
+.field input{width:100%;border:1.5px solid #e6e0cd;border-radius:6px;background:#fff;padding:14px;font-family:'Outfit',sans-serif;font-size:1rem;color:var(--green-deep);outline:none}
+.field input:focus{border-color:var(--green-mid)}
+.autherr{font-size:.82rem;color:var(--bad);background:var(--bad-bg);border-radius:6px;padding:11px 13px;margin-bottom:14px;line-height:1.45}
+.authsep{display:flex;align-items:center;gap:12px;margin:15px 0 13px;color:#a8a390;font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.authsep::before,.authsep::after{content:'';flex:1;height:1px;background:#e0dac6}
+.authlink{display:block;text-align:center;background:none;border:none;color:var(--green-mid);font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;margin-top:14px;text-decoration:underline;width:100%}
+.btn{width:100%;border:none;border-radius:6px;padding:16px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:1rem;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s,box-shadow .2s,opacity .2s}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:linear-gradient(145deg,var(--green-mid),var(--green));color:var(--cream);box-shadow:0 14px 26px -14px rgba(27,67,50,.9)}
+.btn-primary:disabled{opacity:.4;box-shadow:none;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--green-mid);border:1.5px solid #d9d3bf}
+.btn-google{background:#fff;color:#3c4043;border:1.5px solid #dadce0}
+.btn-google svg{width:19px;height:19px}
+.btn.loading{opacity:.7;pointer-events:none}
+.btn svg{width:18px;height:18px}
+.footnote{color:rgba(246,243,233,.55);font-size:.72rem;text-align:center;margin-top:20px;line-height:1.5}
+.privlink,.footnote a{color:rgba(116,198,157,.85);text-decoration:underline;text-underline-offset:3px}
+
+/* ================= application ================= */
+#app{height:100dvh;display:flex;flex-direction:column;max-width:560px;margin:0 auto;position:relative}
+header{flex:0 0 auto;padding:calc(14px + env(safe-area-inset-top)) 14px 12px;display:flex;align-items:center;gap:12px}
+header .mark{width:46px;height:46px}
+.brand{flex:1;min-width:0}
+.brand h1{font-family:var(--serif);font-weight:900;color:var(--cream);font-size:1.32rem;line-height:1;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand p{color:var(--green-glow);font-size:.72rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.betapill{flex:0 0 auto;align-self:center;margin-left:2px;font-size:.58rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--green-deep);background:var(--green-glow);padding:3px 8px;border-radius:999px}
+.betapill.hidden{display:none}
+.acctbtn{flex:0 0 auto;display:flex;align-items:center;gap:8px;background:rgba(246,243,233,.12);border:none;border-radius:999px;padding:6px 6px 6px 12px;cursor:pointer;color:var(--cream);font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;max-width:150px}
+.acctbtn .who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acctbtn .av{width:30px;height:30px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;background:linear-gradient(145deg,#52b788,#1b4332);font-family:var(--serif);font-weight:900;font-size:.9rem;color:#fff}
+.propill{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(201,162,39,.22);color:#8a6f00;padding:3px 8px;border-radius:999px;margin-left:2px}
+.accbtns{display:grid;gap:8px;margin-top:14px}
+.accbtns .btn{width:100%}
+.hintsm{font-size:.74rem;color:#8b8770;line-height:1.4;margin-top:10px}
+.modpriv{text-align:center;margin-top:14px;font-size:.76rem}
+.modpriv a{color:#8b8770;text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- carte ---------- */
+#map{flex:1 1 auto;min-height:0;position:relative;overflow:hidden;background:#0b1f16;touch-action:none}
+#mapInner{position:absolute;transform-origin:50% 50%;will-change:transform}
+.leaflet-container{background:#0b1f16;font-family:'Outfit',sans-serif}
+#attrib{position:absolute;left:0;bottom:0;z-index:700;padding:3px 8px;background:rgba(15,42,26,.85);
+  color:rgba(246,243,233,.6);font-size:8.5px;line-height:1.3;border-radius:0 6px 0 0;max-width:80%}
+#attrib a{color:rgba(116,198,157,.85)}
+
+#accBadge{position:absolute;left:10px;top:10px;z-index:800;display:none;align-items:center;gap:6px;
+  padding:6px 10px 6px 8px;border-radius:999px;background:rgba(19,54,31,.88);
+  border:1.5px solid rgba(116,198,157,.32);color:var(--green-glow);font-family:'Outfit',sans-serif;
+  font-weight:700;font-size:.68rem;letter-spacing:.02em;white-space:nowrap;
+  box-shadow:0 10px 22px -10px rgba(0,0,0,.5)}
+#accBadge.on{display:flex}
+#accBadge i{width:7px;height:7px;flex:0 0 auto;border-radius:50%;background:currentColor}
+#accBadge.warn{border-color:var(--gold);color:#f0d878}
+#accBadge.bad{border-color:var(--bad);color:#ff9b95;animation:accpulse 1.4s ease-in-out infinite}
+@keyframes accpulse{0%,100%{opacity:1}50%{opacity:.55}}
+
+.me-icon{background:none!important;border:0!important}
+.beam{position:absolute;inset:0;transform-origin:50% 50%;transition:transform .12s linear;opacity:0}
+.beam.on{opacity:1}
+.beam::before{content:"";position:absolute;left:50%;top:50%;width:0;height:0;
+  border-left:27px solid transparent;border-right:27px solid transparent;
+  border-bottom:52px solid rgba(201,162,39,.34);transform:translate(-50%,-100%)}
+.beam::after{content:"";position:absolute;left:50%;top:50%;width:0;height:0;
+  border-left:12px solid transparent;border-right:12px solid transparent;
+  border-bottom:52px solid rgba(201,162,39,.5);transform:translate(-50%,-100%)}
+.dot{position:absolute;left:50%;top:50%;width:17px;height:17px;margin:-8.5px 0 0 -8.5px;
+  border-radius:50%;background:var(--gold);border:3px solid var(--green-deep);box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.gtag{background:none!important;border:0!important}
+.gtag span{display:block;transform:translate(-50%,-50%) rotate(var(--cr));padding:3px 9px;border-radius:6px;
+  background:rgba(19,54,31,.85);border:1px solid rgba(116,198,157,.4);color:var(--cream);
+  font-size:10px;font-weight:500;line-height:1.2;white-space:nowrap}
+.gtag.sel span{border-color:var(--gold);color:#f0d878;background:rgba(19,54,31,.95)}
+.mtag{background:none!important;border:0!important}
+.mtag span{display:block;transform:translate(-50%,-50%) rotate(var(--cr));padding:4px 10px;border-radius:6px;
+  background:var(--gold);color:#3a2c00;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4)}
+.handle{background:none!important;border:0!important;cursor:grab;touch-action:none}
+.handle i{position:absolute;left:50%;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;
+  border-radius:50%;background:transparent}
+.handle i::after{content:"";position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;
+  border-radius:50%;background:var(--gold);border:2.5px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.5)}
+.handle.dragging i::after{background:#fff}
+
+#mtools{position:absolute;right:10px;top:10px;z-index:800;display:flex;flex-direction:column;gap:6px}
+#carto{display:none;flex-direction:column;gap:6px}
+#carto.on{display:flex}
+.tool{width:44px;height:44px;border-radius:6px;border:1.5px solid rgba(116,198,157,.32);
+  background:rgba(19,54,31,.88);color:var(--green-glow);cursor:pointer;
+  font-family:'Outfit',sans-serif;font-weight:700;font-size:7.5px;letter-spacing:.06em;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0}
+.tool:active{background:rgba(45,106,79,.92);transform:scale(.95)}
+.tool.armed{border-color:var(--gold);color:#f0d878}
+.tool.hide{display:none}
+.tool.busy{opacity:.5}
+.tool.pro::after{content:"";position:absolute;margin:-26px 0 0 26px;width:7px;height:7px;border-radius:50%;background:var(--gold)}
+#bRot svg{transform-origin:50% 50%}
+#rotLab{font-size:6.5px;letter-spacing:.08em}
+#bRot.follow{border-color:var(--gold);color:#f0d878}
+#bRot.needs{border-style:dashed;border-color:var(--gold)}
+
+#stack{position:absolute;left:10px;right:10px;bottom:10px;z-index:800;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+#stack>*{pointer-events:auto}
+#bar{display:none;flex-direction:column;gap:9px;padding:12px 13px;border-radius:6px;
+  background:rgba(19,54,31,.96);border:1.5px solid var(--gold);box-shadow:var(--shadow)}
+#bar.on{display:flex}
+#barMsg{font-size:.78rem;line-height:1.4;color:var(--cream)}
+#barMsg b{color:#f0d878;font-weight:600}
+.slide{display:none;align-items:center;gap:10px}
+.slide.on{display:flex}
+.slide .lb{font-size:.62rem;letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--green-glow)}
+.slide input[type=range]{flex:1;accent-color:var(--gold);height:18px;min-width:0}
+.slide .val{font-size:.78rem;font-weight:700;color:#f0d878;min-width:40px;text-align:right;font-variant-numeric:tabular-nums}
+#measWrap{display:none;align-items:baseline;gap:10px}
+#measWrap.on{display:flex}
+#measVal{font-family:var(--serif);font-weight:900;font-size:1.9rem;color:#f0d878;line-height:1;font-variant-numeric:tabular-nums}
+#measVal small{font-family:'Outfit',sans-serif;font-weight:500;font-size:.8rem;color:rgba(246,243,233,.5);margin-left:3px}
+#measClub{margin-left:auto;text-align:right;font-size:.74rem;line-height:1.35;color:rgba(246,243,233,.72)}
+#barRow{display:flex;gap:7px}
+.mini{flex:1;border:1.5px solid rgba(201,162,39,.6);background:rgba(201,162,39,.14);color:#f0d878;
+  font-family:'Outfit',sans-serif;font-weight:600;font-size:.8rem;padding:11px 8px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.mini:active{transform:scale(.98)}
+.mini.ghost{border-color:rgba(116,198,157,.4);color:var(--green-glow);background:transparent}
+#banner{display:none;padding:12px 13px;border-radius:6px;background:rgba(179,38,30,.95);color:#fff;font-size:.78rem;line-height:1.45}
+#banner.on{display:block}
+#banner b{font-weight:700}
+
+/* ---------- bandeau de lecture ---------- */
+#strip{flex:0 0 auto;background:linear-gradient(180deg,var(--cream),#efebdd);
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -18px 40px -18px rgba(8,30,18,.6)}
+#sHead{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+#freeBar{display:flex;align-items:center;gap:11px;width:100%;text-align:left;cursor:pointer;
+  background:linear-gradient(145deg,#fffdf3,#fff);border:1.5px solid var(--gold);border-radius:6px;
+  padding:10px 12px;margin-bottom:9px;font-family:'Outfit',sans-serif}
+#freeBar.hidden{display:none}
+#freeBar:active{transform:scale(.995)}
+#freeBar .fic{width:30px;height:30px;flex:0 0 auto;border-radius:6px;display:grid;place-items:center;
+  background:rgba(201,162,39,.2);color:#8a6f00}
+#freeBar .fic svg{width:16px;height:16px}
+#freeBar .ftx{flex:1;min-width:0}
+#freeBar .ftx b{display:block;font-family:var(--serif);font-weight:900;font-size:.92rem;color:var(--green-deep);line-height:1.15}
+#freeBar .ftx span{display:block;font-size:.72rem;color:#8b8770;line-height:1.35;margin-top:2px}
+#freeBar .farr{flex:0 0 auto;color:var(--gold);font-size:1.3rem;line-height:1}
+#gName{font-family:var(--serif);font-weight:900;font-size:1rem;color:var(--green-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#gSub{font-size:.66rem;color:#8b8770;white-space:nowrap}
+#blind{display:none;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  background:rgba(201,162,39,.22);color:#8a6f00;padding:4px 8px;border-radius:999px;white-space:nowrap}
+#blind.on{display:block}
+#compet{margin-left:auto;border:1.5px solid #ddd6c0;background:#fff;color:#8b8770;border-radius:6px;
+  padding:5px 9px;font-family:'Outfit',sans-serif;font-weight:700;font-size:.56rem;letter-spacing:.1em;
+  text-transform:uppercase;cursor:pointer;white-space:nowrap}
+#compet.on{border-color:var(--gold);background:rgba(201,162,39,.16);color:#8a6f00}
+#gSub{margin-left:8px}
+#clubRow{display:flex;gap:11px;background:linear-gradient(145deg,#1f4d34,var(--green-deep));border-radius:6px;padding:10px 12px}
+#clubIcon{flex:0 0 auto;width:42px;display:grid;place-items:center}
+#clubIcon svg{width:42px;height:54px;display:block}
+#clubMain{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.mlab{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--green-glow)}
+#line1{display:flex;align-items:center;gap:7px;margin-top:3px}
+#clubName{flex:1;min-width:0;font-family:var(--serif);font-weight:900;font-size:1.25rem;color:var(--cream);line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#seg{display:flex;background:rgba(246,243,233,.1);border-radius:6px;padding:2px;flex:0 0 auto}
+#seg button{border:none;background:none;color:rgba(246,243,233,.6);cursor:pointer;font-family:'Outfit',sans-serif;
+  font-weight:700;font-size:.6rem;letter-spacing:.06em;padding:8px 7px;border-radius:6px}
+#seg button.on{background:var(--gold);color:#3a2c00}
+#bBag{flex:0 0 auto;border:1.5px solid rgba(201,162,39,.55);background:transparent;color:#f0d878;
+  border-radius:6px;padding:9px;font-family:'Outfit',sans-serif;font-weight:700;font-size:.6rem;letter-spacing:.08em;cursor:pointer}
+#clubMeta{margin-top:5px;font-size:.68rem;line-height:1.4;color:rgba(246,243,233,.62)}
+#cells{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;margin-top:8px;background:#e2dcc7;border:1px solid #e2dcc7;border-radius:6px;overflow:hidden}
+.c{background:var(--cream);padding:8px 4px 9px;text-align:center;min-width:0}
+.c .l{font-size:.55rem;text-transform:uppercase;letter-spacing:.09em;color:#8b8770;font-weight:600}
+.c b{display:block;margin-top:4px;font-family:'Outfit',sans-serif;font-weight:700;font-size:1.12rem;
+  color:var(--green-deep);line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.c b i{font-style:normal;font-size:.62rem;font-weight:500;color:#8b8770;margin-left:1px}
+.c.front b{color:var(--green-mid)}
+.c.up b{color:var(--flag)}
+.c.down b{color:var(--green-mid)}
+
+/* ================= dialogues ================= */
+.overlay{position:fixed;inset:0;z-index:1000;background:rgba(8,24,15,.62);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:grid;place-items:center;padding:20px}
+.modal{width:100%;max-width:400px;max-height:82dvh;overflow:auto;background:var(--cream);border-radius:6px;box-shadow:var(--shadow);padding:22px;animation:rise .25s ease}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.modal h3{font-family:var(--serif);font-weight:900;font-size:1.3rem;color:var(--green-deep);letter-spacing:-.01em}
+.modal h3 em{font-style:italic;color:var(--green-mid)}
+.modal p.txt{font-size:.9rem;color:#5a5848;margin-top:8px;line-height:1.5}
+.modal p.warn{font-size:.82rem;color:var(--bad);background:var(--bad-bg);border-radius:6px;padding:10px 12px;margin-top:12px;line-height:1.45}
+.modal input{width:100%;border:1.5px solid #e6e0cd;border-radius:6px;background:#fff;padding:13px;margin-top:12px;font-family:'Outfit',sans-serif;font-size:1rem;color:var(--green-deep);outline:none}
+.modal input:focus{border-color:var(--green-mid)}
+.modal .row{display:flex;gap:10px;margin-top:16px}
+.modal .row .btn{flex:1;padding:14px}
+.modal .list{display:grid;gap:8px;margin-top:14px}
+.modal .list button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:#fff;border:1.5px solid #e6e0cd;border-radius:6px;padding:13px;cursor:pointer;font-family:'Outfit',sans-serif}
+.modal .list button:active{transform:scale(.99);background:#f1f9f4}
+.modal .list .gl{width:32px;height:32px;border-radius:6px;flex:0 0 auto;display:grid;place-items:center;background:var(--green-mid);color:#fff}
+.modal .list b{font-family:var(--serif);font-size:1rem;color:var(--green-deep);display:block}
+.modal .list small{display:block;font-size:.74rem;color:#8b8770;margin-top:2px;line-height:1.35}
+.modal .list button.dgr{border-color:rgba(179,38,30,.3)}
+.modal .list button.dgr .gl{background:var(--bad)}
+.modal .list button.dgr b{color:var(--bad)}
+.modal .list button.dgr.armed{background:var(--bad-bg)}
+#askChips{display:flex;gap:6px;margin-top:11px;overflow-x:auto;padding-bottom:3px;scrollbar-width:none}
+#askChips::-webkit-scrollbar{display:none}
+#askChips button{flex:0 0 auto;border:1.5px solid #e6e0cd;background:#fff;color:var(--green-deep);
+  border-radius:6px;padding:9px 13px;font-family:'Outfit',sans-serif;font-weight:500;font-size:.8rem;cursor:pointer;white-space:nowrap}
+#askChips button:active{background:#f1f9f4;border-color:var(--green-mid)}
+.plan{margin-top:14px;border:1.5px solid #e6e0cd;border-radius:6px;background:#fff;padding:14px 15px}
+.feat{display:flex;gap:10px;align-items:flex-start;margin-bottom:11px}
+.feat svg{width:17px;height:17px;flex:0 0 auto;color:var(--green-mid);margin-top:2px}
+.feat b{display:block;font-family:var(--serif);font-size:.95rem;color:var(--green-deep);line-height:1.2}
+.feat span{display:block;font-size:.78rem;color:#8b8770;line-height:1.4;margin-top:2px}
+.plan .price{margin-top:14px;padding-top:13px;border-top:1px solid #ece7d6;font-family:var(--serif);font-weight:900;font-size:1.5rem;color:var(--green-deep);text-align:center;letter-spacing:-.02em}
+.plan .pnote{font-size:.72rem;color:#a8a390;text-align:center;margin-top:5px}
+.subline{margin-top:14px;border:1.5px solid #e6e0cd;border-radius:6px;background:#fff;padding:12px 14px}
+.subline.on{border-color:var(--gold);background:linear-gradient(145deg,#fffdf3,#fff)}
+.subline b{display:block;font-family:var(--serif);font-size:1rem;color:var(--green-deep)}
+.subline span{display:block;font-size:.78rem;color:#8b8770;margin-top:2px}
+
+/* ---------- sac ---------- */
+#bag{position:fixed;inset:0;z-index:950;background:var(--cream);display:none;flex-direction:column}
+#bag.on{display:flex}
+#bagTop{flex:0 0 auto;display:flex;align-items:center;gap:12px;background:var(--green-deep);color:var(--cream);
+  padding:calc(13px + env(safe-area-inset-top)) 16px 13px}
+#bagTop .mark{width:34px;height:34px}
+#bagTop h2{flex:1;font-family:var(--serif);font-weight:900;font-size:1.15rem}
+.tbtn{border:1.5px solid rgba(116,198,157,.4);background:transparent;color:var(--green-glow);border-radius:6px;
+  padding:9px 13px;font-family:'Outfit',sans-serif;font-weight:600;font-size:.8rem;cursor:pointer}
+#bagBody{flex:1;overflow-y:auto;padding:16px;max-width:560px;margin:0 auto;width:100%}
+.flabel{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--green-mid);margin:18px 0 9px}
+.flabel:first-child{margin-top:0}
+#presets{display:flex;gap:8px}
+#presets button{flex:1;border:1.5px solid #e6e0cd;background:#fff;color:#5a5848;border-radius:6px;
+  padding:12px 6px;font-family:'Outfit',sans-serif;font-weight:600;font-size:.78rem;line-height:1.3;cursor:pointer}
+#presets button:active{background:#f1f9f4;border-color:var(--green-mid)}
+.club{display:flex;align-items:center;gap:11px;background:#fff;border:1.5px solid #e6e0cd;border-radius:6px;padding:8px 11px;margin-bottom:8px}
+.club .ic{width:36px;height:44px;flex:0 0 auto;border-radius:6px;background:var(--green-deep);display:grid;place-items:center}
+.club .ic svg{width:28px;height:36px;display:block}
+.club .nm{flex:1;font-size:.94rem;font-weight:500;color:var(--green-deep)}
+.club input[type=number]{width:74px;border:1.5px solid #e6e0cd;border-radius:6px;background:#fff;padding:10px;
+  font-family:'Outfit',sans-serif;font-weight:600;font-size:.95rem;color:var(--green-deep);text-align:right;outline:none;font-variant-numeric:tabular-nums}
+.club input:focus{border-color:var(--green-mid)}
+.club .u{font-size:.7rem;color:#8b8770;width:12px}
+.club.off{opacity:.4}
+.tg{position:relative;width:42px;height:25px;flex:0 0 auto}
+.tg input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:2}
+.tg i{position:absolute;inset:0;border-radius:999px;background:#d9d3bf;transition:background .18s}
+.tg i::after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:transform .18s}
+.tg input:checked+i{background:var(--green-mid)}
+.tg input:checked+i::after{transform:translateX(17px)}
+.note{font-size:.78rem;line-height:1.6;color:#8b8770;margin-top:14px}
+.note b{color:#5a5848;font-weight:600}
+
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translate(-50%,20px);
+  background:rgba(19,54,31,.94);color:var(--cream);font-size:.85rem;font-weight:500;padding:11px 20px;border-radius:999px;
+  z-index:1100;opacity:0;pointer-events:none;transition:all .3s;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+#consent{position:fixed;left:0;right:0;bottom:0;z-index:1050;background:var(--cream);padding:16px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -18px 40px -18px rgba(8,30,18,.6)}
+#consent .in{max-width:560px;margin:0 auto}
+#consent p{font-size:.82rem;line-height:1.5;color:#5a5848}
+#consent .row{display:flex;gap:9px;margin-top:12px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ====================== ECRAN DE DEMARRAGE ====================== -->
+<div id="boot">
+  <div class="bootin">
+    <div class="bootmark">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path class="pole" d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle class="foot" cx="6" cy="21" r="1.6" fill="#f6f3e9"/>
+        <g class="ball"><circle cx="14.6" cy="19.4" r="2.7" fill="#d62828"/><circle cx="13.8" cy="18.6" r=".75" fill="#fff" fill-opacity=".55"/></g>
+      </svg>
+    </div>
+    <h1 class="bootword">Swing<em>Up</em></h1>
+    <p class="boottag">Télémètre</p>
+    <div class="bootbar"><i></i></div>
+  </div>
+</div>
+
+<!-- ====================== CONNEXION ====================== -->
+<section id="auth" class="hidden">
+  <div class="auth-wrap">
+    <div class="auth-head">
+      <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/><circle cx="14" cy="19" r="2.6" fill="#d62828"/></svg></div>
+      <h1 data-t>Télémètre</h1>
+      <p id="authTagline" data-t>Connecte-toi pour retrouver tes parcours</p>
+    </div>
+    <div class="surface auth-card">
+      <div class="auth-tabs">
+        <button id="tabLogin" class="on" data-t>Se connecter</button>
+        <button id="tabSignup" data-t>Créer un compte</button>
+      </div>
+      <div class="autherr hidden" id="authErr"></div>
+      <div class="field hidden" id="fldName">
+        <label data-t>Prénom / pseudo</label>
+        <input type="text" id="auName" maxlength="14" autocomplete="nickname">
+      </div>
+      <div class="field">
+        <label data-t>Adresse e-mail</label>
+        <input type="email" id="auEmail" autocomplete="email" inputmode="email">
+      </div>
+      <div class="field">
+        <label data-t>Mot de passe</label>
+        <input type="password" id="auPass" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary" id="btnAuth" data-t>Se connecter</button>
+      <div class="authsep"><span data-t>ou</span></div>
+      <button class="btn btn-google" id="btnGoogle">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-2.8-.4-4H24v7.3h12.1c-.2 2-1.6 5-4.5 7l-.1.3 6.5 5 .5.1c4.1-3.8 6.6-9.4 6.6-15.7"/><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-6.9-5.4c-1.8 1.3-4.3 2.2-7.6 2.2-5.8 0-10.7-3.8-12.5-9.1l-.3 0-6.7 5.2-.1.2C8 40.4 15.4 46 24 46"/><path fill="#FBBC05" d="M11.5 28.4c-.5-1.4-.7-2.9-.7-4.4s.3-3 .7-4.4v-.3l-6.8-5.3-.2.1C2.9 17 2 20.4 2 24s.9 7 2.5 10.1z"/><path fill="#EA4335" d="M24 9.5c4.1 0 6.9 1.8 8.5 3.3l6.2-6C34.9 3.4 29.9 1 24 1 15.4 1 8 6.6 4.5 13.9l7 5.4c1.8-5.3 6.7-9.8 12.5-9.8"/></svg>
+        <span data-t>Continuer avec Google</span>
+      </button>
+      <button class="authlink" id="btnReset" data-t>Mot de passe oublié ?</button>
+      <button class="authlink" id="btnSkip" data-t>Essayer sans compte</button>
+    </div>
+    <p class="footnote"><span data-t>Tes greens tracés sont enregistrés sur ton compte</span><br><span data-t>et te suivent sur tous tes appareils.</span></p>
+    <p class="footnote"><a class="privlink" id="privLink" href="confidentialite.html" target="_blank" rel="noopener" data-t>Politique de confidentialité</a></p>
+  </div>
+</section>
+
+<!-- ====================== APPLICATION ====================== -->
+<div id="app" class="hidden">
+
+  <header>
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/><circle cx="14" cy="19" r="2.6" fill="#d62828"/></svg></div>
+    <div class="brand"><h1 data-t>Télémètre</h1><p id="courseName" data-t>Chargement des parcours…</p></div>
+    <span class="betapill hidden" id="betaPill">Bêta</span>
+    <button class="acctbtn" id="btnAcct" aria-label="Mon compte"><span class="who" id="acctWho">—</span><span class="av" id="acctAv">?</span></button>
+  </header>
+
+  <div id="map">
+    <div id="mapInner"></div>
+    <div id="attrib"></div>
+    <div id="accBadge" class="hidden"><i></i><span id="accTxt"></span></div>
+
+    <div id="mtools">
+      <button class="tool hide" id="bFs" title="Plein écran" aria-label="Plein écran">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      </button>
+      <button class="tool" id="bRot" title="Orientation">
+        <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M12 3 L16 20 L12 16.5 L8 20 Z" fill="currentColor"/></svg>
+        <span id="rotLab">NORD</span>
+      </button>
+      <button class="tool" id="bMe" title="Me recentrer"><span data-t>MOI</span></button>
+      <button class="tool" id="bMeas" title="Mesurer">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15.5 8.5 21 21 8.5 15.5 3Z"/><path d="M7.2 11.8l1.8 1.8M10.2 8.8l1.8 1.8M13.2 5.8l1.8 1.8"/></svg>
+        <span data-t>MESURE</span>
+      </button>
+      <button class="tool" id="bCarto" title="Cartographie">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        <span data-t>CARTO</span>
+      </button>
+      <div id="carto">
+        <button class="tool" id="bDetect" data-t>DÉTECT</button>
+        <button class="tool" id="bDraw" data-t>TRACER</button>
+        <button class="tool" id="bPoint" data-t>POINTER</button>
+        <button class="tool" id="bLoad" title="Recharger les greens">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>
+          <span data-t>GREENS</span>
+        </button>
+        <button class="tool hide" id="bPos" data-t>POS.</button>
+      </div>
+    </div>
+
+    <div id="stack">
+      <div id="banner"></div>
+      <div id="bar">
+        <p id="barMsg"></p>
+        <div class="slide" id="tolWrap">
+          <span class="lb" data-t>Tolérance</span>
+          <input type="range" id="tol" min="0" max="80" step="2" value="30" aria-label="Tolérance">
+          <span class="val" id="tolLab">30</span>
+        </div>
+        <div class="slide" id="radWrap">
+          <span class="lb" data-t>Rayon</span>
+          <input type="range" id="rad" min="1" max="45" step="1" value="14" aria-label="Rayon">
+          <span class="val" id="radLab">14 m</span>
+        </div>
+        <div id="measWrap"><span id="measVal">—</span><span id="measClub"></span></div>
+        <div id="barRow">
+          <button class="mini ghost" id="bAgain" data-t>Refaire</button>
+          <button class="mini" id="bKeep" data-t>Garder</button>
+          <button class="mini ghost" id="bCancel" data-t>Fermer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="strip">
+    <button id="freeBar" class="hidden">
+      <span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+      <span class="ftx"><b data-t>Greens non conservés</b><span id="freeSub" data-t>Passe en Premium pour garder tes tracés</span></span>
+      <span class="farr">›</span>
+    </button>
+    <div id="sHead">
+      <span id="gName" data-t>En attente de position</span>
+      <span id="blind" data-t>Coup aveugle</span>
+      <button id="compet" aria-pressed="false" title="Mode compétition"><span data-t>COMPÉT.</span></button>
+      <span id="gSub"></span>
+    </div>
+    <div id="clubRow">
+      <div id="clubIcon" aria-hidden="true"></div>
+      <div id="clubMain">
+        <span class="mlab" data-t>Club conseillé</span>
+        <div id="line1">
+          <span id="clubName">—</span>
+          <div id="seg" role="group">
+            <button data-t data-tt="front">AV</button><button data-t data-tt="centre" class="on">CEN</button><button data-t data-tt="back">ARR</button>
+          </div>
+          <button id="bBag" data-t>SAC</button>
+        </div>
+        <p id="clubMeta" data-t>Choisissez un green</p>
+      </div>
+    </div>
+    <div id="cells">
+      <div class="c front"><span class="l" data-t>Avant</span><b id="dFront">—</b></div>
+      <div class="c"><span class="l" data-t>Arrière</span><b id="dBack">—</b></div>
+      <div class="c"><span class="l" data-t>Gauche</span><b id="dLeft">—</b></div>
+      <div class="c"><span class="l" data-t>Droite</span><b id="dRight">—</b></div>
+      <div class="c" id="cElev"><span class="l" data-t>Déniv.</span><b id="dElev">—</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== SAC ====================== -->
+<div id="bag" role="dialog">
+  <div id="bagTop">
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/><circle cx="14" cy="19" r="2.6" fill="#d62828"/></svg></div>
+    <h2 data-t>Mon sac</h2>
+    <button class="tbtn" id="bagClose" data-t>Fermer</button>
+  </div>
+  <div id="bagBody">
+    <p class="flabel" data-t>Point de départ</p>
+    <div id="presets">
+      <button data-p="men" data-t>Amateur homme</button>
+      <button data-p="women" data-t>Amateur femme</button>
+      <button data-p="senior" data-t>Senior ou débutant</button>
+    </div>
+    <p class="flabel" data-t>Distance totale par club</p>
+    <div id="bagList"></div>
+    <button class="btn btn-primary" id="bagDone" style="margin-top:14px" data-t>Terminé</button>
+    <p class="note" data-t>Notez la distance que vous atteignez régulièrement, pas votre meilleur coup de l'année. C'est ce qui rend le conseil juste.</p>
+  </div>
+</div>
+
+<!-- ====================== NOMMER ====================== -->
+<div class="overlay hidden" id="ask">
+  <div class="modal">
+    <h3 id="askTitle"></h3>
+    <p class="txt" data-t>Un nom court se lit mieux sur la carte.</p>
+    <input id="askInput" type="text" maxlength="28" autocomplete="off" spellcheck="false">
+    <div id="askChips"></div>
+    <div class="row">
+      <button class="btn btn-ghost" id="askNo" data-t>Annuler</button>
+      <button class="btn btn-primary" id="askYes" data-t>Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== FICHE GREEN ====================== -->
+<div class="overlay hidden" id="ctx">
+  <div class="modal">
+    <h3 id="ctxName">—</h3>
+    <p class="txt" id="ctxSub"></p>
+    <div class="list">
+      <button id="ctxRename"><span class="gl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span><span><b data-t>Renommer</b><small data-t>Changer le nom affiché sur la carte</small></span></button>
+      <button id="ctxRedraw"><span class="gl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></span><span id="ctxRedrawLbl"></span></button>
+      <button id="ctxDel" class="dgr"><span class="gl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg></span><span id="ctxDelLbl"></span></button>
+    </div>
+    <div class="row"><button class="btn btn-ghost" id="ctxClose" data-t>Fermer</button></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="overlay"></div>
+<div class="toast" id="toast"></div>
+<div id="consent" class="hidden">
+  <div class="in">
+    <p data-t>Nous mesurons l'audience pour améliorer l'application. Aucune donnée n'est revendue et refuser ne limite rien.</p>
+    <div class="row">
+      <button class="btn btn-ghost" id="cNo" data-t>Refuser</button>
+      <button class="btn btn-primary" id="cYes" data-t>Accepter</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="leaflet/leaflet.js"></script>
+<script src="fr-poly.js"></script>
+<script>
+/* Numéro de version : à comparer avec celui affiché dans le diagnostic
+   pour vérifier que le téléphone sert bien la dernière mise en ligne. */
+const BUILD = 'tel-2026-08-16-v';
+
+/* Capture des erreurs le plus tôt possible : une erreur de syntaxe dans
+   la configuration collée casse tout le script, et sans ça l'écran reste
+   simplement inerte, sans le moindre message. */
+window.__errs = [];
+function noterErreur(src, e){
+  const m = (e && (e.message || e.reason && e.reason.message || e.reason)) || String(e);
+  const l = (e && e.lineno) ? ' L' + e.lineno : '';
+  window.__errs.push(src + l + ' · ' + m);
+  if (window.__errs.length > 6) window.__errs.shift();
+  try{ montrerErreurBloquante(); }catch(_){}
+}
+addEventListener('error', e => noterErreur('script', e));
+addEventListener('unhandledrejection', e => noterErreur('promesse', e));
+function montrerErreurBloquante(){
+  const el = document.getElementById('authErr');
+  if (!el || !window.__errs.length) return;
+  el.textContent = window.__errs[window.__errs.length - 1];
+  el.classList.remove('hidden');
+  const a = document.getElementById('auth');
+  if (a) a.classList.remove('hidden');
+  hideBoot();
+}
+
+/* ---------- écran de démarrage ----------
+   Remplace le fond vert nu du lancement natif par un écran animé, le
+   temps que Firebase et la carte s'initialisent. BOOT_MIN évite un
+   flash trop bref si tout charge en un clin d'œil. */
+const BOOT_T0 = Date.now(), BOOT_MIN = 1200;
+let bootHidden = false;
+function hideBoot(){
+  if (bootHidden) return;
+  bootHidden = true;
+  setTimeout(() => {
+    const b = document.getElementById('boot');
+    if (!b) return;
+    b.classList.add('off');
+    setTimeout(() => { if (b.parentNode) b.parentNode.removeChild(b); }, 650);
+  }, Math.max(0, BOOT_MIN - (Date.now() - BOOT_T0)));
+}
+setTimeout(hideBoot, 7000); /* filet de sécurité si le réseau ne répond pas */
+
+/* =======================================================================
+   ▼▼▼  CONFIGURATION FIREBASE — projet PROPRE au télémètre  ▼▼▼
+   Ne réutilise pas celui de la carte de score : bases distinctes.
+   ======================================================================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyABxRqI8tH_H8zTblxYv7hspfWqKziuBYA",
+  authDomain: "swingup-telemetre.firebaseapp.com",
+  projectId: "swingup-telemetre",
+  storageBucket: "swingup-telemetre.firebasestorage.app",
+  messagingSenderId: "287840826427",
+  appId: "1:287840826427:web:ee44e50af226be3bb8181e",
+  measurementId: "G-FCS3VQQJSZ"
+};
+
+/* =======================================================================
+   ▼▼▼  FOND SATELLITE MONDIAL — ArcGIS Location Platform  ▼▼▼
+   2 M de tuiles offertes par mois, licence commerciale incluse.
+   Restreindre la clé par référent HTTP dans le tableau de bord ArcGIS.
+   Tant qu'elle vaut A_REMPLIR, seule la France est couverte (IGN).
+   ======================================================================= */
+const ARCGIS = { key:'AAPTa8DRuQJQGOUvh41sj32S8gg..ZKqyZIL73HwwgH3jQkbOjl1i1P0gt6H1U-gzwkNNIimGqXUBDLpKrVSy-Cxj6QtUp1-n9RyuSXVzHwhzLfa_F4VDwoc6cmyJ7T_kIMwCzzmGiOh56GPOaWANC2UTIGORLStc1uXa5Y5cw4yCOm-BmsGQdLA9ZpPaWxNxI-XHd0ucSTt7WKLkW8tCAwmD9u81HpdOKyiUdosjPKxPO7scjdfY4_BMDLrOf4HOv9TDI5Zx67MjMK08Ag..AT1_UGpst60w' };
+
+/* =======================================================================
+   ▼▼▼  CONNEXION GOOGLE  ▼▼▼
+   Même circuit que SwingUpPro (carte de score) : signInWithPopup, puis
+   redirection en secours si la fenêtre est refusée. Rien à configurer côté
+   Google Cloud — seul le fournisseur Google doit être activé dans
+   Firebase Authentication, et le domaine ajouté aux domaines autorisés.
+   ======================================================================= */
+
+/* =======================================================================
+   ▼▼▼  ABONNEMENT PREMIUM — compte Stripe PROPRE au télémètre  ▼▼▼
+   ======================================================================= */
+const PREMIUM = {
+  name:'Télémètre Premium',
+  price:'2,90 € / mois',
+  priceShort:'2,90 €/mois',
+  note:'Sans engagement, résiliable à tout moment.',
+  /* Cloud Functions du projet du télémètre. Tant qu'elles valent null,
+     le bouton annonce simplement que le paiement arrive bientôt. */
+  checkoutUrl:null,
+  portalUrl:null,
+  /* null = comportement normal · true = tout ouvert · false = tout verrouillé */
+  test:null
+};
+
+/* Phase bêta : actif:true → l'app est entièrement ouverte, rien n'est vendu.
+   Le jour de la bascule, passer actif à false : les comptes créés avant
+   « limite » gardent leur accès à vie. */
+const BETA = {
+  actif:true,
+  fin:'27 septembre 2026',
+  limite:Date.parse('2026-09-27T23:59:59+02:00')
+};
+
+/* Mesure d'audience. Tant que id est vide, aucun script, aucune bannière. */
+const ANALYTICS = { id:'G-FCS3VQQJSZ' };
+
+/* ======================= DICTIONNAIRES =======================
+   La clé est le texte français. Une entrée absente laisse le
+   français s'afficher : aucune traduction manquante ne casse rien. */
+const LANGS = {
+
+en:{
+'Télémètre':'Rangefinder','Connecte-toi pour retrouver tes parcours':'Sign in to find your courses',
+'Se connecter':'Sign in','Créer un compte':'Create account','Prénom / pseudo':'First name / nickname',
+'Adresse e-mail':'Email address','Mot de passe':'Password','ou':'or','Continuer avec Google':'Continue with Google',
+'Mot de passe oublié ?':'Forgot your password?','Continuer sans compte':'Continue without an account',
+'Sans abonnement, les greens ne sont pas conservés.':'Without an account, your greens stay on this device.',
+'Avec un compte Premium, ils te suivent partout.':'With a Premium account, they follow you everywhere.',
+'Politique de confidentialité':'Privacy policy','Chargement des parcours…':'Loading courses…',
+'Parcours chargés':'Courses loaded','Aucun parcours trouvé':'No course found',
+'Comment on t\'appelle ?':'What should we call you?','toi@exemple.fr':'you@example.com',
+'Au moins 6 caractères':'At least 6 characters','Essayer sans compte':'Try without an account',
+'Tes greens tracés sont enregistrés sur ton compte':'Your mapped greens are saved to your account',
+'et te suivent sur tous tes appareils.':'and follow you on every device.',
+'Ton navigateur a bloqué le retour de Google. Connecte-toi avec ton adresse e-mail.':'Your browser blocked the return from Google. Sign in with your email instead.',
+'Firebase n\'a pas démarré. Vérifie la configuration.':'Firebase did not start. Check the configuration.',
+'E-mail de réinitialisation envoyé':'Reset email sent','Mon compte':'My account','Se déconnecter':'Sign out',
+'Langue':'Language','Invité':'Guest','Compte':'Account','Ton nom':'Your name','Nom mis à jour':'Name updated',
+'Connecté·e en tant que':'Signed in as',
+'Ton compte utilise la connexion Google : l\'adresse e-mail et le mot de passe se gèrent depuis ton compte Google.':'Your account uses Google sign-in: email and password are managed from your Google account.',
+'Reconnecte-toi puis recommence.':'Sign in again, then retry.','Supprimer mon compte':'Delete my account',
+'Ton compte, tes greens et ton sac seront effacés définitivement. Cette action est irréversible.':'Your account, your greens and your bag will be permanently erased. This cannot be undone.',
+'Si tu as un abonnement en cours, résilie-le avant de supprimer ton compte.':'If you have an active subscription, cancel it before deleting your account.',
+'Sauvegarde dans le cloud':'Cloud backup','Débloquer':'Unlock','Version bêta':'Beta version',
+'Abonnement actif':'Subscription active','J\'ai déjà un abonnement':'I already have a subscription',
+'Gérer mon abonnement':'Manage my subscription','Premium activé':'Premium activated',
+'Greens synchronisés':'Greens synced','Hors ligne : synchro différée':'Offline: sync deferred',
+'Le paiement arrive bientôt.':'Payment is coming soon.','Bientôt disponible':'Coming soon',
+'Paiement indisponible':'Payment unavailable','Tes greens ne sont pas conservés.':'Your greens are not kept.',
+'Tes greens sont sauvegardés sur ton compte.':'Your greens are backed up to your account.',
+'Sauvegarde et synchronisation':'Backup and sync',
+'Sans abonnement, les greens que tu traces disparaissent à la fermeture. Avec Premium, ils sont conservés et te suivent sur tous tes appareils.':'Without a subscription, the greens you map are lost when you close the app. With Premium they are kept and follow you on every device.',
+'Parcours illimités':'Unlimited courses',
+'Cartographie sans limite de nombre de greens.':'Map as many greens as you like.',
+'Vue satellite illimitée':'Unlimited satellite view',
+'300 tuiles gratuites par mois hors France, à volonté avec Premium.':'300 free tiles per month outside France, unlimited with Premium.',
+'Limite satellite gratuite du mois atteinte. Passe en Premium pour continuer en vue aérienne.':'Free monthly satellite limit reached. Go Premium to keep the aerial view.',
+'Mesure et création restent gratuites':'Measuring and mapping stay free',
+'Mesure et cartographie restent gratuites':'Measuring and mapping stay free',
+'L\'abonnement ne porte que sur la sauvegarde en ligne.':'The subscription only covers online backup.',
+'L\'abonnement ne porte que sur la conservation de tes tracés.':'The subscription only covers keeping your outlines.',
+'Accès complet offert':'Full access included','jusqu\'au':'until',
+'Tout est ouvert jusqu\'au {d}.':'Everything is unlocked until {d}.','Offre gratuite':'Free plan',
+'Greens non sauvegardés':'Greens are not saved','Découvrir Premium':'Discover Premium',
+'Accès bêta-testeur':'Beta tester access',
+'Accès complet conservé, sans abonnement. Merci d\'avoir été là au début.':'Full access kept, no subscription. Thank you for being there at the start.',
+'Période d\'essai':'Trial period','Mode invité':'Guest mode',
+'{n} green(s) tracé(s) — non sauvegardés. Ils disparaîtront à la fermeture.':'{n} green(s) mapped — not saved. They will be lost when you close the app.',
+'Greens non conservés':'Greens are not kept',
+'{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.':'{n} outline(s) will be lost on close. Premium keeps them.',
+'Les greens que tu traces ne sont pas conservés.':'The greens you map are not being kept.',
+'Passe en Premium pour garder tes tracés':'Go Premium to keep your outlines',
+'Créer un compte pour sauvegarder':'Create an account to save','MOI':'ME','MESURE':'MEASURE','CARTO':'MAP',
+'DÉTECT':'DETECT','TRACER':'DRAW','POINTER':'POINT','GREENS':'GREENS','POS.':'POS.','Tolérance':'Tolerance',
+'Rayon':'Radius','Refaire':'Redo','Garder':'Keep','Fermer':'Close','Annuler':'Cancel','Enregistrer':'Save',
+'En attente de position':'Waiting for position','Coup aveugle':'Blind shot','Club conseillé':'Suggested club',
+'Choisissez un green':'Pick a green','SAC':'BAG','Avant':'Front','Arrière':'Back','Gauche':'Left','Droite':'Right',
+'Déniv.':'Elev.','AV':'FRT','ARR':'BCK','CEN':'CTR','COMPÉT.':'COMP.','Trou {n}':'Hole {n}','Green {n}':'Green {n}',
+'Choisissez DÉTECT, TRACER ou POINTER, ou Fermer pour rétablir l\'ancien contour.':'Choose DETECT, DRAW or POINT, or Close to restore the previous outline.',
+'Il faut au moins trois points.':'You need at least three points.',
+'Rien à garder pour l\'instant.':'Nothing to keep yet.',
+'Ancien contour de {n} effacé. Choisissez DÉTECT, TRACER ou POINTER pour le refaire.':'Previous outline of {n} cleared. Choose DETECT, DRAW or POINT to redo it.',
+'Aucun green trouvé':'No green found','Boussole indisponible sur cet appareil.':'Compass unavailable on this device.',
+'Boussole refusée. La carte reste orientable à deux doigts.':'Compass access denied. You can still rotate the map with two fingers.',
+'Ce fond interdit la lecture des pixels. Utilisez TRACER ou POINTER.':'This basemap does not allow pixel reading. Use DRAW or POINT instead.',
+'Changer le nom affiché sur la carte':'Change the name shown on the map',
+'Comment s\'appelle ce green ?':'What is this green called?','Confirmer la suppression':'Confirm deletion',
+'Efface définitivement ce tracé':'Permanently deletes this outline',
+'Masque ce green sur cet appareil':'Hides this green on this device',
+'Retirer ce green de la carte':'Remove this green from the map',
+'Nouveau contour pour ce green':'New outline for this green','Retracer le contour':'Redraw the outline',
+'Reposer les points à la main':'Place the points again by hand','Régler le rayon':'Adjust the radius',
+'Rouvrir le point et son curseur':'Reopen the point and its slider',
+'Image satellite pas encore chargée à cet endroit. Attendez une seconde et retouchez.':'Satellite image not loaded here yet. Wait a second and tap again.',
+'Le contour déborde — baissez la tolérance.':'The outline overflows — lower the tolerance.',
+'{a} m², {d} m — un peu petit, montez la tolérance.':'{a} m², {d} m — a bit small, raise the tolerance.',
+'{a} m², {d} m de diamètre. Pas le bon endroit ? Retouchez le centre du green.':'{a} m², {d} m across. Wrong spot? Tap the center of the green again.',
+'Le contour déborde — baissez la tolérance ou glissez les points dorés vers l\'intérieur.':'The outline overflows — lower the tolerance or drag the gold points inward.',
+'{a} m², {d} m. Glissez les points dorés pour ajuster, puis Garder.':'{a} m², {d} m. Drag the gold points to adjust, then Keep.',
+'Parcours absent d\'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.':'Course missing from OpenStreetMap. Add greens with DETECT, DRAW or POINT.',
+'Points effacés. Touchez la carte pour recommencer.':'Points cleared. Tap the map to start again.',
+'Rayon {r} m · {a} m². Ajustez puis Garder.':'Radius {r} m · {a} m². Adjust then Keep.',
+'Rayon {r} m · {a} m². Glissez les points dorés ou changez le rayon, puis Garder.':'Radius {r} m · {a} m². Drag the gold points or change the radius, then Keep.',
+'Reprise de {n}.':'Resuming {n}.',
+'Repère effacé. Touchez un point pour mesurer.':'Marker cleared. Tap a point to measure.',
+'Rien de cohérent ici. Visez le centre du green ou montez la tolérance.':'Nothing consistent detected here. Aim for the center of the green or raise the tolerance.',
+'Touchez ailleurs pour déplacer le repère.':'Tap elsewhere to move the marker.',
+'Touchez la carte pour poser les points du contour.':'Tap the map to place the outline points.',
+'Touchez la carte à l\'endroit où vous vous trouvez.':'Tap the map at your current location.',
+'Touchez le centre du green : la zone s\'étend par similarité de couleur.':'Tap the center of the green: the area expands by color similarity.',
+'Touchez le centre du green, puis réglez le rayon.':'Tap the center of the green, then adjust the radius.',
+'Touchez un green':'Tap a green',
+'Touchez un point : la distance se met à jour en marchant.':'Tap a point: the distance updates as you walk.',
+'Touchez à nouveau le centre du green.':'Tap the center of the green again.',
+'Touchez à nouveau pour valider':'Tap again to confirm',
+'Zoomez davantage : la détection demande le niveau 19.':'Zoom in further: detection requires level 19.',
+'Page non servie en HTTPS : le navigateur bloque GPS et boussole. Touchez POS. pour vous placer à la main.':'Page not served over HTTPS: the browser blocks GPS and compass. Tap POS. to place yourself manually.',
+'Position inaccessible. Utilisez POS.':'Position unavailable. Use POS.',
+'Position indisponible.':'Position unavailable.','Pos. manuelle':'Manual position',
+'Fond satellite mondial non configuré : clé ArcGIS manquante.':'Worldwide satellite basemap not configured: missing ArcGIS key.',
+'Imagerie satellite temporairement indisponible.':'Satellite imagery temporarily unavailable.',
+'(dénivelé compris)':'(elevation included)',
+'Hors de portée : {d} m {w}, il manque {g} m':'Out of range: {d} m {w}, {g} m short',
+'Réglez vos distances dans SAC':'Set your distances in BAG','Sac vide':'Empty bag',
+'au bord arrière':'at the back edge','au bord avant':'at the front edge','au centre':'at the center',
+'estimé':'estimated','hors de portée':'out of range',
+'limite, {c} si vous frappez long':'borderline, {c} if you hit long','marge de {g} m':'{g} m margin',
+'pile la distance':'exact distance','pointé':'pinned','porte {d} m':'carries {d} m',
+'position inconnue':'position unknown','tracé':'drawn',
+'{a} m² · {w} m de large · bord avant à {d} m':'{a} m² · {w} m wide · front edge at {d} m',
+'{n} point(s) — 3 minimum, puis Garder.':'{n} point(s) — 3 minimum, then Keep.','Mon sac':'My bag',
+'Point de départ':'Starting point','Amateur homme':'Male amateur','Amateur femme':'Female amateur',
+'Senior ou débutant':'Senior or beginner','Distance totale par club':'Total distance per club',
+'Notez la distance que vous atteignez régulièrement, pas votre meilleur coup de l\'année. C\'est ce qui rend le conseil juste.':'Enter the distance you reach consistently, not your best shot of the year. That is what makes the advice right.',
+'Terminé':'Done','Un nom court se lit mieux sur la carte.':'A short name reads better on the map.',
+'Renommer':'Rename','Renommer {n}':'Rename {n}',
+'Nous mesurons l\'audience pour améliorer l\'application. Aucune donnée n\'est revendue et refuser ne limite rien.':'We measure usage to improve the app. No data is ever sold and declining limits nothing.',
+'Refuser':'Decline','Accepter':'Accept','Supprimer':'Delete','Driver':'Driver','Bois 3':'3 Wood','Bois 5':'5 Wood',
+'Hybride':'Hybrid','Fer 4':'4 Iron','Fer 5':'5 Iron','Fer 6':'6 Iron','Fer 7':'7 Iron','Fer 8':'8 Iron',
+'Fer 9':'9 Iron','Pitching':'Pitching Wedge','Approche':'Approach Wedge','Sand':'Sand Wedge','Lob':'Lob Wedge'
+},
+
+es:{
+'Télémètre':'Telémetro','Connecte-toi pour retrouver tes parcours':'Inicia sesión para encontrar tus campos',
+'Se connecter':'Iniciar sesión','Créer un compte':'Crear una cuenta','Prénom / pseudo':'Nombre / apodo',
+'Adresse e-mail':'Correo electrónico','Mot de passe':'Contraseña','ou':'o',
+'Continuer avec Google':'Continuar con Google','Mot de passe oublié ?':'¿Olvidaste tu contraseña?',
+'Continuer sans compte':'Continuar sin cuenta',
+'Sans abonnement, les greens ne sont pas conservés.':'Sin suscripción, los greens no se conservan.',
+'Avec un compte Premium, ils te suivent partout.':'Con una cuenta Premium, te siguen a todas partes.',
+'Politique de confidentialité':'Política de privacidad','Chargement des parcours…':'Cargando campos…',
+'Parcours chargés':'Campos cargados','Aucun parcours trouvé':'Ningún campo encontrado',
+'Comment on t\'appelle ?':'¿Cómo te llamamos?','toi@exemple.fr':'tu@ejemplo.com',
+'Au moins 6 caractères':'Al menos 6 caracteres','Essayer sans compte':'Probar sin cuenta',
+'Tes greens tracés sont enregistrés sur ton compte':'Los greens que trazas se guardan en tu cuenta',
+'et te suivent sur tous tes appareils.':'y te siguen en todos tus dispositivos.',
+'Ton navigateur a bloqué le retour de Google. Connecte-toi avec ton adresse e-mail.':'Tu navegador bloqueó el regreso de Google. Inicia sesión con tu correo electrónico.',
+'Firebase n\'a pas démarré. Vérifie la configuration.':'Firebase no se inició. Comprueba la configuración.',
+'E-mail de réinitialisation envoyé':'Correo de restablecimiento enviado','Mon compte':'Mi cuenta',
+'Se déconnecter':'Cerrar sesión','Langue':'Idioma','Invité':'Invitado','Compte':'Cuenta','Ton nom':'Tu nombre',
+'Nom mis à jour':'Nombre actualizado','Connecté·e en tant que':'Sesión iniciada como',
+'Ton compte utilise la connexion Google : l\'adresse e-mail et le mot de passe se gèrent depuis ton compte Google.':'Tu cuenta usa el inicio de sesión con Google: el correo y la contraseña se gestionan desde tu cuenta de Google.',
+'Reconnecte-toi puis recommence.':'Vuelve a iniciar sesión e inténtalo de nuevo.',
+'Supprimer mon compte':'Eliminar mi cuenta',
+'Ton compte, tes greens et ton sac seront effacés définitivement. Cette action est irréversible.':'Tu cuenta, tus greens y tu bolsa se eliminarán permanentemente. Esta acción no se puede deshacer.',
+'Si tu as un abonnement en cours, résilie-le avant de supprimer ton compte.':'Si tienes una suscripción activa, cancélala antes de eliminar tu cuenta.',
+'Sauvegarde dans le cloud':'Copia en la nube','Débloquer':'Desbloquear','Version bêta':'Versión beta',
+'Abonnement actif':'Suscripción activa','J\'ai déjà un abonnement':'Ya tengo una suscripción',
+'Gérer mon abonnement':'Gestionar mi suscripción','Premium activé':'Premium activado',
+'Greens synchronisés':'Greens sincronizados','Hors ligne : synchro différée':'Sin conexión: sincronización pendiente',
+'Le paiement arrive bientôt.':'El pago estará disponible próximamente.','Bientôt disponible':'Próximamente',
+'Paiement indisponible':'Pago no disponible','Tes greens ne sont pas conservés.':'Tus greens no se conservan.',
+'Tes greens sont sauvegardés sur ton compte.':'Tus greens se guardan en tu cuenta.',
+'Sauvegarde et synchronisation':'Copia de seguridad y sincronización',
+'Sans abonnement, les greens que tu traces disparaissent à la fermeture. Avec Premium, ils sont conservés et te suivent sur tous tes appareils.':'Sin suscripción, los greens que trazas desaparecen al cerrar la app. Con Premium, se conservan y te siguen en todos tus dispositivos.',
+'Parcours illimités':'Campos ilimitados',
+'Cartographie sans limite de nombre de greens.':'Cartografía sin límite en el número de greens.',
+'Vue satellite illimitée':'Vista satelital ilimitada',
+'300 tuiles gratuites par mois hors France, à volonté avec Premium.':'300 tuiles gratuitas al mes fuera de Francia, ilimitadas con Premium.',
+'Limite satellite gratuite du mois atteinte. Passe en Premium pour continuer en vue aérienne.':'Límite satelital gratuito del mes alcanzado. Pasa a Premium para seguir con la vista aérea.',
+'Mesure et création restent gratuites':'Medir y crear siguen siendo gratis',
+'Mesure et cartographie restent gratuites':'Medir y cartografiar siguen siendo gratis',
+'L\'abonnement ne porte que sur la sauvegarde en ligne.':'La suscripción solo cubre la copia de seguridad en línea.',
+'L\'abonnement ne porte que sur la conservation de tes tracés.':'La suscripción solo cubre la conservación de tus trazados.',
+'Accès complet offert':'Acceso completo incluido','jusqu\'au':'hasta el',
+'Tout est ouvert jusqu\'au {d}.':'Todo está desbloqueado hasta el {d}.','Offre gratuite':'Plan gratuito',
+'Greens non sauvegardés':'Los greens no se guardan','Découvrir Premium':'Descubrir Premium',
+'Accès bêta-testeur':'Acceso de probador beta',
+'Accès complet conservé, sans abonnement. Merci d\'avoir été là au début.':'Acceso completo conservado, sin suscripción. Gracias por estar ahí desde el principio.',
+'Période d\'essai':'Período de prueba','Mode invité':'Modo invitado',
+'{n} green(s) tracé(s) — non sauvegardés. Ils disparaîtront à la fermeture.':'{n} green(s) trazado(s) — no guardados. Desaparecerán al cerrar.',
+'Greens non conservés':'Los greens no se conservan',
+'{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.':'{n} trazado(s) se perderán al cerrar. Premium los conserva.',
+'Les greens que tu traces ne sont pas conservés.':'Los greens que trazas no se conservan.',
+'Passe en Premium pour garder tes tracés':'Pasa a Premium para conservar tus trazados',
+'Créer un compte pour sauvegarder':'Crea una cuenta para guardar','MOI':'YO','MESURE':'MEDIR','CARTO':'MAPA',
+'DÉTECT':'DETECT','TRACER':'TRAZAR','POINTER':'PUNTO','GREENS':'GREENS','POS.':'POS.','Tolérance':'Tolerancia',
+'Rayon':'Radio','Refaire':'Rehacer','Garder':'Conservar','Fermer':'Cerrar','Annuler':'Cancelar',
+'Enregistrer':'Guardar','En attente de position':'Esperando posición','Coup aveugle':'Golpe ciego',
+'Club conseillé':'Palo sugerido','Choisissez un green':'Elige un green','SAC':'BOLSA','Avant':'Delante',
+'Arrière':'Detrás','Gauche':'Izquierda','Droite':'Derecha','Déniv.':'Desn.','AV':'DEL','ARR':'DET','CEN':'CEN',
+'COMPÉT.':'COMPET.','Trou {n}':'Hoyo {n}','Green {n}':'Green {n}',
+'Choisissez DÉTECT, TRACER ou POINTER, ou Fermer pour rétablir l\'ancien contour.':'Elige DETECT, TRAZAR o PUNTO, o Cerrar para restablecer el contorno anterior.',
+'Il faut au moins trois points.':'Se necesitan al menos tres puntos.',
+'Rien à garder pour l\'instant.':'Nada que conservar por ahora.',
+'Ancien contour de {n} effacé. Choisissez DÉTECT, TRACER ou POINTER pour le refaire.':'Contorno anterior de {n} borrado. Elige DETECT, TRAZAR o PUNTO para rehacerlo.',
+'Aucun green trouvé':'Ningún green encontrado',
+'Boussole indisponible sur cet appareil.':'Brújula no disponible en este dispositivo.',
+'Boussole refusée. La carte reste orientable à deux doigts.':'Acceso a la brújula denegado. Aún puedes girar el mapa con dos dedos.',
+'Ce fond interdit la lecture des pixels. Utilisez TRACER ou POINTER.':'Este mapa base no permite leer píxeles. Usa TRAZAR o PUNTO.',
+'Changer le nom affiché sur la carte':'Cambiar el nombre mostrado en el mapa',
+'Comment s\'appelle ce green ?':'¿Cómo se llama este green?','Confirmer la suppression':'Confirmar eliminación',
+'Efface définitivement ce tracé':'Elimina este trazado de forma permanente',
+'Masque ce green sur cet appareil':'Oculta este green en este dispositivo',
+'Retirer ce green de la carte':'Quitar este green del mapa',
+'Nouveau contour pour ce green':'Nuevo contorno para este green','Retracer le contour':'Volver a trazar el contorno',
+'Reposer les points à la main':'Volver a colocar los puntos a mano','Régler le rayon':'Ajustar el radio',
+'Rouvrir le point et son curseur':'Reabrir el punto y su control deslizante',
+'Image satellite pas encore chargée à cet endroit. Attendez une seconde et retouchez.':'La imagen satelital aún no se ha cargado aquí. Espera un segundo y vuelve a tocar.',
+'Le contour déborde — baissez la tolérance.':'El contorno se desborda — reduce la tolerancia.',
+'{a} m², {d} m — un peu petit, montez la tolérance.':'{a} m², {d} m — un poco pequeño, sube la tolerancia.',
+'{a} m², {d} m de diamètre. Pas le bon endroit ? Retouchez le centre du green.':'{a} m², {d} m de diámetro. ¿No es el sitio correcto? Vuelve a tocar el centro del green.',
+'Le contour déborde — baissez la tolérance ou glissez les points dorés vers l\'intérieur.':'El contorno se desborda — reduce la tolerancia o arrastra los puntos dorados hacia dentro.',
+'{a} m², {d} m. Glissez les points dorés pour ajuster, puis Garder.':'{a} m², {d} m. Arrastra los puntos dorados para ajustar y pulsa Conservar.',
+'Parcours absent d\'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.':'Campo ausente de OpenStreetMap. Añade los greens con DETECT, TRAZAR o PUNTO.',
+'Points effacés. Touchez la carte pour recommencer.':'Puntos borrados. Toca el mapa para empezar de nuevo.',
+'Rayon {r} m · {a} m². Ajustez puis Garder.':'Radio {r} m · {a} m². Ajusta y pulsa Conservar.',
+'Rayon {r} m · {a} m². Glissez les points dorés ou changez le rayon, puis Garder.':'Radio {r} m · {a} m². Arrastra los puntos dorados o cambia el radio, y pulsa Conservar.',
+'Reprise de {n}.':'Reanudando {n}.',
+'Repère effacé. Touchez un point pour mesurer.':'Marca borrada. Toca un punto para medir.',
+'Rien de cohérent ici. Visez le centre du green ou montez la tolérance.':'Nada coherente detectado aquí. Apunta al centro del green o sube la tolerancia.',
+'Touchez ailleurs pour déplacer le repère.':'Toca en otro lugar para mover la marca.',
+'Touchez la carte pour poser les points du contour.':'Toca el mapa para colocar los puntos del contorno.',
+'Touchez la carte à l\'endroit où vous vous trouvez.':'Toca el mapa en el lugar donde te encuentras.',
+'Touchez le centre du green : la zone s\'étend par similarité de couleur.':'Toca el centro del green: el área se expande por similitud de color.',
+'Touchez le centre du green, puis réglez le rayon.':'Toca el centro del green y luego ajusta el radio.',
+'Touchez un green':'Toca un green',
+'Touchez un point : la distance se met à jour en marchant.':'Toca un punto: la distancia se actualiza mientras caminas.',
+'Touchez à nouveau le centre du green.':'Vuelve a tocar el centro del green.',
+'Touchez à nouveau pour valider':'Vuelve a tocar para confirmar',
+'Zoomez davantage : la détection demande le niveau 19.':'Acerca más el zoom: la detección requiere el nivel 19.',
+'Page non servie en HTTPS : le navigateur bloque GPS et boussole. Touchez POS. pour vous placer à la main.':'Página no servida por HTTPS: el navegador bloquea el GPS y la brújula. Toca POS. para ubicarte manualmente.',
+'Position inaccessible. Utilisez POS.':'Posición no disponible. Usa POS.',
+'Position indisponible.':'Posición no disponible.','Pos. manuelle':'Posición manual',
+'Fond satellite mondial non configuré : clé ArcGIS manquante.':'Mapa satelital mundial no configurado: falta la clave de ArcGIS.',
+'Imagerie satellite temporairement indisponible.':'Imágenes satelitales no disponibles temporalmente.',
+'(dénivelé compris)':'(desnivel incluido)',
+'Hors de portée : {d} m {w}, il manque {g} m':'Fuera de alcance: {d} m {w}, faltan {g} m',
+'Réglez vos distances dans SAC':'Ajusta tus distancias en BOLSA','Sac vide':'Bolsa vacía',
+'au bord arrière':'en el borde trasero','au bord avant':'en el borde delantero','au centre':'en el centro',
+'estimé':'estimado','hors de portée':'fuera de alcance',
+'limite, {c} si vous frappez long':'límite, {c} si golpeas largo','marge de {g} m':'margen de {g} m',
+'pile la distance':'distancia exacta','pointé':'marcado','porte {d} m':'alcanza {d} m',
+'position inconnue':'posición desconocida','tracé':'trazado',
+'{a} m² · {w} m de large · bord avant à {d} m':'{a} m² · {w} m de ancho · borde delantero a {d} m',
+'{n} point(s) — 3 minimum, puis Garder.':'{n} punto(s) — 3 como mínimo, luego Conservar.','Mon sac':'Mi bolsa',
+'Point de départ':'Punto de partida','Amateur homme':'Amateur hombre','Amateur femme':'Amateur mujer',
+'Senior ou débutant':'Senior o principiante','Distance totale par club':'Distancia total por palo',
+'Notez la distance que vous atteignez régulièrement, pas votre meilleur coup de l\'année. C\'est ce qui rend le conseil juste.':'Anota la distancia que alcanzas habitualmente, no tu mejor golpe del año. Eso es lo que hace que el consejo sea acertado.',
+'Terminé':'Hecho','Un nom court se lit mieux sur la carte.':'Un nombre corto se lee mejor en el mapa.',
+'Renommer':'Renombrar','Renommer {n}':'Renombrar {n}',
+'Nous mesurons l\'audience pour améliorer l\'application. Aucune donnée n\'est revendue et refuser ne limite rien.':'Medimos la audiencia para mejorar la aplicación. Ningún dato se revende y rechazar no limita nada.',
+'Refuser':'Rechazar','Accepter':'Aceptar','Supprimer':'Eliminar','Driver':'Driver','Bois 3':'Madera 3',
+'Bois 5':'Madera 5','Hybride':'Híbrido','Fer 4':'Hierro 4','Fer 5':'Hierro 5','Fer 6':'Hierro 6','Fer 7':'Hierro 7',
+'Fer 8':'Hierro 8','Fer 9':'Hierro 9','Pitching':'Pitching Wedge','Approche':'Approach Wedge','Sand':'Sand Wedge',
+'Lob':'Lob Wedge'
+},
+
+de:{
+'Télémètre':'Entfernungsmesser',
+'Connecte-toi pour retrouver tes parcours':'Melde dich an, um deine Plätze wiederzufinden','Se connecter':'Anmelden',
+'Créer un compte':'Konto erstellen','Prénom / pseudo':'Vorname / Spitzname','Adresse e-mail':'E-Mail-Adresse',
+'Mot de passe':'Passwort','ou':'oder','Continuer avec Google':'Mit Google fortfahren',
+'Mot de passe oublié ?':'Passwort vergessen?','Continuer sans compte':'Ohne Konto fortfahren',
+'Sans abonnement, les greens ne sont pas conservés.':'Ohne Abo werden die Greens nicht gespeichert.',
+'Avec un compte Premium, ils te suivent partout.':'Mit einem Premium-Konto begleiten sie dich überallhin.',
+'Politique de confidentialité':'Datenschutz','Chargement des parcours…':'Plätze werden geladen…',
+'Parcours chargés':'Plätze geladen','Aucun parcours trouvé':'Kein Platz gefunden',
+'Comment on t\'appelle ?':'Wie dürfen wir dich nennen?','toi@exemple.fr':'du@beispiel.de',
+'Au moins 6 caractères':'Mindestens 6 Zeichen','Essayer sans compte':'Ohne Konto testen',
+'Tes greens tracés sont enregistrés sur ton compte':'Deine erfassten Greens werden in deinem Konto gespeichert',
+'et te suivent sur tous tes appareils.':'und begleiten dich auf all deinen Geräten.',
+'Ton navigateur a bloqué le retour de Google. Connecte-toi avec ton adresse e-mail.':'Dein Browser hat die Rückkehr von Google blockiert. Melde dich stattdessen mit deiner E-Mail-Adresse an.',
+'Firebase n\'a pas démarré. Vérifie la configuration.':'Firebase wurde nicht gestartet. Überprüfe die Konfiguration.',
+'E-mail de réinitialisation envoyé':'E-Mail zum Zurücksetzen gesendet','Mon compte':'Mein Konto',
+'Se déconnecter':'Abmelden','Langue':'Sprache','Invité':'Gast','Compte':'Konto','Ton nom':'Dein Name',
+'Nom mis à jour':'Name aktualisiert','Connecté·e en tant que':'Angemeldet als',
+'Ton compte utilise la connexion Google : l\'adresse e-mail et le mot de passe se gèrent depuis ton compte Google.':'Dein Konto nutzt die Google-Anmeldung: E-Mail-Adresse und Passwort werden über dein Google-Konto verwaltet.',
+'Reconnecte-toi puis recommence.':'Melde dich erneut an und versuche es noch einmal.',
+'Supprimer mon compte':'Mein Konto löschen',
+'Ton compte, tes greens et ton sac seront effacés définitivement. Cette action est irréversible.':'Dein Konto, deine Greens und dein Bag werden dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.',
+'Si tu as un abonnement en cours, résilie-le avant de supprimer ton compte.':'Wenn du ein laufendes Abo hast, kündige es, bevor du dein Konto löschst.',
+'Sauvegarde dans le cloud':'Cloud-Sicherung','Débloquer':'Freischalten','Version bêta':'Beta-Version',
+'Abonnement actif':'Abo aktiv','J\'ai déjà un abonnement':'Ich habe bereits ein Abo',
+'Gérer mon abonnement':'Mein Abo verwalten','Premium activé':'Premium aktiviert',
+'Greens synchronisés':'Greens synchronisiert','Hors ligne : synchro différée':'Offline: Synchronisierung verschoben',
+'Le paiement arrive bientôt.':'Die Zahlung ist bald verfügbar.','Bientôt disponible':'Bald verfügbar',
+'Paiement indisponible':'Zahlung nicht verfügbar',
+'Tes greens ne sont pas conservés.':'Deine Greens werden nicht gespeichert.',
+'Tes greens sont sauvegardés sur ton compte.':'Deine Greens werden in deinem Konto gespeichert.',
+'Sauvegarde et synchronisation':'Sicherung und Synchronisierung',
+'Sans abonnement, les greens que tu traces disparaissent à la fermeture. Avec Premium, ils sont conservés et te suivent sur tous tes appareils.':'Ohne Abo verschwinden die von dir erfassten Greens beim Schließen der App. Mit Premium bleiben sie erhalten und begleiten dich auf all deinen Geräten.',
+'Parcours illimités':'Unbegrenzte Plätze',
+'Cartographie sans limite de nombre de greens.':'Kartierung ohne Begrenzung der Anzahl an Greens.',
+'Vue satellite illimitée':'Unbegrenzte Satellitenansicht',
+'300 tuiles gratuites par mois hors France, à volonté avec Premium.':'300 kostenlose Kacheln pro Monat außerhalb Frankreichs, unbegrenzt mit Premium.',
+'Limite satellite gratuite du mois atteinte. Passe en Premium pour continuer en vue aérienne.':'Kostenloses Satelliten-Monatslimit erreicht. Wechsle zu Premium, um die Luftansicht zu behalten.',
+'Mesure et création restent gratuites':'Messen und Erstellen bleiben kostenlos',
+'Mesure et cartographie restent gratuites':'Messen und Kartieren bleiben kostenlos',
+'L\'abonnement ne porte que sur la sauvegarde en ligne.':'Das Abo deckt nur die Online-Sicherung ab.',
+'L\'abonnement ne porte que sur la conservation de tes tracés.':'Das Abo deckt nur die Aufbewahrung deiner Konturen ab.',
+'Accès complet offert':'Voller Zugang inklusive','jusqu\'au':'bis zum',
+'Tout est ouvert jusqu\'au {d}.':'Alles ist bis zum {d} freigeschaltet.','Offre gratuite':'Kostenloser Plan',
+'Greens non sauvegardés':'Greens werden nicht gespeichert','Découvrir Premium':'Premium entdecken',
+'Accès bêta-testeur':'Beta-Tester-Zugang',
+'Accès complet conservé, sans abonnement. Merci d\'avoir été là au début.':'Voller Zugang bleibt erhalten, ohne Abo. Danke, dass du von Anfang an dabei warst.',
+'Période d\'essai':'Testzeitraum','Mode invité':'Gastmodus',
+'{n} green(s) tracé(s) — non sauvegardés. Ils disparaîtront à la fermeture.':'{n} Green(s) erfasst — nicht gespeichert. Sie gehen beim Schließen verloren.',
+'Greens non conservés':'Greens werden nicht behalten',
+'{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.':'{n} Kontur(en) gehen beim Schließen verloren. Premium behält sie.',
+'Les greens que tu traces ne sont pas conservés.':'Die von dir erfassten Greens werden nicht gespeichert.',
+'Passe en Premium pour garder tes tracés':'Wechsle zu Premium, um deine Konturen zu behalten',
+'Créer un compte pour sauvegarder':'Erstelle ein Konto, um zu speichern','MOI':'ICH','MESURE':'MESSEN',
+'CARTO':'KARTE','DÉTECT':'ERKENN','TRACER':'ZEICHN','POINTER':'PUNKT','GREENS':'GREENS','POS.':'POS.',
+'Tolérance':'Toleranz','Rayon':'Radius','Refaire':'Neu','Garder':'Behalten','Fermer':'Schließen',
+'Annuler':'Abbrechen','Enregistrer':'Speichern','En attente de position':'Warte auf Position',
+'Coup aveugle':'Blinder Schlag','Club conseillé':'Empfohlener Schläger','Choisissez un green':'Wähle ein Green',
+'SAC':'BAG','Avant':'Vorne','Arrière':'Hinten','Gauche':'Links','Droite':'Rechts','Déniv.':'Höhe','AV':'VOR',
+'ARR':'HIN','CEN':'MIT','COMPÉT.':'WETTK.','Trou {n}':'Loch {n}','Green {n}':'Grün {n}',
+'Choisissez DÉTECT, TRACER ou POINTER, ou Fermer pour rétablir l\'ancien contour.':'Wähle ERKENN, ZEICHN oder PUNKT, oder Schließen, um die vorherige Kontur wiederherzustellen.',
+'Il faut au moins trois points.':'Es werden mindestens drei Punkte benötigt.',
+'Rien à garder pour l\'instant.':'Noch nichts zu behalten.',
+'Ancien contour de {n} effacé. Choisissez DÉTECT, TRACER ou POINTER pour le refaire.':'Vorherige Kontur von {n} gelöscht. Wähle ERKENN, ZEICHN oder PUNKT, um sie neu zu erstellen.',
+'Aucun green trouvé':'Kein Green gefunden',
+'Boussole indisponible sur cet appareil.':'Kompass auf diesem Gerät nicht verfügbar.',
+'Boussole refusée. La carte reste orientable à deux doigts.':'Kompasszugriff verweigert. Du kannst die Karte weiterhin mit zwei Fingern drehen.',
+'Ce fond interdit la lecture des pixels. Utilisez TRACER ou POINTER.':'Diese Kartengrundlage erlaubt kein Pixel-Auslesen. Verwende ZEICHN oder PUNKT.',
+'Changer le nom affiché sur la carte':'Den auf der Karte angezeigten Namen ändern',
+'Comment s\'appelle ce green ?':'Wie heißt dieses Green?','Confirmer la suppression':'Löschen bestätigen',
+'Efface définitivement ce tracé':'Löscht diese Kontur endgültig',
+'Masque ce green sur cet appareil':'Blendet dieses Green auf diesem Gerät aus',
+'Retirer ce green de la carte':'Dieses Green von der Karte entfernen',
+'Nouveau contour pour ce green':'Neue Kontur für dieses Green','Retracer le contour':'Kontur neu zeichnen',
+'Reposer les points à la main':'Die Punkte erneut von Hand setzen','Régler le rayon':'Radius einstellen',
+'Rouvrir le point et son curseur':'Den Punkt und seinen Regler erneut öffnen',
+'Image satellite pas encore chargée à cet endroit. Attendez une seconde et retouchez.':'Satellitenbild an dieser Stelle noch nicht geladen. Warte eine Sekunde und tippe erneut.',
+'Le contour déborde — baissez la tolérance.':'Die Kontur läuft über — verringere die Toleranz.',
+'{a} m², {d} m — un peu petit, montez la tolérance.':'{a} m², {d} m — etwas klein, erhöhe die Toleranz.',
+'{a} m², {d} m de diamètre. Pas le bon endroit ? Retouchez le centre du green.':'{a} m², {d} m Durchmesser. Falsche Stelle? Tippe erneut die Mitte des Greens an.',
+'Le contour déborde — baissez la tolérance ou glissez les points dorés vers l\'intérieur.':'Die Kontur läuft über — verringere die Toleranz oder ziehe die goldenen Punkte nach innen.',
+'{a} m², {d} m. Glissez les points dorés pour ajuster, puis Garder.':'{a} m², {d} m. Ziehe die goldenen Punkte zum Anpassen, dann Behalten.',
+'Parcours absent d\'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.':'Platz fehlt bei OpenStreetMap. Füge Greens mit ERKENN, ZEICHN oder PUNKT hinzu.',
+'Points effacés. Touchez la carte pour recommencer.':'Punkte gelöscht. Tippe auf die Karte, um erneut zu beginnen.',
+'Rayon {r} m · {a} m². Ajustez puis Garder.':'Radius {r} m · {a} m². Anpassen und dann Behalten.',
+'Rayon {r} m · {a} m². Glissez les points dorés ou changez le rayon, puis Garder.':'Radius {r} m · {a} m². Ziehe die goldenen Punkte oder ändere den Radius, dann Behalten.',
+'Reprise de {n}.':'{n} wird fortgesetzt.',
+'Repère effacé. Touchez un point pour mesurer.':'Markierung gelöscht. Tippe auf einen Punkt, um zu messen.',
+'Rien de cohérent ici. Visez le centre du green ou montez la tolérance.':'Hier nichts Einheitliches erkannt. Ziele auf die Mitte des Greens oder erhöhe die Toleranz.',
+'Touchez ailleurs pour déplacer le repère.':'Tippe woanders hin, um die Markierung zu verschieben.',
+'Touchez la carte pour poser les points du contour.':'Tippe auf die Karte, um die Konturpunkte zu setzen.',
+'Touchez la carte à l\'endroit où vous vous trouvez.':'Tippe auf der Karte den Ort an, an dem du dich befindest.',
+'Touchez le centre du green : la zone s\'étend par similarité de couleur.':'Tippe die Mitte des Greens an: Der Bereich erweitert sich nach Farbähnlichkeit.',
+'Touchez le centre du green, puis réglez le rayon.':'Tippe die Mitte des Greens an und stelle dann den Radius ein.',
+'Touchez un green':'Tippe ein Green an',
+'Touchez un point : la distance se met à jour en marchant.':'Tippe einen Punkt an: Die Entfernung aktualisiert sich beim Gehen.',
+'Touchez à nouveau le centre du green.':'Tippe erneut die Mitte des Greens an.',
+'Touchez à nouveau pour valider':'Erneut tippen zum Bestätigen',
+'Zoomez davantage : la détection demande le niveau 19.':'Weiter hineinzoomen: Die Erkennung erfordert Stufe 19.',
+'Page non servie en HTTPS : le navigateur bloque GPS et boussole. Touchez POS. pour vous placer à la main.':'Seite wird nicht über HTTPS bereitgestellt: Der Browser blockiert GPS und Kompass. Tippe auf POS., um dich manuell zu positionieren.',
+'Position inaccessible. Utilisez POS.':'Position nicht verfügbar. Verwende POS.',
+'Position indisponible.':'Position nicht verfügbar.','Pos. manuelle':'Manuelle Position',
+'Fond satellite mondial non configuré : clé ArcGIS manquante.':'Weltweite Satellitenkarte nicht konfiguriert: ArcGIS-Schlüssel fehlt.',
+'Imagerie satellite temporairement indisponible.':'Satellitenbilder vorübergehend nicht verfügbar.',
+'(dénivelé compris)':'(Höhenunterschied inbegriffen)',
+'Hors de portée : {d} m {w}, il manque {g} m':'Außer Reichweite: {d} m {w}, {g} m fehlen',
+'Réglez vos distances dans SAC':'Stelle deine Distanzen im BAG ein','Sac vide':'Leeres Bag',
+'au bord arrière':'am hinteren Rand','au bord avant':'am vorderen Rand','au centre':'in der Mitte',
+'estimé':'geschätzt','hors de portée':'außer Reichweite',
+'limite, {c} si vous frappez long':'grenzwertig, {c} bei einem langen Schlag','marge de {g} m':'{g} m Spielraum',
+'pile la distance':'genau die Distanz','pointé':'gesetzt','porte {d} m':'trägt {d} m',
+'position inconnue':'Position unbekannt','tracé':'gezeichnet',
+'{a} m² · {w} m de large · bord avant à {d} m':'{a} m² · {w} m breit · Vorderkante bei {d} m',
+'{n} point(s) — 3 minimum, puis Garder.':'{n} Punkt(e) — mindestens 3, dann Behalten.','Mon sac':'Mein Bag',
+'Point de départ':'Ausgangspunkt','Amateur homme':'Amateur Herren','Amateur femme':'Amateur Damen',
+'Senior ou débutant':'Senior oder Anfänger','Distance totale par club':'Gesamtdistanz pro Schläger',
+'Notez la distance que vous atteignez régulièrement, pas votre meilleur coup de l\'année. C\'est ce qui rend le conseil juste.':'Notiere die Distanz, die du regelmäßig erreichst, nicht deinen besten Schlag des Jahres. Das macht die Empfehlung treffsicher.',
+'Terminé':'Fertig','Un nom court se lit mieux sur la carte.':'Ein kurzer Name lässt sich auf der Karte besser lesen.',
+'Renommer':'Umbenennen','Renommer {n}':'{n} umbenennen',
+'Nous mesurons l\'audience pour améliorer l\'application. Aucune donnée n\'est revendue et refuser ne limite rien.':'Wir messen die Nutzung, um die App zu verbessern. Keine Daten werden verkauft, und eine Ablehnung schränkt nichts ein.',
+'Refuser':'Ablehnen','Accepter':'Akzeptieren','Supprimer':'Löschen','Driver':'Driver','Bois 3':'Holz 3',
+'Bois 5':'Holz 5','Hybride':'Hybrid','Fer 4':'Eisen 4','Fer 5':'Eisen 5','Fer 6':'Eisen 6','Fer 7':'Eisen 7',
+'Fer 8':'Eisen 8','Fer 9':'Eisen 9','Pitching':'Pitching Wedge','Approche':'Approach Wedge','Sand':'Sand Wedge',
+'Lob':'Lob Wedge'
+}
+
+};
+
+const LANGUES=['en','fr','es','de'];
+const LANGUE_DEFAUT='en';
+const NOMS_LANGUES={fr:'Français',en:'English',es:'Español',de:'Deutsch'};
+
+/* ---------- stockage local ---------- */
+const Store=(()=>{let mem={},ok=true;
+  try{localStorage.setItem('__t','1');localStorage.removeItem('__t');}catch(e){ok=false;}
+  return{get(k){try{return ok?localStorage.getItem(k):(mem[k]??null)}catch(e){return mem[k]??null}},
+         set(k,v){try{ok?localStorage.setItem(k,v):mem[k]=v}catch(e){mem[k]=v}},
+         del(k){try{ok?localStorage.removeItem(k):delete mem[k]}catch(e){delete mem[k]}}};
+})();
+
+/* La langue suit celle du téléphone, comme dans SwingUpPro :
+   aucun sélecteur, aucun réglage à mémoriser. */
+function langueParDefaut(){
+  const n=((navigator.languages&&navigator.languages[0])||navigator.language||LANGUE_DEFAUT).slice(0,2).toLowerCase();
+  return LANGUES.indexOf(n)>=0?n:LANGUE_DEFAUT;
+}
+let LANG=langueParDefaut();
+const PAGE_POLITIQUE=()=>LANG==='fr'?'confidentialite.html':'privacy.html';
+
+function T(fr,vars){
+  const d=LANGS[LANG]||null;
+  let s=(d&&d[fr])||fr;
+  if(vars)for(const k in vars)s=s.split('{'+k+'}').join(vars[k]);
+  return s;
+}
+const $=s=>document.querySelector(s);
+const $id=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+/* Traduit tous les éléments porteurs de data-t, en mémorisant le
+   texte français d'origine pour pouvoir changer de langue à chaud. */
+function appliquerLangue(){
+  document.documentElement.lang=LANG;
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    if(!el.dataset.src)el.dataset.src=el.textContent.trim();
+    el.textContent=T(el.dataset.src);
+  });
+  $id('auName').placeholder=T("Comment on t'appelle ?");
+  $id('auEmail').placeholder=T('toi@exemple.fr');
+  $id('auPass').placeholder=T('Au moins 6 caractères');
+  $id('askInput').placeholder=T('Trou {n}',{n:7});
+  $id('privLink').href=PAGE_POLITIQUE();
+  if(typeof rafraichirCarte==='function')rafraichirCarte();
+}
+
+/* ---------- Firebase ---------- */
+let auth=null,fs=null,fbReady=false;
+const configMissing=firebaseConfig.apiKey==='A_REMPLIR';
+if(!configMissing){
+  try{
+    firebase.initializeApp(firebaseConfig);
+    auth=firebase.auth(); fs=firebase.firestore();
+    try{ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(e){}
+    try{fs.settings({experimentalAutoDetectLongPolling:true,merge:true});}catch(e){}
+    fbReady=true;
+  }catch(e){ console.error('Firebase non initialisé :',e); }
+}
+
+let currentUser=null,profileName='',accountCreated=0,premium=null,invite=false;
+
+/* ---------- abonnement ----------
+   L'état vit dans users/{uid}/billing/status, écrit UNIQUEMENT par la
+   Cloud Function qui reçoit le webhook Stripe. Le client ne fait que lire. */
+const premKey=()=>'prem_'+(currentUser?currentUser.uid:'anon');
+function readPremiumCache(){try{const r=Store.get(premKey());if(r)premium=JSON.parse(r);}catch(e){}}
+async function pullPremium(){
+  if(!fbReady||!currentUser){readPremiumCache();return;}
+  try{
+    const s=await fs.collection('users').doc(currentUser.uid).collection('billing').doc('status').get();
+    if(s.exists){const d=s.data()||{};
+      premium={status:d.status||'free',until:d.currentPeriodEnd||null,plan:d.plan||null};
+    }else premium={status:'free'};
+    Store.set(premKey(),JSON.stringify(premium));
+  }catch(e){ readPremiumCache(); }
+}
+function isPremium(){
+  if(PREMIUM.test!==null)return !!PREMIUM.test;
+  if(BETA.actif)return true;
+  if(accountCreated&&BETA.limite&&accountCreated<=BETA.limite)return true;
+  if(!premium||['active','trialing'].indexOf(premium.status)<0)return false;
+  if(premium.until&&Date.now()>premium.until+3*864e5)return false;
+  return true;
+}
+/* La sauvegarde en ligne est le seul verrou : mesurer et cartographier
+   restent gratuits, y compris sans compte. */
+const peutSauvegarderCloud=()=>fbReady&&!!currentUser&&isPremium();
+
+async function startCheckout(){
+  if(!PREMIUM.checkoutUrl||!currentUser){
+    openModal('<h3>'+esc(T('Bientôt disponible'))+'</h3><p class="txt">'+esc(T('Le paiement arrive bientôt.'))+'</p>'
+      +'<div class="row"><button class="btn btn-ghost" id="mClose">'+esc(T('Fermer'))+'</button></div>');
+    $id('mClose').onclick=closeModal; return;
+  }
+  try{
+    const token=await currentUser.getIdToken();
+    const res=await fetch(PREMIUM.checkoutUrl,{method:'POST',
+      headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},
+      body:JSON.stringify({returnUrl:location.origin+location.pathname})});
+    const data=await res.json();
+    if(data&&data.url)location.href=data.url; else toast(T('Paiement indisponible'));
+  }catch(e){ toast(T('Paiement indisponible')); }
+}
+async function openPortal(){
+  if(!PREMIUM.portalUrl||!currentUser){toast(T('Le paiement arrive bientôt.'));return;}
+  try{
+    const token=await currentUser.getIdToken();
+    const res=await fetch(PREMIUM.portalUrl,{method:'POST',
+      headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},
+      body:JSON.stringify({returnUrl:location.origin+location.pathname})});
+    const data=await res.json();
+    if(data&&data.url)location.href=data.url;
+  }catch(e){ toast(T('Paiement indisponible')); }
+}
+async function afterCheckout(){
+  if(location.search.indexOf('checkout=success')<0)return;
+  history.replaceState({},'',location.pathname);
+  for(let i=0;i<6;i++){await new Promise(r=>setTimeout(r,1500));await pullPremium();if(isPremium())break;}
+  majCompteUI();
+  if(isPremium())toast(T('Premium activé'));
+}
+
+function ecranPremium(origine){
+  const pro=isPremium();
+  openModal('<h3>'+esc(PREMIUM.name)+'</h3>'
+    +'<p class="txt">'+esc(origine||T("L'abonnement ne porte que sur la sauvegarde en ligne."))+'</p>'
+    +'<div class="plan">'
+    +feat(T('Sauvegarde et synchronisation'),T('Sans abonnement, les greens que tu traces disparaissent à la fermeture. Avec Premium, ils sont conservés et te suivent sur tous tes appareils.'))
+    +feat(T('Parcours illimités'),T('Cartographie sans limite de nombre de greens.'))
+    +feat(T('Vue satellite illimitée'),T('300 tuiles gratuites par mois hors France, à volonté avec Premium.'))
+    +feat(T('Mesure et cartographie restent gratuites'),T("L'abonnement ne porte que sur la conservation de tes tracés."))
+    +'<div class="price">'+esc(PREMIUM.price)+'</div><p class="pnote">'+esc(PREMIUM.note)+'</p></div>'
+    +(BETA.actif?'<div class="subline on"><b>'+esc(T('Version bêta'))+'</b><span>'+esc(T('Tout est ouvert jusqu\'au {d}.',{d:BETA.fin}))+'</span></div>':'')
+    +'<div class="row">'
+    +'<button class="btn btn-ghost" id="mClose">'+esc(T('Fermer'))+'</button>'
+    +(pro?'<button class="btn btn-primary" id="mPortal">'+esc(T('Gérer mon abonnement'))+'</button>'
+         :'<button class="btn btn-primary" id="mGo">'+esc(T('Débloquer'))+' · '+esc(PREMIUM.priceShort)+'</button>')
+    +'</div>');
+  $id('mClose').onclick=closeModal;
+  if($id('mGo'))$id('mGo').onclick=startCheckout;
+  if($id('mPortal'))$id('mPortal').onclick=openPortal;
+}
+const feat=(t,s)=>'<div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>'+esc(t)+'</b><span>'+esc(s)+'</span></div></div>';
+
+/* ---------- dialogues et notifications ---------- */
+function openModal(html){const o=$id('overlay');o.innerHTML='<div class="modal">'+html+'</div>';o.classList.remove('hidden');}
+function closeModal(){const o=$id('overlay');o.classList.add('hidden');o.innerHTML='';}
+let toastT=null;
+function toast(m){const t=$id('toast');t.textContent=m;t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1800);}
+
+/* ---------- authentification ---------- */
+let modeSignup=false;
+function majOngletsAuth(){
+  $id('tabLogin').classList.toggle('on',!modeSignup);
+  $id('tabSignup').classList.toggle('on',modeSignup);
+  $id('fldName').classList.toggle('hidden',!modeSignup);
+  $id('auPass').autocomplete=modeSignup?'new-password':'current-password';
+  const b=$id('btnAuth');b.dataset.src=modeSignup?'Créer un compte':'Se connecter';
+  b.textContent=T(b.dataset.src);
+}
+let derniereErreurAuth=null;
+function erreurAuth(e){
+  const c=(e&&e.code)||'';
+  derniereErreurAuth=(c||'?')+' · '+((e&&e.message)||'');
+  const m={'auth/invalid-email':'Adresse e-mail invalide.',
+    'auth/user-not-found':'Aucun compte avec cette adresse.',
+    'auth/wrong-password':'Mot de passe incorrect.',
+    'auth/invalid-credential':'Adresse ou mot de passe incorrect.',
+    'auth/email-already-in-use':'Cette adresse est déjà utilisée.',
+    'auth/weak-password':'Mot de passe trop court : 6 caractères minimum.',
+    'auth/network-request-failed':'Réseau indisponible.',
+    'auth/popup-closed-by-user':'Connexion annulée.',
+    'auth/popup-blocked':'Fenêtre bloquée par le navigateur.',
+    'auth/unauthorized-domain':'Ce domaine n\'est pas autorisé dans Firebase Authentication.',
+    'auth/account-exists-with-different-credential':'Un compte existe déjà avec cette adresse, connecte-toi par e-mail.'}[c];
+  const el=$id('authErr');
+  el.textContent=T(m||'Connexion impossible pour le moment.');
+  el.classList.remove('hidden');
+}
+async function lancerAuth(){
+  if(!fbReady){erreurAuth({code:'x'});return;}
+  const b=$id('btnAuth');b.classList.add('loading');$id('authErr').classList.add('hidden');
+  const em=$id('auEmail').value.trim(),pw=$id('auPass').value;
+  try{
+    if(modeSignup){
+      const nom=$id('auName').value.trim()||em.split('@')[0];
+      const cred=await auth.createUserWithEmailAndPassword(em,pw);
+      profileName=nom.slice(0,14);
+      await cred.user.updateProfile({displayName:profileName});
+    }else{
+      await auth.signInWithEmailAndPassword(em,pw);
+    }
+  }catch(e){ erreurAuth(e); }
+  b.classList.remove('loading');
+}
+/* ---------- Connexion Google ----------
+   Même principe que SwingUpPro (carte de score) : signInWithPopup en
+   premier essai, systématiquement — pas de pré-détection d'application
+   installée qui saute directement à la redirection. Beaucoup de contextes
+   « app installée » gèrent très bien la fenêtre surgissante ; ne la tenter
+   qu'après un vrai échec évite de forcer inutilement le chemin redirection,
+   plus fragile (stockage cloisonné vers firebaseapp.com). */
+async function authGoogle(){
+  if(!fbReady){erreurAuth({code:'x'});return;}
+  const prov=new firebase.auth.GoogleAuthProvider();
+  prov.setCustomParameters({prompt:'select_account'});
+  $id('btnGoogle').classList.add('loading');
+  try{
+    await auth.signInWithPopup(prov);
+  }catch(e){
+    if(e&&(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request')){
+      $id('btnGoogle').classList.remove('loading');
+      return;
+    }
+    /* Fenêtre impossible (app installée, navigateur strict) : on bascule
+       sur la redirection, qui revient sur la page une fois connecté. */
+    if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment')){
+      try{ Store.set('gRedirect','1'); await auth.signInWithRedirect(prov); return; }catch(e2){ erreurAuth(e2); }
+    }else erreurAuth(e);
+  }
+  $id('btnGoogle').classList.remove('loading');
+}
+
+/* Retour de redirection : on récupère le résultat ou l'erreur réelle. */
+async function verifierRedirection(){
+  if(!fbReady)return;
+  const enRetour=Store.get('gRedirect')==='1';
+  Store.del('gRedirect');
+  try{
+    const r=await auth.getRedirectResult();
+    if(r&&r.user){Store.del('gRedirect');return;}
+    /* Revenu sans utilisateur et sans erreur : le navigateur a cloisonné
+       le stockage du domaine d'authentification. On le dit clairement. */
+    if(enRetour){
+      Store.del('gRedirect');
+      $id('auth').classList.remove('hidden');
+      hideBoot();
+      const el=$id('authErr');
+      el.textContent=T("Ton navigateur a bloqué le retour de Google. Connecte-toi avec ton adresse e-mail.");
+      el.classList.remove('hidden');
+    }
+  }catch(e){
+    Store.del('gRedirect');
+    erreurAuth(e);
+  }
+}
+async function resetPass(){
+  const em=$id('auEmail').value.trim();
+  if(!em){erreurAuth({code:'auth/invalid-email'});return;}
+  try{ await auth.sendPasswordResetEmail(em); toast(T('E-mail de réinitialisation envoyé')); }
+  catch(e){ erreurAuth(e); }
+}
+
+/* ---------- profil et compte ---------- */
+async function pullProfil(){
+  if(!fbReady||!currentUser)return;
+  try{
+    const snap=await fs.collection('users').doc(currentUser.uid).get();
+    if(snap.exists){
+      const d=snap.data()||{};
+      if(d.name)profileName=d.name;
+      accountCreated=typeof d.created==='number'?d.created:0;
+      if(d.bag&&Array.isArray(d.bag)&&d.bag.length&&typeof window.applyCloudBag==='function')window.applyCloudBag(d.bag);
+      if(d.lang&&LANGUES.indexOf(d.lang)>=0){LANG=d.lang;Store.set('lang',LANG);}
+    }else{
+      accountCreated=Date.now();
+      await fs.collection('users').doc(currentUser.uid)
+        .set({name:profileName,created:accountCreated},{merge:true});
+    }
+  }catch(e){ console.warn('Lecture profil échouée :',e); }
+}
+function majCompteUI(){
+  const bp=$id('betaPill'); if(bp)bp.classList.toggle('hidden',!BETA.actif);
+  const nom=invite?T('Invité'):(profileName||T('Compte'));
+  $id('acctWho').textContent=nom;
+  $id('acctAv').textContent=(nom[0]||'?').toUpperCase();
+}
+function ecranCompte(){
+  const ok=isPremium(), betaTesteur=!BETA.actif&&accountCreated&&BETA.limite&&accountCreated<=BETA.limite;
+  const jusqu=premium&&premium.until?' · '+T("jusqu'au")+' '+new Date(premium.until).toLocaleDateString():'';
+  let abo;
+  if(BETA.actif){
+    abo='<div class="subline on"><b>'+esc(T('Version bêta'))+'</b><span>'+esc(T('Accès complet offert'))+' '+esc(T("jusqu'au"))+' '+esc(BETA.fin)+'</span></div>';
+  }else if(betaTesteur){
+    abo='<div class="subline on"><b>'+esc(T('Accès bêta-testeur'))+'</b><span>'+esc(T("Accès complet conservé, sans abonnement. Merci d'avoir été là au début."))+'</span></div>';
+  }else if(ok){
+    abo='<div class="subline on"><b>'+esc(PREMIUM.name)+'</b><span>'+esc(premium&&premium.status==='trialing'?T("Période d'essai"):T('Abonnement actif'))+esc(jusqu)+'</span></div>'
+      +(PREMIUM.portalUrl?'<button class="btn btn-ghost" id="mPortal" style="margin-top:10px">'+esc(T('Gérer mon abonnement'))+'</button>':'');
+  }else{
+    abo='<div class="subline"><b>'+esc(T('Offre gratuite'))+'</b><span>'+esc(T('Greens non sauvegardés'))+'</span></div>'
+      +'<button class="btn btn-primary" id="mUp" style="margin-top:10px">'+esc(T('Découvrir Premium'))+'</button>';
+  }
+  const parMdp=!!(currentUser&&currentUser.providerData&&currentUser.providerData.some(p=>p&&p.providerId==='password'));
+  openModal('<h3>'+esc(T('Mon compte'))+'</h3>'
+    +'<p class="txt">'+(invite||!currentUser
+        ? esc(T('Mode invité'))
+        : esc(T('Connecté·e en tant que'))+' <b>'+esc(currentUser.email||'')+'</b>'+(parMdp?'':' <span class="propill">Google</span>'))+'</p>'
+    +abo
+    +(currentUser?'<input id="mName" type="text" maxlength="14" value="'+esc(profileName)+'" placeholder="'+esc(T('Ton nom'))+'">':'')
+    +'<div class="accbtns">'
+    +(currentUser&&!parMdp?'<p class="hintsm">'+esc(T("Ton compte utilise la connexion Google : l'adresse e-mail et le mot de passe se gèrent depuis ton compte Google."))+'</p>':'')
+    +'</div>'
+    +'<div class="row">'
+    +(currentUser
+        ? '<button class="btn btn-ghost" id="mLogout">'+esc(T('Se déconnecter'))+'</button><button class="btn btn-primary" id="mOk">'+esc(T('Enregistrer'))+'</button>'
+        : '<button class="btn btn-ghost" id="mClose">'+esc(T('Fermer'))+'</button><button class="btn btn-primary" id="mIn">'+esc(T('Créer un compte'))+'</button>')
+    +'</div>'
+    +(currentUser?'<button class="authlink" id="mDel" style="color:var(--bad)">'+esc(T('Supprimer mon compte'))+'</button>':'')
+    +'<p class="modpriv"><a href="'+PAGE_POLITIQUE()+'" target="_blank" rel="noopener">'+esc(T('Politique de confidentialité'))+'</a></p>');
+  const del=$id('mDel'); if(del)del.onclick=ecranSuppression;
+  const up=$id('mUp'); if(up)up.onclick=()=>{closeModal();ecranPremium();};
+  const po=$id('mPortal'); if(po)po.onclick=openPortal;
+  const cl=$id('mClose'); if(cl)cl.onclick=closeModal;
+  const si=$id('mIn'); if(si)si.onclick=()=>{closeModal();invite=false;Store.del('invite');$id('app').classList.add('hidden');$id('auth').classList.remove('hidden');};
+  const lo=$id('mLogout'); if(lo)lo.onclick=async()=>{closeModal();try{await auth.signOut();}catch(e){}location.reload();};
+  const okb=$id('mOk');
+  if(okb)okb.onclick=async()=>{
+    const v=($id('mName')||{}).value?$id('mName').value.trim():'';
+    if(v&&v!==profileName){
+      profileName=v.slice(0,14);
+      try{ await currentUser.updateProfile({displayName:profileName}); }catch(e){}
+      if(fbReady)fs.collection('users').doc(currentUser.uid).set({name:profileName},{merge:true}).catch(()=>{});
+      majCompteUI(); toast(T('Nom mis à jour'));
+    }
+    closeModal();
+  };
+}
+
+function ecranSuppression(){
+  openModal('<h3>'+esc(T('Supprimer mon compte'))+'</h3>'
+    +'<p class="txt">'+esc(T('Ton compte, tes greens et ton sac seront effacés définitivement. Cette action est irréversible.'))+'</p>'
+    +'<p class="warn">'+esc(T('Si tu as un abonnement en cours, résilie-le avant de supprimer ton compte.'))+'</p>'
+    +'<div class="row"><button class="btn btn-ghost" id="mNo">'+esc(T('Annuler'))+'</button>'
+    +'<button class="btn btn-primary" id="mYes" style="background:var(--bad);box-shadow:none">'+esc(T('Supprimer'))+'</button></div>');
+  $id('mNo').onclick=closeModal;
+  $id('mYes').onclick=async()=>{
+    try{
+      const uid=currentUser.uid;
+      const snap=await fs.collection('users').doc(uid).collection('courses').get();
+      await Promise.all(snap.docs.map(d=>d.ref.delete()));
+      await fs.collection('users').doc(uid).delete();
+      await currentUser.delete();
+      Store.del(premKey());
+      location.reload();
+    }catch(e){
+      if(e&&e.code==='auth/requires-recent-login'){
+        closeModal();
+        toast(T('Reconnecte-toi puis recommence.'));
+        try{ await auth.signOut(); }catch(_){}
+        location.reload();
+      }else erreurAuth(e);
+    }
+  };
+}
+
+/* ---------- mesure d'audience ---------- */
+function chargerAnalytics(){
+  if(!ANALYTICS.id)return;
+  const s=document.createElement('script');
+  s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+ANALYTICS.id;
+  document.head.appendChild(s);
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  window.gtag=gtag;gtag('js',new Date());gtag('config',ANALYTICS.id,{anonymize_ip:true});
+}
+function initConsentement(){
+  if(!ANALYTICS.id)return;
+  const c=Store.get('consent');
+  if(c==='yes'){chargerAnalytics();return;}
+  if(c==='no')return;
+  $id('consent').classList.remove('hidden');
+  $id('cYes').onclick=()=>{Store.set('consent','yes');$id('consent').classList.add('hidden');chargerAnalytics();};
+  $id('cNo').onclick=()=>{Store.set('consent','no');$id('consent').classList.add('hidden');};
+}
+
+/* ---------- démarrage ---------- */
+function entrerDansApp(){
+  if(typeof majBandeauFree==='function')setTimeout(majBandeauFree,50);
+  $id('auth').classList.add('hidden');
+  $id('app').classList.remove('hidden');
+  majCompteUI();
+  hideBoot();
+  if(typeof boot==='function'&&!window.__booted){window.__booted=true;boot();}
+  else if(typeof rechargerGreens==='function')rechargerGreens();
+}
+
+if('serviceWorker' in navigator){
+  addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  appliquerLangue(); majOngletsAuth(); initConsentement();
+  $id('tabLogin').onclick=()=>{modeSignup=false;majOngletsAuth();};
+  $id('tabSignup').onclick=()=>{modeSignup=true;majOngletsAuth();};
+  $id('btnAuth').onclick=lancerAuth;
+  $id('btnGoogle').onclick=authGoogle;
+  $id('btnReset').onclick=resetPass;
+  $id('btnSkip').onclick=()=>{invite=true;Store.set('invite','1');entrerDansApp();};
+  $id('btnAcct').onclick=ecranCompte;
+  $id('freeBar').onclick=()=>ecranPremium(T('Les greens que tu traces ne sont pas conservés.'));
+  $id('overlay').addEventListener('click',e=>{if(e.target.id==='overlay')closeModal();});
+  montrerErreurBloquante();
+
+  if(configMissing||!fbReady){
+    /* Sans Firebase utilisable, l'app tourne en local. On le signale au
+       lieu d'entrer silencieusement, sinon le compte semble « ne rien faire ». */
+    if(!configMissing&&!fbReady){
+      const el=$id('authErr');
+      el.textContent=T("Firebase n'a pas démarré. Vérifie la configuration.");
+      el.classList.remove('hidden');
+      $id('auth').classList.remove('hidden');
+      hideBoot();
+      return;
+    }
+    invite=true; entrerDansApp(); return;
+  }
+  verifierRedirection();
+  /* Au retour d'une redirection Google, on n'affiche pas l'écran de
+     connexion : onAuthStateChanged va basculer dans l'app tout seul. */
+  const enRetour=Store.get('gRedirect')==='1';
+  if(Store.get('invite')==='1'){ invite=true; entrerDansApp(); }
+  else if(!enRetour){ $id('auth').classList.remove('hidden'); hideBoot(); }
+
+  auth.onAuthStateChanged(async u=>{
+    currentUser=u||null;
+    if(u){
+      invite=false; Store.del('invite');
+      Store.del('gRedirect');
+      profileName=(u.displayName||profileName||(u.email||'').split('@')[0]||'').slice(0,14);
+      await pullProfil(); await pullPremium();
+      entrerDansApp(); afterCheckout();
+      if(typeof majBandeauFree==='function')majBandeauFree();
+      if(typeof pullGreens==='function')await pullGreens();
+    }else if(!invite){
+      Store.del('gRedirect');
+      $id('app').classList.add('hidden');
+      $id('auth').classList.remove('hidden');
+      $id('btnGoogle').classList.remove('loading');
+      hideBoot();
+    }
+    majCompteUI();
+  });
+});
+
+</script>
+<script>
+
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const L_ = (s,v) => (typeof T==="function" ? T(s,v) : s);
+const R_E = 6371008.8, D2R = Math.PI/180, R2D = 180/Math.PI;
+const KEY = "greens.custom.v2", LAST = "greens.last.v1", BAG = "greens.bag.v1", OVER = "greens.over.v1";
+
+const BASE = [
+  ["Driver",200],["Bois 3",185],["Bois 5",170],["Hybride",160],
+  ["Fer 4",152],["Fer 5",143],["Fer 6",134],["Fer 7",125],["Fer 8",115],["Fer 9",105],
+  ["Pitching",92],["Approche",78],["Sand",62],["Lob",48]
+];
+const FACTOR = { men:1, women:0.80, senior:0.88 };
+const preset = k => BASE.map(([n,d]) => ({ n, d:Math.round(d*FACTOR[k]), on:true }));
+
+function clubShape(name){
+  const n = (name||"").toLowerCase();
+  if (n.startsWith("driver"))  return { kind:"wood", loft:10, scale:1.12 };
+  if (n.startsWith("bois"))    return { kind:"wood", loft:n.indexOf("3")>=0?15:19, scale:.98 };
+  if (n.startsWith("hybride")) return { kind:"hyb",  loft:23, scale:.92 };
+  if (n.startsWith("fer")){ const k = parseInt(n.replace(/\D/g,""),10) || 7; return { kind:"iron", loft:24+(k-4)*4, scale:1 }; }
+  if (n.startsWith("pitching")) return { kind:"wedge", loft:46, scale:1 };
+  if (n.startsWith("approche")) return { kind:"wedge", loft:51, scale:1 };
+  if (n.startsWith("sand"))     return { kind:"wedge", loft:56, scale:1 };
+  if (n.startsWith("lob"))      return { kind:"wedge", loft:60, scale:1 };
+  return { kind:"iron", loft:34, scale:1 };
+}
+function clubSvg(name){
+  const s = clubShape(name);
+  const head = s.kind === "wood" ? '<path d="M25 40 C25 54 14 61 7 55 C0 49 4 39 14 39 Z"/>'
+    : s.kind === "hyb" ? '<path d="M25 40 C25 51 16 57 10 52 C4 47 7 39 15 39 Z"/>'
+    : '<path d="M25 39 L25 57 L7 57 L11 40 Z"/>';
+  const grooves = (s.kind === "iron" || s.kind === "wedge")
+    ? [45,48.5,52].map(y => '<line x1="11" y1="'+y+'" x2="23" y2="'+y+'" stroke="#3A2C00" stroke-width="1.1" opacity=".55"/>').join("")
+    : '<path d="M12 44 C16 42 20 42 23 44" stroke="#3A2C00" stroke-width="1.1" fill="none" opacity=".4"/>';
+  const tilt = (s.loft*0.55 - 12).toFixed(1);
+  return '<svg viewBox="0 0 44 64" role="img" aria-label="' + esc(L_(name)) + '">'
+    + '<path d="M38 5 L34 16" stroke="#8FC0A1" stroke-width="5.4" stroke-linecap="round" opacity=".45"/>'
+    + '<path d="M37 8 L25.5 40" stroke="#8FC0A1" stroke-width="2.5" stroke-linecap="round"/>'
+    + '<g transform="rotate(' + tilt + ' 25 40) translate(25 40) scale(' + s.scale + ') translate(-25 -40)" fill="#C9A227">'
+    + head + grooves + '</g></svg>';
+}
+
+const S = { pos:null, acc:null, heading:null, greens:[], sel:null, ctx:null, replaceId:null,
+            mode:null, draft:[], detect:null, point:null, meas:null, hideId:null, alti:null, altiKey:"", altiBusy:false,
+            france:null, target:"centre", bag:loadBag(), over:loadOver(),
+            editRing:null, editDirty:false, resumeOriginal:null, resumeNoReduce:false };
+let map, base, meMarker, accRing, spokes, gLayer, tagLayer, tmpLayer, measLayer, follow = true;
+let editPoly = null, editHandles = [];
+let rot = 0, rotMode = "north", rotAnim = null, askResolve = null;
+
+function loadBag(){
+  try{ const b = JSON.parse(Store.get(BAG)); if (Array.isArray(b) && b.length) return b; }catch(e){}
+  return preset("men");
+}
+const saveBag = () => {
+  try{ Store.set(BAG, JSON.stringify(S.bag)); }catch(e){}
+  if (peutSauvegarderCloud()){
+    fs.collection("users").doc(currentUser.uid).set({ bag:S.bag }, { merge:true }).catch(()=>{});
+  }
+};
+/* Appelé depuis pullProfil() (autre bloc <script>, donc sans accès direct
+   à S) pour appliquer le sac reçu du cloud à la connexion. */
+window.applyCloudBag = function(bag){
+  S.bag = bag;
+  try{ Store.set(BAG, JSON.stringify(S.bag)); }catch(e){}
+  if (typeof renderBag === "function") renderBag();
+  if (typeof refresh === "function") refresh();
+};
+function loadOver(){ try{ const o = JSON.parse(Store.get(OVER)); if (o && o.names) return o; }catch(e){} return { names:{}, hidden:[] }; }
+const saveOver = () => { try{ Store.set(OVER, JSON.stringify(S.over)); }catch(e){} };
+
+/* Les boîtes suivent la zone visible : sans ça, le clavier virtuel
+   recouvre le champ de saisie sur la plupart des Android. */
+function fitModals(){
+  const vv = window.visualViewport;
+  const h = vv ? vv.height : window.innerHeight, t = vv ? vv.offsetTop : 0;
+  document.querySelectorAll(".overlay").forEach(m => { m.style.height = h + "px"; m.style.top = t + "px"; });
+}
+if (window.visualViewport){
+  visualViewport.addEventListener("resize", fitModals);
+  visualViewport.addEventListener("scroll", fitModals);
+}
+addEventListener("resize", fitModals);
+
+/* ---------- géométrie ---------- */
+const loc   = (la,lo,la0,lo0) => [ (lo-lo0)*D2R*R_E*Math.cos(la0*D2R), (la-la0)*D2R*R_E ];
+const unloc = (x,y,la0,lo0)   => [ la0 + (y/R_E)*R2D, lo0 + (x/(R_E*Math.cos(la0*D2R)))*R2D ];
+const brg   = (x,y) => (Math.atan2(x,y)*R2D + 360) % 360;
+const wrap  = a => { a=(a+180)%360; return (a<0?a+360:a)-180; };
+const ctr   = cs => [ cs.reduce((s,c)=>s+c[0],0)/cs.length, cs.reduce((s,c)=>s+c[1],0)/cs.length ];
+const ringAt = (lat, lon, r) => {
+  const out = [];
+  for (let a=0;a<360;a+=7.5){ const b=a*D2R; out.push(unloc(Math.sin(b)*r, Math.cos(b)*r, lat, lon)); }
+  return out;
+};
+function segD(ax,ay,bx,by){
+  const vx=bx-ax, vy=by-ay, L=vx*vx+vy*vy;
+  let t = L>0 ? -(ax*vx+ay*vy)/L : 0; t = t<0?0:t>1?1:t;
+  const cx=ax+t*vx, cy=ay+t*vy;
+  return { d:Math.hypot(cx,cy), x:cx, y:cy };
+}
+function polyArea(P){
+  let a = 0;
+  for (let i=0;i<P.length;i++){ const b=P[(i+1)%P.length]; a += P[i][0]*b[1] - b[0]*P[i][1]; }
+  return Math.abs(a/2);
+}
+function measure(g, pos){
+  const P = g.coords.map(c => loc(c[0],c[1],pos.lat,pos.lon));
+  if (P.length < 3) return null;
+  const cx = P.reduce((s,p)=>s+p[0],0)/P.length, cy = P.reduce((s,p)=>s+p[1],0)/P.length;
+  const axis = brg(cx,cy);
+  let front={d:Infinity}, back={d:-1};
+  for (let i=0;i<P.length;i++){
+    const a=P[i], b=P[(i+1)%P.length], s=segD(a[0],a[1],b[0],b[1]);
+    if (s.d < front.d) front = s;
+    const dv = Math.hypot(a[0],a[1]);
+    if (dv > back.d) back = { d:dv, x:a[0], y:a[1] };
+  }
+  let left={rel:Infinity}, right={rel:-Infinity};
+  for (const p of P){
+    const rel = wrap(brg(p[0],p[1]) - axis);
+    if (rel < left.rel)  left  = { rel, d:Math.hypot(p[0],p[1]), x:p[0], y:p[1] };
+    if (rel > right.rel) right = { rel, d:Math.hypot(p[0],p[1]), x:p[0], y:p[1] };
+  }
+  return { axis, front, back, left, right, centre:{ d:Math.hypot(cx,cy), x:cx, y:cy },
+           width:Math.hypot(left.x-right.x, left.y-right.y), area:polyArea(P),
+           ll:p => unloc(p.x,p.y,pos.lat,pos.lon) };
+}
+function pickClub(target){
+  const list = S.bag.filter(c => c.on && c.d > 0).sort((a,b) => b.d - a.d);
+  if (!list.length || !Number.isFinite(target)) return null;
+  let i = -1;
+  for (let k = list.length - 1; k >= 0; k--) if (list[k].d >= target){ i = k; break; }
+  if (i < 0) return { club:list[0], gap:target - list[0].d, short:true, alt:null };
+  return { club:list[i], gap:list[i].d - target, short:false, alt:list[i+1] || null };
+}
+
+/* ---------- fonds ---------- */
+const ESRI_ANON = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+const ESRI_KEY = "https://ibasemaps-api.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}?token=";
+const hasArc = () => typeof ARCGIS === "object" && ARCGIS.key && ARCGIS.key !== "A_REMPLIR";
+const ESRI = () => hasArc() ? ESRI_KEY + encodeURIComponent(ARCGIS.key) : ESRI_ANON;
+const IGN  = "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0"
+           + "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg"
+           + "&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}";
+/* Un simple rectangle englobant classait à tort le nord de l'Espagne,
+   Andorre, la Suisse ou Monaco comme « France » — le fond IGN n'y couvre
+   rien, d'où une carte vide dans ces zones. On teste maintenant l'appartenance
+   réelle au contour du pays (fr-poly.js), avec le rectangle en pré-filtre
+   rapide et en repli si ce fichier n'a pas pu charger. */
+function ptDansAnneau(lat, lon, ring){
+  let dedans = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++){
+    const yi = ring[i][0], xi = ring[i][1], yj = ring[j][0], xj = ring[j][1];
+    if (((yi > lat) !== (yj > lat)) && (lon < (xj - xi) * (lat - yi) / (yj - yi) + xi)) dedans = !dedans;
+  }
+  return dedans;
+}
+const inFR = p => {
+  if (!p) return false;
+  if (p.lat < 41 || p.lat > 51.2 || p.lon < -5.2 || p.lon > 9.6) return false;
+  if (typeof FR_POLY === "undefined") return true; /* fr-poly.js absent : on retombe sur le rectangle */
+  return FR_POLY.some(ring => ptDansAnneau(p.lat, p.lon, ring));
+};
+
+/* ---------- quota satellite mensuel (gratuit) ----------
+   Hors France, le satellite Esri est limité à SAT_QUOTA_MAX tuiles
+   DISTINCTES par mois civil pour les comptes non-Premium : rejouer
+   le même green plusieurs fois ne compte qu'une fois grâce au cache
+   du service worker et à cette liste de tuiles déjà vues. Une fois
+   la limite atteinte, on bascule sur OpenStreetMap (gratuit, illimité,
+   pas de photo aérienne) jusqu'au mois suivant. Premium n'a aucune
+   limite : « à volonté ». */
+const OSM_FALLBACK = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+const SAT_QUOTA_MAX = 300;
+const moisCourant = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); };
+const quotaSatCle = () => "sat.quota." + moisCourant();
+function quotaSatVues(){
+  try { return JSON.parse(Store.get(quotaSatCle()) || "[]"); } catch (e) { return []; }
+}
+function quotaSatDispo(){ return isPremium() || quotaSatVues().length < SAT_QUOTA_MAX; }
+function quotaSatCompter(coords){
+  if (isPremium()) return;
+  const cle = coords.z + "/" + coords.x + "/" + coords.y;
+  const vues = quotaSatVues();
+  if (vues.indexOf(cle) >= 0) return;
+  vues.push(cle);
+  try { Store.set(quotaSatCle(), JSON.stringify(vues)); } catch (e) {}
+  if (vues.length >= SAT_QUOTA_MAX){
+    warn(L_("Limite satellite gratuite du mois atteinte. Passe en Premium pour continuer en vue aérienne."));
+    setTimeout(() => setBase(S.france, true), 0);
+  }
+}
+function baseKind(fr){ return fr ? "fr" : (quotaSatDispo() ? "sat" : "osm"); }
+function baseUrl(kind){ return kind === "fr" ? IGN : kind === "sat" ? ESRI() : OSM_FALLBACK; }
+function setBase(fr, force){
+  const kind = baseKind(fr);
+  if (S.france === fr && S.baseKind === kind && !force) return;
+  S.france = fr; S.baseKind = kind;
+  if (base) map.removeLayer(base);
+  const opts = { maxNativeZoom:19, maxZoom:19, crossOrigin:"anonymous" };
+  if (kind !== "osm") opts.maxZoom = 21;
+  if (kind === "osm") opts.subdomains = "abc";
+  base = L.tileLayer(baseUrl(kind), opts).addTo(map);
+  base.bringToBack();
+  let tuileAvertie = false;
+  base.on("tileerror", () => {
+    if (tuileAvertie) return;
+    tuileAvertie = true;
+    warn(L_("Imagerie satellite temporairement indisponible."));
+  });
+  base.on("tileload", e => {
+    tuileAvertie = false;
+    if (kind === "sat") quotaSatCompter(e.coords);
+  });
+  $("attrib").innerHTML = kind === "fr"
+    ? 'Ortho &amp; RGE ALTI © <a href="https://www.ign.fr" target="_blank" rel="noopener">IGN</a> · greens © OpenStreetMap · Leaflet'
+    : kind === "sat"
+    ? 'Powered by <a href="https://www.esri.com" target="_blank" rel="noopener">Esri</a> · altitudes Copernicus · greens © OpenStreetMap · Leaflet'
+    : 'Fond © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · greens © OpenStreetMap · Leaflet';
+  if (kind === "sat" && !hasArc()) warn(L_("Fond satellite mondial non configuré : clé ArcGIS manquante."));
+}
+async function elevations(pts){
+  if (!pts.length) return [];
+  if (S.france){
+    const r = await fetch("https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest/elevation.json?lon="
+      + encodeURIComponent(pts.map(p=>p[1].toFixed(6)).join("|")) + "&lat="
+      + encodeURIComponent(pts.map(p=>p[0].toFixed(6)).join("|"))
+      + "&resource=ign_rge_alti_wld&delimiter=" + encodeURIComponent("|")
+      + "&indent=false&measures=false&zonly=true");
+    const j = await r.json();
+    return (j.elevations||[]).map(e => { const z = typeof e === "number" ? e : e.z; return z === -99999 ? null : z; });
+  }
+  const r = await fetch("https://api.open-meteo.com/v1/elevation?latitude="
+    + pts.map(p=>p[0].toFixed(6)).join(",") + "&longitude=" + pts.map(p=>p[1].toFixed(6)).join(","));
+  return (await r.json()).elevation || [];
+}
+
+/* ---------- rotation ---------- */
+function sizeMap(){
+  const w = $("map").clientWidth, h = $("map").clientHeight;
+  const D = Math.ceil(Math.hypot(w, h)) + 2, inner = $("mapInner");
+  inner.style.width = D + "px"; inner.style.height = D + "px";
+  inner.style.left = ((w - D)/2) + "px"; inner.style.top = ((h - D)/2) + "px";
+  if (map) map.invalidateSize({ animate:false });
+}
+function applyRot(){
+  $("mapInner").style.transform = "rotate(" + rot.toFixed(2) + "deg)";
+  document.documentElement.style.setProperty("--cr", (-rot).toFixed(2) + "deg");
+  const nd = $("bRot").querySelector("svg");
+  if (nd) nd.style.transform = "rotate(" + rot.toFixed(2) + "deg)";
+}
+function setRot(d){ rot = wrap(d); applyRot(); }
+function snapNorth(){
+  if (rotAnim){ cancelAnimationFrame(rotAnim); rotAnim = null; }
+  rotMode = "north"; $("rotLab").textContent = "NORD";
+  $("bRot").classList.remove("follow"); setRot(0);
+}
+function animRotTo(t){
+  if (rotAnim) cancelAnimationFrame(rotAnim);
+  const step = () => {
+    const d = wrap(t - rot);
+    if (Math.abs(d) < 0.4){ setRot(t); rotAnim = null; return; }
+    setRot(rot + d*0.22); rotAnim = requestAnimationFrame(step);
+  };
+  step();
+}
+function setRotMode(m, quiet){
+  rotMode = m;
+  $("rotLab").textContent = m === "north" ? "NORD" : m === "free" ? "LIBRE" : "CAP";
+  $("bRot").classList.toggle("follow", m === "compass");
+  if (m === "north") animRotTo(0);
+  if (m === "compass" && S.heading === null && !quiet) msg(L_("Boussole indisponible sur cet appareil."));
+}
+function screenToLatLng(x, y){
+  const r = $("map").getBoundingClientRect();
+  const dx = x - r.width/2, dy = y - r.height/2, a = rot*D2R;
+  const ux =  dx*Math.cos(a) + dy*Math.sin(a);
+  const uy = -dx*Math.sin(a) + dy*Math.cos(a);
+  const s = map.getSize();
+  return map.containerPointToLatLng(L.point(s.x/2 + ux, s.y/2 + uy));
+}
+const unrotate = (dx,dy) => { const a = rot*D2R; return [ dx*Math.cos(a)+dy*Math.sin(a), -dx*Math.sin(a)+dy*Math.cos(a) ]; };
+
+/* ---------- gestes ---------- */
+function bindGestures(){
+  const el = $("map"), pts = new Map();
+  let g = null;
+  const rel = ev => { const r = el.getBoundingClientRect(); return { x:ev.clientX - r.left, y:ev.clientY - r.top }; };
+  const two = () => { const v = [...pts.values()]; return [v[0], v[1]]; };
+  const killLP = () => { if (g && g.lp){ clearTimeout(g.lp); g.lp = null; } };
+
+  el.addEventListener("pointerdown", ev => {
+    if (ev.target.closest("#mtools, #stack, #attrib")) return;
+    el.setPointerCapture(ev.pointerId);
+    pts.set(ev.pointerId, rel(ev));
+    if (pts.size === 1){
+      g = { kind:"pan", last:rel(ev), moved:0, t:Date.now(), lpFired:false };
+      const p = g.last;
+      g.lp = setTimeout(() => {
+        g.lpFired = true; g.lp = null;
+        if (navigator.vibrate) navigator.vibrate(14);
+        longPress(screenToLatLng(p.x, p.y));
+      }, 520);
+    } else if (pts.size === 2){
+      killLP();
+      const [a,b] = two(), c = { x:(a.x+b.x)/2, y:(a.y+b.y)/2 };
+      g = { kind:"pinch", d0:Math.hypot(b.x-a.x,b.y-a.y) || 1, a0:Math.atan2(b.y-a.y, b.x-a.x)*R2D,
+            z0:map.getZoom(), rot0:rot, anchor:screenToLatLng(c.x, c.y), twisted:false };
+    }
+  });
+
+  el.addEventListener("pointermove", ev => {
+    if (!pts.has(ev.pointerId)) return;
+    pts.set(ev.pointerId, rel(ev));
+    if (!g) return;
+    if (g.kind === "pan" && pts.size === 1){
+      const p = rel(ev), dx = p.x - g.last.x, dy = p.y - g.last.y;
+      g.moved += Math.hypot(dx, dy); g.last = p;
+      if (g.moved > 10) killLP();
+      if (g.lpFired) return;
+      const [rx, ry] = unrotate(dx, dy);
+      map.panBy([-rx, -ry], { animate:false });
+      follow = false;
+    } else if (g.kind === "pinch" && pts.size === 2){
+      const [a,b] = two();
+      const d = Math.hypot(b.x-a.x, b.y-a.y) || 1;
+      const twist = wrap(Math.atan2(b.y-a.y, b.x-a.x)*R2D - g.a0);
+      if (!g.twisted && Math.abs(twist) > 10) g.twisted = true;
+      if (g.twisted && rotMode !== "compass"){
+        if (rotMode === "north") setRotMode("free", true);
+        setRot(g.rot0 + twist);
+      }
+      map.setZoomAround(g.anchor, Math.max(3, Math.min(21, g.z0 + Math.log2(d / g.d0))), { animate:false });
+      follow = false;
+    }
+  });
+
+  const up = ev => {
+    if (!pts.has(ev.pointerId)) return;
+    const p = pts.get(ev.pointerId);
+    pts.delete(ev.pointerId);
+    killLP();
+    if (g && g.kind === "pan" && !g.lpFired && g.moved < 9 && Date.now() - g.t < 450)
+      tap(screenToLatLng(p.x, p.y));
+    g = pts.size === 1 ? { kind:"pan", last:[...pts.values()][0], moved:99, t:Date.now(), lpFired:true } : null;
+  };
+  el.addEventListener("pointerup", up);
+  el.addEventListener("pointercancel", up);
+
+  el.addEventListener("wheel", ev => {
+    if (ev.target.closest("#mtools, #stack")) return;
+    ev.preventDefault();
+    const r = el.getBoundingClientRect();
+    const ll = screenToLatLng(ev.clientX - r.left, ev.clientY - r.top);
+    map.setZoomAround(ll, Math.max(3, Math.min(21, map.getZoom() - Math.sign(ev.deltaY)*0.5)), { animate:false });
+    follow = false;
+  }, { passive:false });
+}
+
+function tap(ll){
+  if (S.mode === "pos"){ setPos(ll.lat, ll.lng, 5, true); closeBar(); return; }
+  if (S.mode === "draw"){ pushDraft(ll); return; }
+  if (S.mode === "detect"){ runDetect(ll); return; }
+  if (S.mode === "point"){ S.point = { lat:ll.lat, lon:ll.lng }; applyPoint(); return; }
+  if (S.mode === "measure"){ S.meas = { lat:ll.lat, lon:ll.lng }; drawMeas(); return; }
+  /* Un appui dans le vide relâche la sélection : les rayons et le
+     conseil de club disparaissent au lieu de rester sur un green
+     qu'on ne joue plus. */
+  const hit = hitTest(ll);
+  if (hit){ S.sel = hit; refresh(); }
+  else if (S.sel){ S.sel = null; refresh(); }
+}
+function longPress(ll){
+  if (S.mode) return;
+  const hit = hitTest(ll);
+  if (hit){ S.sel = hit; refresh(); openCtx(hit); }
+}
+
+/* ---------- carte ---------- */
+function initMap(){
+  sizeMap();
+  let start = [46.6, 2.4], z = 5;
+  try{ const l = JSON.parse(Store.get(LAST)); if (l){ start = [l.lat, l.lon]; z = 18; } }catch(e){}
+  map = L.map("mapInner", { zoomControl:false, attributionControl:false, zoomSnap:0, zoomDelta:0.5,
+    dragging:false, touchZoom:false, scrollWheelZoom:false, doubleClickZoom:false,
+    boxZoom:false, keyboard:false, tap:false, inertia:false }).setView(start, z);
+  setBase(inFR({ lat:start[0], lon:start[1] }));
+  gLayer = L.layerGroup().addTo(map); tagLayer = L.layerGroup().addTo(map);
+  spokes = L.layerGroup().addTo(map); tmpLayer = L.layerGroup().addTo(map);
+  measLayer = L.layerGroup().addTo(map);
+  meMarker = L.marker(start, { icon:L.divIcon({ className:"me-icon", iconSize:[100,100], iconAnchor:[50,50],
+    html:'<div class="beam"></div><div class="dot"></div>' }), interactive:false, zIndexOffset:1000 });
+  accRing = L.circle(start, { radius:0, color:"#C9A227", weight:1, opacity:.3, fill:false, interactive:false });
+  bindGestures(); applyRot(); fitModals();
+  setTimeout(sizeMap, 120);
+  addEventListener("resize", sizeMap);
+  addEventListener("orientationchange", () => setTimeout(sizeMap, 250));
+}
+function hitTest(ll){
+  let best=null, bd=Infinity;
+  for (const g of S.greens){
+    if (S.hideId === g.id) continue;
+    const c = ctr(g.coords), d = Math.hypot(...loc(ll.lat, ll.lng, c[0], c[1]));
+    const inside = g.layer && g.layer.getBounds().contains(ll), sc = inside ? 0 : d;
+    if (sc < bd && (inside || d < 45)){ bd = sc; best = g; }
+  }
+  return best;
+}
+
+/* ---------- position ---------- */
+function majAccBadge(acc, manual){
+  const b = $("accBadge"); if (!b) return;
+  if (manual){
+    b.className = "on";
+    $("accTxt").textContent = L_("Pos. manuelle");
+    return;
+  }
+  if (acc == null || !isFinite(acc)){ b.classList.remove("on"); return; }
+  const r = Math.round(acc);
+  const cls = r <= 8 ? "on" : r <= 20 ? "on warn" : "on bad";
+  b.className = cls;
+  $("accTxt").textContent = "GPS ±" + r + " m";
+}
+function setPos(lat, lon, acc, manual){
+  const first = !S.pos;
+  S.pos = { lat, lon }; S.acc = acc;
+  try{ Store.set(LAST, JSON.stringify({ lat, lon })); }catch(e){}
+  setBase(inFR(S.pos));
+  if (first){ meMarker.addTo(map); accRing.addTo(map); map.setView([lat,lon], 18); }
+  meMarker.setLatLng([lat,lon]);
+  accRing.setLatLng([lat,lon]).setRadius(acc||0);
+  majAccBadge(acc, manual);
+  if (follow) map.panTo([lat,lon], { animate:false });
+  if (first) loadCourse();
+  refresh();
+}
+function startGeo(){
+  if (!window.isSecureContext){
+    warn(L_("Page non servie en HTTPS : le navigateur bloque GPS et boussole. Touchez POS. pour vous placer à la main."));
+    openCarto(); $("bPos").classList.remove("hide"); return;
+  }
+  if (!navigator.geolocation){ warn(L_("Position inaccessible. Utilisez POS.")); openCarto(); $("bPos").classList.remove("hide"); return; }
+  navigator.geolocation.watchPosition(
+    p => { hideWarn(); setPos(p.coords.latitude, p.coords.longitude, p.coords.accuracy, false); },
+    e => { warn(L_("Position indisponible.") + " " + e.message); openCarto(); $("bPos").classList.remove("hide"); },
+    { enableHighAccuracy:true, maximumAge:1500, timeout:15000 });
+}
+let compassPending = false, compassBound = false;
+function tryCompass(){
+  if (typeof DeviceOrientationEvent === "undefined") return;
+  if (DeviceOrientationEvent.requestPermission){
+    /* iOS n'accorde l'accès qu'à l'intérieur d'un geste utilisateur :
+       la demande part donc au premier appui sur le bouton d'orientation. */
+    compassPending = true;
+    $("bRot").classList.add("needs");
+    return;
+  }
+  bindCompass();
+}
+async function askCompass(){
+  try{
+    if ((await DeviceOrientationEvent.requestPermission()) === "granted"){
+      compassPending = false;
+      $("bRot").classList.remove("needs");
+      bindCompass();
+      return true;
+    }
+  }catch(e){}
+  compassPending = false;
+  $("bRot").classList.remove("needs");
+  msg(L_("Boussole refusée. La carte reste orientable à deux doigts."));
+  return false;
+}
+function bindCompass(){
+  if (compassBound) return;
+  compassBound = true;
+  const on = e => {
+    let h = null;
+    if (typeof e.webkitCompassHeading === "number") h = e.webkitCompassHeading;
+    else if (e.absolute && typeof e.alpha === "number") h = (360 - e.alpha) % 360;
+    if (h === null) return;
+    S.heading = S.heading === null ? h : (S.heading + 0.25*wrap(h - S.heading) + 360) % 360;
+    const el = meMarker && meMarker.getElement && meMarker.getElement();
+    const beam = el && el.querySelector(".beam");
+    if (beam){ beam.classList.add("on"); beam.style.transform = "rotate(" + S.heading.toFixed(1) + "deg)"; }
+    if (rotMode === "compass"){
+      if (rotAnim){ cancelAnimationFrame(rotAnim); rotAnim = null; }
+      setRot(rot + 0.10*wrap(-S.heading - rot));
+    }
+  };
+  addEventListener("deviceorientationabsolute", on);
+  addEventListener("deviceorientation", on);
+}
+
+/* ---------- plein écran ---------- */
+const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+function toggleFs(){
+  const d = document.documentElement;
+  if (!fsEl()){
+    const req = d.requestFullscreen || d.webkitRequestFullscreen;
+    if (req) Promise.resolve(req.call(d, { navigationUI:"hide" })).catch(()=>{});
+  } else {
+    const ex = document.exitFullscreen || document.webkitExitFullscreen;
+    if (ex) Promise.resolve(ex.call(document)).catch(()=>{});
+  }
+}
+function initFs(){
+  const d = document.documentElement;
+  const supported = !!(d.requestFullscreen || d.webkitRequestFullscreen);
+  const standalone = matchMedia("(display-mode: fullscreen)").matches
+    || matchMedia("(display-mode: standalone)").matches
+    || navigator.standalone === true;
+  if (supported && !standalone) $("bFs").classList.remove("hide");
+  $("bFs").addEventListener("click", () => { toggleFs(); setTimeout(sizeMap, 350); });
+  ["fullscreenchange","webkitfullscreenchange"].forEach(ev =>
+    document.addEventListener(ev, () => setTimeout(() => { sizeMap(); fitModals(); }, 250)));
+}
+
+
+const warn = h => { $("banner").innerHTML = h; $("banner").classList.add("on"); };
+const openCarto = () => { $("carto").classList.add("on"); $("bCarto").classList.add("armed"); };
+const hideWarn = () => $("banner").classList.remove("on");
+
+/* ---------- parcours ---------- */
+async function loadCourse(){
+  if (!S.pos) return;
+  $("bLoad").classList.add("busy");
+  $("courseName").textContent = L_("Chargement des parcours…");
+  const q = `[out:json][timeout:30];
+    (way["golf"="green"](around:2500,${S.pos.lat},${S.pos.lon});
+     relation["golf"="green"](around:2500,${S.pos.lat},${S.pos.lon});
+     way["golf"="hole"](around:2500,${S.pos.lat},${S.pos.lon});
+     way["leisure"="golf_course"](around:2500,${S.pos.lat},${S.pos.lon});
+     relation["leisure"="golf_course"](around:2500,${S.pos.lat},${S.pos.lon}););
+    out geom tags;`;
+  let greens = [], holes = [], name = null;
+  try{
+    const r = await fetch("https://overpass-api.de/api/interpreter", { method:"POST",
+      body:"data=" + encodeURIComponent(q), headers:{ "Content-Type":"application/x-www-form-urlencoded" } });
+    const j = await r.json();
+    for (const el of (j.elements||[])){
+      const t = el.tags || {};
+      if (t.leisure === "golf_course" && t.name && !name) name = t.name;
+      let cs = null;
+      if (el.geometry) cs = el.geometry.map(g => [g.lat, g.lon]);
+      else if (el.members){ const o = el.members.find(m => m.role === "outer" && m.geometry); if (o) cs = o.geometry.map(g => [g.lat,g.lon]); }
+      if (!cs || cs.length < 2) continue;
+      if (t.golf === "green") greens.push({ id:"o"+el.id, name:t.ref?L_("Trou {n}",{n:t.ref}):null, coords:cs, src:"osm" });
+      else if (t.golf === "hole") holes.push({ ref:t.ref||null, end:cs[cs.length-1] });
+    }
+    if (!greens.length && holes.length){
+      for (const h of holes)
+        greens.push({ id:"h"+(h.ref||h.end[0]), name:h.ref?L_("Trou {n}",{n:h.ref}):null,
+                      coords:ringAt(h.end[0], h.end[1], 14), src:"approx" });
+    }
+    for (const g of greens){
+      if (g.name) continue;
+      const c = ctr(g.coords); let bd=Infinity, best=null;
+      for (const h of holes){ const d = Math.hypot(...loc(h.end[0],h.end[1],c[0],c[1])); if (d<bd){ bd=d; best=h; } }
+      if (best && bd < 80 && best.ref) g.name = L_("Trou {n}",{n:best.ref});
+    }
+  }catch(e){}
+  $("bLoad").classList.remove("busy");
+  S.greens = greens.filter(g => S.over.hidden.indexOf(g.id) < 0).concat(readCustom());
+  for (const g of S.greens) if (S.over.names[g.id]) g.name = S.over.names[g.id];
+  $("courseName").textContent = S.greens.length
+    ? (L_("Parcours chargés") + (name ? " · " + name : ""))
+    : L_("Aucun parcours trouvé");
+  if (!greens.length){ warn(L_("Parcours absent d'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.")); openCarto(); }
+  drawGreens(); refresh();
+}
+function drawGreens(){
+  gLayer.clearLayers(); tagLayer.clearLayers();
+  S.greens.forEach((g,i) => {
+    if (!g.name) g.name = L_("Green {n}",{n:i+1});
+    if (S.hideId === g.id){ g.layer = null; return; }
+    const sel = S.sel && S.sel.id === g.id;
+    g.layer = L.polygon(g.coords, { color: sel?"#C9A227":"#8FC0A1", weight: sel?2.5:1.5, opacity:.9,
+      fillColor: sel?"#C9A227":"#8FC0A1", fillOpacity: sel?.22:.12, interactive:false }).addTo(gLayer);
+    L.marker(ctr(g.coords), { icon:L.divIcon({ className:"gtag"+(sel?" sel":""), html:"<span>"+esc(g.name)+"</span>" }), interactive:false }).addTo(tagLayer);
+  });
+}
+
+
+/* ---------- capture des tuiles ---------- */
+const mpp = (lat,z) => 156543.03392 * Math.cos(lat*D2R) / Math.pow(2,z);
+function grab(ll, halfM){
+  /* Tout se fait dans le repère pixel du niveau de tuile réellement chargé.
+     map.project() et les coordonnées de tuile partagent ce repère, donc le
+     résultat ne dépend ni du zoom fractionnaire, ni de la rotation, ni de
+     la densité d'écran — c'était la source du décalage. */
+  const tz = base._tileZoom;
+  if (tz == null) return null;
+  const ts = base.getTileSize().x;
+  const m = mpp(ll.lat, tz);
+  const half = Math.min(Math.max(Math.round(halfM / m), 40), 320), size = half * 2;
+  const c = map.project(ll, tz);
+  const ox = c.x - half, oy = c.y - half;
+
+  const cv = document.createElement("canvas"); cv.width = cv.height = size;
+  const cx = cv.getContext("2d", { willReadFrequently:true });
+  let n = 0, centreCovered = false;
+  for (const k in base._tiles){
+    const t = base._tiles[k];
+    if (!t.el || !t.el.complete || !t.el.naturalWidth) continue;
+    if (!t.coords || t.coords.z !== tz) continue;
+    const tx = t.coords.x * ts, ty = t.coords.y * ts;
+    if (tx > ox + size || tx + ts < ox || ty > oy + size || ty + ts < oy) continue;
+    cx.drawImage(t.el, tx - ox, ty - oy, ts, ts);
+    n++;
+    if (c.x >= tx && c.x < tx + ts && c.y >= ty && c.y < ty + ts) centreCovered = true;
+  }
+  if (!n || !centreCovered) return null;
+  try{ return { data:cx.getImageData(0,0,size,size).data, size, half, m }; }
+  catch(e){ return { tainted:true }; }
+}
+function seedColor(data, size){
+  /* Fenêtre élargie à la vraie « zone touchée » (quelques mètres autour du
+     doigt) plutôt qu'un minuscule carré de 7×7 px : moins sensible à une
+     rayure de tondeuse, une ombre ou un artefact de compression tombés
+     pile sous le point exact. La médiane (déjà plus robuste qu'une simple
+     moyenne face à quelques pixels aberrants) reste utilisée par canal. */
+  const c = size/2|0, rad = Math.max(5, Math.min(14, Math.round(size*0.045)));
+  const R=[], G=[], B=[];
+  for (let dy=-rad;dy<=rad;dy++) for (let dx=-rad;dx<=rad;dx++){
+    const y = c+dy, x = c+dx;
+    if (y<0||x<0||y>=size||x>=size) continue;
+    const i = (y*size + x)*4;
+    R.push(data[i]); G.push(data[i+1]); B.push(data[i+2]);
+  }
+  const med = a => { a.sort((x,y)=>x-y); return a[a.length>>1]; };
+  return [med(R), med(G), med(B)];
+}
+/* Érosion 4-connexe d'une passe : un pixel ne survit que si ses 4 voisins
+   directs appartiennent aussi au masque. Répétée k fois, elle efface tout
+   corridor plus étroit qu'environ 2k pixels sur toute sa longueur — pas
+   seulement à ses extrémités — sans entamer un green plein qui fait
+   presque toujours plusieurs dizaines de pixels de large. */
+function erode(mask, size){
+  const out = new Uint8Array(size*size);
+  for (let y=1;y<size-1;y++) for (let x=1;x<size-1;x++){
+    const i = y*size+x;
+    if (mask[i] && mask[i-1] && mask[i+1] && mask[i-size] && mask[i+size]) out[i]=1;
+  }
+  return out;
+}
+/* Dilatation contrainte : ne regagne que des pixels déjà présents dans le
+   masque brut (celui d'avant érosion), pour reconstituer le bord du green
+   sans jamais retraverser un corridor qui vient d'être coupé. */
+function dilateInto(mask, raw, size){
+  const out = mask.slice();
+  for (let y=1;y<size-1;y++) for (let x=1;x<size-1;x++){
+    const i = y*size+x;
+    if (mask[i] || !raw[i]) continue;
+    if (mask[i-1] || mask[i+1] || mask[i-size] || mask[i+size]) out[i]=1;
+  }
+  return out;
+}
+function compProcheSeed(mask, size, seed){
+  /* Priorité absolue à la composante qui contient encore le pixel tapé :
+     c'est la seule qui garantit que le point touché reste dans la zone
+     rendue. On ne retombe sur « la plus proche du centre » que si le tap
+     lui-même a été rongé par l'érosion (green minuscule). */
+  const seen = new Uint8Array(size*size), cx = seed % size, cy = (seed/size)|0;
+  let best = null, bestD = Infinity;
+  for (let s=0;s<mask.length;s++){
+    if (!mask[s] || seen[s]) continue;
+    const stack=[s]; seen[s]=1; const pix=[s];
+    let hasSeed = (s === seed);
+    while (stack.length){
+      const i = stack.pop(), x=i%size, y=(i/size)|0;
+      for (const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const nx=x+dx, ny=y+dy; if (nx<0||ny<0||nx>=size||ny>=size) continue;
+        const ni = ny*size+nx;
+        if (mask[ni] && !seen[ni]){ seen[ni]=1; stack.push(ni); pix.push(ni); if (ni===seed) hasSeed=true; }
+      }
+    }
+    if (hasSeed) return pix;
+    let sx=0, sy=0;
+    for (const i of pix){ sx+=i%size; sy+=(i/size)|0; }
+    const d = Math.hypot(sx/pix.length-cx, sy/pix.length-cy);
+    if (d < bestD){ bestD = d; best = pix; }
+  }
+  return best;
+}
+function grow(px, tol){
+  const { data, size } = px;
+  const [r0,g0,b0] = seedColor(data, size);
+  const seed = (size/2|0)*size + (size/2|0);
+  const raw = new Uint8Array(size*size), q = [seed]; raw[seed] = 1;
+  let n = 1;
+  const cap = size*size*0.7, lim = size/2 - 2, thr = tol*3;
+  /* 4-connexité (pas de diagonales) : un contour qui ne passe que par un
+     coin de pixel (bord de chemin, ombre) ne suffit plus à faire fuir le
+     remplissage vers la zone voisine. */
+  while (q.length && n < cap){
+    const i = q.pop(), x = i%size, y = (i/size)|0;
+    for (const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const nx=x+dx, ny=y+dy;
+      if (nx<1||ny<1||nx>=size-1||ny>=size-1) continue;
+      const ni = ny*size+nx;
+      if (raw[ni] || Math.hypot(nx-size/2, ny-size/2) > lim) continue;
+      const j = ni*4;
+      if (Math.abs(data[j]-r0)+Math.abs(data[j+1]-g0)+Math.abs(data[j+2]-b0) > thr) continue;
+      raw[ni]=1; n++; q.push(ni);
+    }
+  }
+  /* Ouverture morphologique (érosion puis dilatation) : la 4-connexité
+     bloque une fuite par un simple coin, mais pas une fuite qui suit un
+     vrai corridor de quelques pixels de large (liseré tondu, chemin,
+     ombre continue) reliant le green à une zone voisine de teinte proche
+     — c'était la cause du contour qui « saute » sur le terrain d'à côté
+     alors même que le repère de tap reste bien sur le bon green. On
+     essaie une érosion de plus en plus légère jusqu'à obtenir une zone
+     encore assez grande autour du point tapé ; en dernier recours on
+     revient au masque brut plutôt que de perdre un petit green valide. */
+  for (const k of [3,2,1]){
+    let eroded = raw;
+    for (let i=0;i<k;i++) eroded = erode(eroded, size);
+    const comp = compProcheSeed(eroded, size, seed);
+    if (!comp || comp.length < 30) continue;
+    let clean = new Uint8Array(size*size);
+    for (const i of comp) clean[i] = 1;
+    for (let i=0;i<k;i++) clean = dilateInto(clean, raw, size);
+    clean[seed] = 1; /* garantie : le point tapé fait toujours partie de la zone rendue */
+    let cn = 0; for (let i=0;i<clean.length;i++) cn += clean[i];
+    return { mask: clean, n: cn, lim, seed };
+  }
+  return { mask: raw, n, lim, seed };
+}
+function contour(px, reg, ll){
+  /* Le rayon part toujours du point tapé (et non du centre de gravité de
+     la tache détectée) : pour une forme irrégulière ou en haltère, le
+     barycentre peut tomber hors zone, voire de l'autre côté d'un
+     étranglement, et produire un contour qui ne contient plus le point
+     que l'utilisateur a réellement touché — exactement le bug remonté.
+     Partir du point tapé garantit qu'il reste systématiquement dans le
+     polygone rendu. */
+  const { size, m } = px, { mask, lim, seed } = reg;
+  let n = 0;
+  for (let i=0;i<mask.length;i++) if (mask[i]) n++;
+  if (n < 50 || !mask[seed]) return null;
+  const sx = size/2, sy = size/2;
+  const N = 72, rad = new Float32Array(N); let leak = 0;
+  for (let k=0;k<N;k++){
+    const t = k*(360/N)*D2R, ux = Math.sin(t), uy = -Math.cos(t);
+    let r=0, miss=0;
+    while (r < lim){
+      const x = Math.round(sx+ux*(r+1)), y = Math.round(sy+uy*(r+1));
+      if (x<0||y<0||x>=size||y>=size) break;
+      if (mask[y*size+x]){ r++; miss=0; } else if (++miss>2) break; else r++;
+    }
+    if (r >= lim-2) leak++;
+    rad[k] = r;
+  }
+  const sm = new Float32Array(N);
+  for (let k=0;k<N;k++){
+    const w = [];
+    for (let j=-3;j<=3;j++) w.push(rad[(k+j+N)%N]);
+    w.sort((a,b)=>a-b); sm[k] = w[3];
+  }
+  const ring = [];
+  for (let k=0;k<N;k++){
+    const t = k*(360/N)*D2R, ux = Math.sin(t), uy = -Math.cos(t);
+    ring.push(unloc((sx+ux*sm[k]-size/2)*m, -(sy+uy*sm[k]-size/2)*m, ll.lat, ll.lng));
+  }
+  let area = 0;
+  for (let k=0;k<N;k++) area += 0.5*sm[k]*sm[(k+1)%N]*Math.sin(2*Math.PI/N);
+  return { ring, area: area*m*m, leak: leak/N > 0.25 };
+}
+function runDetect(ll){
+  if (map.getZoom() < 18.5){ msg(L_("Zoomez davantage : la détection demande le niveau 19.")); return; }
+  /* Fenêtre de recherche resserrée sur la zone tapée : au-delà d'une
+     trentaine de mètres du point touché, on est presque toujours déjà
+     sorti du green. Réduire cette fenêtre empêche physiquement le
+     remplissage d'atteindre un terrain voisin, même si sa couleur est
+     proche — la tolérance ci-dessous reste le seul réglage à ajuster. */
+  const px = grab(ll, 32);
+  if (!px){ msg(L_("Image satellite pas encore chargée à cet endroit. Attendez une seconde et retouchez.")); return; }
+  if (px.tainted){ msg(L_("Ce fond interdit la lecture des pixels. Utilisez TRACER ou POINTER.")); return; }
+  S.detect = { px, ll }; applyDetect();
+}
+/* Un contour à 72 points (une par angle de rayon) est trop dense pour être
+   corrigé au doigt un par un ; on le ramène à une quinzaine de poignées
+   réparties tout autour, largement suffisant pour suivre la forme d'un
+   green tout en restant maniable sur un écran de téléphone. */
+function reduceRing(ring, k){
+  if (ring.length <= k) return ring.map(p => [p[0], p[1]]);
+  const out = [];
+  for (let i=0;i<k;i++){ const p = ring[Math.floor(i*ring.length/k) % ring.length]; out.push([p[0], p[1]]); }
+  return out;
+}
+/* Aire d'un polygone lat/lng via une projection plane locale (mêmes
+   formules loc()/D2R que le reste de l'app) : reste juste après un
+   glisser-déposer de poignée, sans dépendre du calcul de détection. */
+function ringArea(ring){
+  const [la0, lo0] = ring[0];
+  const pts = ring.map(([la,lo]) => loc(la, lo, la0, lo0));
+  let a = 0;
+  for (let i=0;i<pts.length;i++){
+    const [x1,y1] = pts[i], [x2,y2] = pts[(i+1)%pts.length];
+    a += x1*y2 - x2*y1;
+  }
+  return Math.abs(a)/2;
+}
+/* ---------- édition générique d'un contour par poignées ----------
+   Moteur commun à DÉTECT, POINTER et à la reprise d'un green existant
+   (« Retracer le contour ») : S.editRing est le contour actuellement
+   affiché/éditable (réduit à une quinzaine de points), quel que soit
+   l'outil qui l'a produit. */
+function drawEditPoly(){
+  if (editPoly) editPoly.remove(); editPoly = null;
+  /* TRACER peut n'avoir qu'un seul point posé : pas de polygone visible
+     avant le deuxième (comme avant), mais les poignées, elles,
+     s'affichent dès le premier point. */
+  if (!S.editRing || S.editRing.length < 2) return;
+  editPoly = L.polygon(S.editRing, { color:"#C9A227", weight:2.5, fillColor:"#C9A227", fillOpacity:.28, interactive:false }).addTo(tmpLayer);
+}
+function editMsg(prefix){
+  const area = ringArea(S.editRing), dia = Math.round(Math.sqrt(area/Math.PI)*2), a = Math.round(area);
+  msg((prefix ? prefix + " " : "") + L_("{a} m², {d} m. Glissez les points dorés pour ajuster, puis Garder.",{a:a,d:dia}));
+}
+/* Poignées glissables sur chaque sommet du contour réduit : la correction
+   manuelle qui manquait à DÉTECT (et maintenant POINTER et la reprise) —
+   au lieu de rejouer tout l'algorithme, on retouche juste l'endroit qui
+   ne va pas.
+   La carte gère elle-même tous ses gestes (pan, pincement, rotation,
+   tap) via ses propres écouteurs pointerdown/move/up posés sur le
+   conteneur (voir bindGestures) plutôt que par les interactions
+   intégrées de Leaflet. Le drag « draggable:true » natif de Leaflet
+   entrerait donc en conflit avec ce système : on implémente le
+   déplacement des poignées à la main, et on arrête la propagation du
+   pointerdown dès la poignée pour que le conteneur ne le voie jamais
+   (sinon un relâchement après un léger mouvement serait interprété
+   comme un tap et relancerait l'outil actif, effaçant la retouche). */
+function armHandleDrag(mk, i, onMove){
+  const el = mk.getElement();
+  if (!el) return;
+  el.addEventListener("pointerdown", ev => {
+    ev.stopPropagation(); ev.preventDefault();
+    el.classList.add("dragging");
+    const move = mv => {
+      if (mv.pointerId !== ev.pointerId) return;
+      mv.stopPropagation();
+      const r = $("map").getBoundingClientRect();
+      const ll2 = screenToLatLng(mv.clientX - r.left, mv.clientY - r.top);
+      mk.setLatLng(ll2);
+      S.editRing[i] = [ll2.lat, ll2.lng];
+      S.editDirty = true;
+      drawEditPoly(); (onMove || editMsg)();
+    };
+    const end = up => {
+      if (up.pointerId !== ev.pointerId) return;
+      up.stopPropagation();
+      el.classList.remove("dragging");
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", end);
+      window.removeEventListener("pointercancel", end);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", end);
+    window.addEventListener("pointercancel", end);
+  });
+}
+function drawEditHandles(onMove){
+  editHandles.forEach(m => m.remove()); editHandles = [];
+  S.editRing.forEach((p, i) => {
+    const mk = L.marker(p, {
+      icon: L.divIcon({ className:"handle", html:"<i></i>", iconSize:[24,24], iconAnchor:[12,12] }),
+      keyboard:false, zIndexOffset:1000, interactive:true
+    }).addTo(tmpLayer);
+    armHandleDrag(mk, i, onMove);
+    editHandles.push(mk);
+  });
+}
+function applyDetect(){
+  if (!S.detect || !S.detect.px) return;
+  const { px, ll } = S.detect, c = contour(px, grow(px, +$("tol").value), ll);
+  tmpLayer.clearLayers(); editHandles = []; editPoly = null;
+  $("tolWrap").classList.add("on");
+  /* Repère du point exact où le doigt a touché l'écran : sans lui, un tap
+     qui manque le green de quelques mètres donne un contour propre mais
+     ailleurs, sans que rien ne le signale — l'utilisateur ne peut pas
+     savoir que c'est le TAP qui était mal placé plutôt que la détection. */
+  L.circleMarker(ll, { radius:5, color:"#fff", weight:2, fillColor:"#C9A227", fillOpacity:1, interactive:false }).addTo(tmpLayer);
+  if (!c){ S.editRing = null; msg(L_("Rien de cohérent ici. Visez le centre du green ou montez la tolérance.")); return; }
+  S.editRing = reduceRing(c.ring, 14);
+  S.editDirty = false;
+  drawEditPoly();
+  drawEditHandles();
+  editMsg(c.leak ? L_("Le contour déborde — baissez la tolérance ou glissez les points dorés vers l'intérieur.") : null);
+}
+
+/* ---------- pointer ---------- */
+/* Message dédié à POINTER : rappelle le rayon (réglable au curseur) en
+   plus de l'aire réelle du contour affiché — celle-ci ne correspond plus
+   à π·r² dès qu'une poignée a été déplacée à la main. */
+function pointMsg(prefix){
+  const area = ringArea(S.editRing);
+  msg((prefix ? prefix + " " : "") + L_("Rayon {r} m · {a} m². Glissez les points dorés ou changez le rayon, puis Garder.",{r:S.point.r,a:Math.round(area)}));
+}
+function applyPoint(){
+  if (!S.point) return;
+  const r = +$("rad").value;
+  $("radLab").textContent = r + " m";
+  S.point.r = r;
+  /* Cercle plein (beaucoup de points) gardé à part pour l'enregistrement
+     tant qu'aucune poignée n'a été bougée à la main ; l'affichage/édition
+     se fait sur une version réduite (voir reduceRing) comme pour DÉTECT. */
+  S.point.ring = ringAt(S.point.lat, S.point.lon, r);
+  tmpLayer.clearLayers(); editHandles = []; editPoly = null;
+  L.circleMarker([S.point.lat, S.point.lon], { radius:4, color:"#C9A227", fillOpacity:1, interactive:false }).addTo(tmpLayer);
+  $("radWrap").classList.add("on");
+  S.editRing = reduceRing(S.point.ring, 14);
+  S.editDirty = false;
+  drawEditPoly();
+  drawEditHandles(pointMsg);
+  pointMsg();
+}
+const msg = t => { $("barMsg").innerHTML = t; $("bar").classList.add("on"); };
+
+/* ---------- mesure instantanée ----------
+   Le repère reste posé sur la carte et la distance se recalcule à chaque
+   nouveau point GPS : on peut le laisser sur un obstacle et marcher. */
+function measDist(){
+  if (!S.meas || !S.pos) return null;
+  const [x,y] = loc(S.meas.lat, S.meas.lon, S.pos.lat, S.pos.lon);
+  return Math.hypot(x, y);
+}
+function drawMeas(){
+  if (!measLayer) return;
+  measLayer.clearLayers();
+  const d = measDist();
+  if (!S.meas){ $("measVal").textContent = "—"; $("measClub").textContent = ""; return; }
+  const at = [S.meas.lat, S.meas.lon];
+  if (S.pos){
+    L.polyline([[S.pos.lat, S.pos.lon], at],
+      { color:"#C9A227", weight:2, opacity:.95, dashArray:"6 5", interactive:false }).addTo(measLayer);
+  }
+  L.circleMarker(at, { radius:6, color:"#3A2C00", weight:2, fillColor:"#C9A227", fillOpacity:1, interactive:false }).addTo(measLayer);
+  if (d != null){
+    const mid = [(S.pos.lat + S.meas.lat)/2, (S.pos.lon + S.meas.lon)/2];
+    L.marker(mid, { icon:L.divIcon({ className:"mtag", html:"<span>" + Math.round(d) + " m</span>" }), interactive:false }).addTo(measLayer);
+    $("measVal").innerHTML = Math.round(d) + "<small>m</small>";
+    const p = pickClub(d);
+    $("measClub").textContent = !p ? ""
+      : p.short ? L_("hors de portée") : L_(p.club.n) + " · " + L_("porte {d} m",{d:p.club.d});
+  } else {
+    $("measVal").textContent = "—";
+    $("measClub").textContent = L_("position inconnue");
+  }
+}
+
+/* ---------- tracé et stockage ---------- */
+function draftMsg(){
+  msg(L_("{n} point(s) — 3 minimum, puis Garder.",{n:S.draft.length}));
+}
+/* Chaque point tapé devient directement une poignée déplaçable — pas de
+   réduction (reduceRing) ici, contrairement à DÉTECT/POINTER : chaque
+   point de TRACER est un tap exact de l'utilisateur, pas un point
+   rééchantillonné sur une courbe, donc aucun n'est à sacrifier. Un tap
+   à côté d'une poignée ajoute un nouveau point comme avant ; un tap sur
+   une poignée la déplace (armHandleDrag stoppe la propagation avant
+   que le tap n'atteigne la carte). */
+function pushDraft(ll){
+  S.draft.push([ll.lat, ll.lng]);
+  S.editRing = S.draft;
+  S.editDirty = false;
+  drawEditPoly();
+  drawEditHandles(draftMsg);
+  draftMsg();
+}
+/* La conservation des greens — sur l'appareil comme dans le cloud — est
+   une fonction Premium. Sans abonnement, ils vivent le temps de la session
+   et disparaissent à la fermeture : rien n'est écrit sur le téléphone. */
+function readCustom(){
+  if (!peutSauvegarderCloud()){ Store.del(KEY); return []; }
+  try{ return (JSON.parse(Store.get(KEY))||[]).map(g=>({...g, src:"draw", mk:g.mk||"draw"})); }catch(e){ return []; }
+}
+function serialiserGreens(){
+  return S.greens.filter(g=>g.src==="draw")
+    .map(g => ({ id:g.id, name:g.name, coords:g.coords, mk:g.mk||"draw", c:g.c||null, r:g.r||null }));
+}
+/* Firestore refuse un tableau qui contient directement d'autres tableaux
+   (DocumentReference.set() : "Nested arrays are not supported") — hors,
+   coords est un tableau de paires [lat,lng]. On passe donc par des objets
+   {lat,lng} pour le cloud, et on reconvertit à la lecture. Le stockage
+   local (localStorage), lui, garde le format [lat,lng] d'origine. */
+function ptsOut(coords){ return (coords||[]).map(p => ({ lat:p[0], lng:p[1] })); }
+function ptsIn(coords){ return (coords||[]).map(p => Array.isArray(p) ? p : [p.lat, p.lng]); }
+function writeCustom(){
+  if (!peutSauvegarderCloud()){ Store.del(KEY); majBandeauFree(); return; }
+  try{ Store.set(KEY, JSON.stringify(serialiserGreens())); }catch(e){}
+  pushGreens();
+}
+
+/* Rappel permanent tant que les tracés ne sont pas conservés : il reste
+   affiché sous la carte au lieu de disparaître avec les autres messages. */
+function majBandeauFree(){
+  const bar = $("freeBar");
+  if (!bar) return;
+  if (peutSauvegarderCloud()){ bar.classList.add("hidden"); return; }
+  const n = S.greens.filter(g => g.src === "draw").length;
+  bar.classList.remove("hidden");
+  $("freeSub").textContent = n
+    ? L_("{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.",{n:n})
+    : L_("Passe en Premium pour garder tes tracés");
+}
+window.majBandeauFree = majBandeauFree;
+
+/* ---------- synchronisation cloud ----------
+   Un document par parcours sous users/{uid}/courses/{id} : le document
+   utilisateur unique aurait fini par heurter la limite de 1 Mo. */
+let pushT = null, pushEnCours = false;
+function parcoursId(){
+  if (!S.pos) return "libre";
+  /* Regroupement par carré d'environ 2 km : un parcours tient dedans. */
+  return "c" + Math.round(S.pos.lat*50) + "_" + Math.round(S.pos.lon*50);
+}
+function pushGreens(){
+  if (!peutSauvegarderCloud()){ majBandeauFree(); return; }
+  clearTimeout(pushT);
+  pushT = setTimeout(async () => {
+    if (pushEnCours) return;
+    pushEnCours = true;
+    try{
+      const greens = serialiserGreens().map(g => ({ ...g, coords: ptsOut(g.coords) }));
+      await fs.collection("users").doc(currentUser.uid)
+        .collection("courses").doc(parcoursId())
+        .set({ greens, name:S.courseName||null, updated:Date.now() }, { merge:true });
+    }catch(e){ console.warn("Sauvegarde cloud échouée :", e); }
+    pushEnCours = false;
+  }, 1200);
+}
+async function pullGreens(){
+  if (!peutSauvegarderCloud()) return;
+  try{
+    const snap = await fs.collection("users").doc(currentUser.uid).collection("courses").get();
+    const dist = [];
+    snap.forEach(d => {
+      const g = (d.data()||{}).greens;
+      if (Array.isArray(g)) dist.push(...g.map(x => ({ ...x, coords: ptsIn(x.coords) })));
+    });
+    if (dist.length){
+      /* Fusion par identifiant : le local gagne, le cloud complète. */
+      const vus = new Set(S.greens.map(g => g.id));
+      let ajout = 0;
+      for (const g of dist) if (!vus.has(g.id)){ S.greens.push({ ...g, src:"draw", mk:g.mk||"draw" }); ajout++; }
+      if (ajout){
+        try{ Store.set(KEY, JSON.stringify(serialiserGreens())); }catch(e){}
+        drawGreens(); refresh();
+        toast(L_("Greens synchronisés"));
+      }
+    }
+    /* Republie systématiquement l'état local vers le cloud du compte
+       actuellement connecté : sans ça, des greens qui n'existent que sur
+       cet appareil (créés hors ligne, ou restés locaux après un
+       changement d'identifiant de compte) ne remontent jamais tant que
+       l'utilisateur ne modifie pas manuellement un green. Fait aussi sur
+       une toute première connexion (dist vide), pour pousser tout de
+       suite ce qui n'existe encore qu'en local. */
+    pushGreens();
+  }catch(e){ console.warn("Lecture cloud échouée :", e); }
+}
+window.pullGreens = pullGreens;
+/* meta.mk retient la méthode de création : c'est elle qui décidera
+   du bon outil quand l'utilisateur voudra modifier ce green. */
+async function saveGreen(coords, meta){
+  const replacing = S.replaceId ? S.greens.find(g => g.id === S.replaceId) : null;
+  const name = await askName(replacing ? replacing.name : "", replacing ? esc(L_("Nouveau contour pour ce green")) : null);
+  if (name === null) return false;
+  if (replacing) removeGreen(replacing, true);
+  S.hideId = null;
+  const g = { id:"c"+Date.now(), name, coords, src:"draw", mk:(meta&&meta.mk)||"draw",
+              c:(meta&&meta.c)||null, r:(meta&&meta.r)||null };
+  S.greens.push(g); S.sel = g; writeCustom();
+  drawGreens(); refresh();
+  return true;
+}
+function removeGreen(g, silent){
+  S.greens = S.greens.filter(x => x.id !== g.id);
+  if (g.src === "draw") writeCustom();
+  else { if (S.over.hidden.indexOf(g.id) < 0) S.over.hidden.push(g.id); saveOver(); }
+  if (S.sel && S.sel.id === g.id) S.sel = null;
+  if (!silent){ drawGreens(); refresh(); }
+}
+function renameGreen(g, name){
+  g.name = name;
+  if (g.src === "draw") writeCustom();
+  else { S.over.names[g.id] = name; saveOver(); }
+  drawGreens(); refresh();
+}
+function closeBar(keepReplace){
+  S.mode = null; S.detect = null; S.draft = []; S.point = null;
+  S.editRing = null; S.editDirty = false; S.resumeOriginal = null; S.resumeNoReduce = false;
+  if (!keepReplace){
+    if (S.replaceId || S.hideId){ S.replaceId = null; S.hideId = null; drawGreens(); }
+  }
+  tmpLayer.clearLayers(); editHandles = []; editPoly = null;
+  $("bar").classList.remove("on");
+  $("tolWrap").classList.remove("on"); $("radWrap").classList.remove("on");
+  $("measWrap").classList.remove("on");
+  $("bKeep").style.display = ""; $("bAgain").textContent = "Refaire";
+  ["bDetect","bDraw","bPoint","bPos","bMeas"].forEach(i => $(i).classList.remove("armed"));
+}
+
+/* ---------- dialogues ---------- */
+function buildChips(){
+  const box = $("askChips"); box.innerHTML = "";
+  for (let i=1;i<=18;i++){
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = L_("Trou {n}",{n:i});
+    b.addEventListener("click", () => { $("askInput").value = b.textContent; $("askInput").focus(); });
+    box.appendChild(b);
+  }
+}
+function askName(current, title){
+  return new Promise(res => {
+    askResolve = res;
+    $("askTitle").innerHTML = title || esc(L_("Comment s'appelle ce green ?"));
+    $("askInput").value = current || "";
+    fitModals();
+    $("ask").classList.remove("hidden");
+    setTimeout(() => { $("askInput").focus(); $("askInput").select(); fitModals(); }, 120);
+  });
+}
+function closeAsk(val){
+  $("ask").classList.add("hidden");
+  const r = askResolve; askResolve = null;
+  if (r) r(val);
+}
+$("askYes").addEventListener("click", () => {
+  const v = $("askInput").value.trim();
+  closeAsk(v || L_("Green {n}",{n:S.greens.length+1}));
+});
+$("askNo").addEventListener("click", () => closeAsk(null));
+$("askInput").addEventListener("keydown", e => { if (e.key === "Enter") $("askYes").click(); });
+$("askInput").addEventListener("focus", () => setTimeout(fitModals, 200));
+$("ask").addEventListener("click", e => { if (e.target === $("ask")) closeAsk(null); });
+
+let delArmed = false;
+function openCtx(g){
+  S.ctx = g; delArmed = false;
+  const isPoint = g.mk === "point" && g.c;
+  
+  $("ctxName").textContent = g.name;
+  const m = S.pos ? measure(g, S.pos) : null;
+  $("ctxSub").textContent = m ? L_("{a} m² · {w} m de large · bord avant à {d} m",{a:Math.round(m.area),w:Math.round(m.width),d:Math.round(m.front.d)}) : "";
+  $("ctxRedrawLbl").innerHTML = isPoint
+    ? "<b>"+esc(L_("Régler le rayon"))+"</b><small>"+esc(L_("Rouvrir le point et son curseur"))+"</small>"
+    : "<b>"+esc(L_("Retracer le contour"))+"</b><small>"+esc(L_("Reposer les points à la main"))+"</small>";
+  $("ctxDelLbl").innerHTML = "<b>"+esc(L_("Supprimer"))+"</b><small>" + esc(g.src === "draw" ? L_("Efface définitivement ce tracé") : L_("Masque ce green sur cet appareil")) + "</small>";
+  $("ctxDel").classList.remove("armed");
+  fitModals();
+  $("ctx").classList.remove("hidden");
+}
+const closeCtx = () => { $("ctx").classList.add("hidden"); S.ctx = null; };
+$("ctxClose").addEventListener("click", closeCtx);
+$("ctx").addEventListener("click", e => { if (e.target === $("ctx")) closeCtx(); });
+$("ctxRename").addEventListener("click", async () => {
+  const g = S.ctx; closeCtx();
+  const n = await askName(g.name, esc(L_("Renommer {n}",{n:g.name})));
+  if (n !== null) renameGreen(g, n);
+});
+$("ctxRedraw").addEventListener("click", () => {
+  const g = S.ctx; closeCtx(); closeBar();
+  /* Le contour existant réapparaît tout de suite avec ses points, prêt à
+     être retouché au doigt — plus besoin de tout retracer à la main.
+     Choisir DÉTECT, TRACER ou POINTER reste possible pour repartir de
+     zéro : closeBar() (appelé par armTool en resuming) efface alors
+     S.editRing et S.resumeOriginal. */
+  S.replaceId = g.id; S.hideId = g.id;
+  map.setView(ctr(g.coords), Math.max(map.getZoom(), 18), { animate:false });
+  drawGreens();
+  openCarto();
+  if (g.mk === "point" && g.c){
+    S.point = { lat:g.c[0], lon:g.c[1] };
+    $("rad").value = g.r || 14;
+    applyPoint();
+    return;
+  }
+  S.resumeOriginal = g.coords.map(p => [p[0], p[1]]);
+  /* Un contour TRACER, c'est des taps exacts posés à la main : on garde
+     chaque point tel quel plutôt que de le réduire à 14 poignées comme
+     pour un contour DÉTECT (issu d'une courbe rééchantillonnable). */
+  S.resumeNoReduce = g.mk === "draw";
+  S.editRing = S.resumeNoReduce ? S.resumeOriginal.slice() : reduceRing(g.coords, 14);
+  S.editDirty = false;
+  drawEditPoly();
+  drawEditHandles();
+  editMsg(L_("Reprise de {n}.",{n:esc(g.name)}));
+});
+$("ctxDel").addEventListener("click", () => {
+  if (!delArmed){
+    delArmed = true;
+    $("ctxDel").classList.add("armed");
+    $("ctxDelLbl").innerHTML = "<b>"+esc(L_("Confirmer la suppression"))+"</b><small>"+esc(L_("Touchez à nouveau pour valider"))+"</small>";
+    return;
+  }
+  const g = S.ctx; closeCtx(); removeGreen(g);
+});
+
+/* ---------- altimétrie ---------- */
+async function updateAlti(m){
+  const front = m.ll(m.front), c = m.ll(m.centre);
+  const key = [S.pos.lat.toFixed(5), S.pos.lon.toFixed(5), c[0].toFixed(5)].join(",");
+  if (key === S.altiKey || S.altiBusy) return;
+  S.altiBusy = true; S.altiKey = key;
+  try{
+    const line = [];
+    for (let i=0;i<=20;i++){ const t=i/20; line.push([ S.pos.lat+(front[0]-S.pos.lat)*t, S.pos.lon+(front[1]-S.pos.lon)*t ]); }
+    const z = await elevations(line.concat([c]));
+    const zp = z[0], zc = z[z.length-1];
+    if (zp != null && zc != null){
+      const eye = zp + 1.6, tgt = z[z.length-2] + 1.0;
+      let blind = false;
+      for (let i=1;i<z.length-2;i++){ if (z[i] != null && z[i] > eye + (i/20)*(tgt-eye) + 0.7){ blind = true; break; } }
+      S.alti = { player:zp, centre:zc, blind };
+    } else S.alti = null;
+  }catch(e){ S.alti = null; }
+  S.altiBusy = false; render(S.sel ? measure(S.sel, S.pos) : null);
+}
+
+/* ---------- rendu ---------- */
+function refresh(){
+  if (!S.pos || !map) return;
+  if (S.sel && (!S.greens.find(g => g.id === S.sel.id) || S.sel.id === S.hideId)) S.sel = null;
+  drawGreens();
+  const m = S.sel ? measure(S.sel, S.pos) : null;
+  spokes.clearLayers();
+  if (m){
+    const from = [S.pos.lat, S.pos.lon];
+    const st = (c,w,dash) => ({ color:c, weight:w, opacity:.9, dashArray:dash, interactive:false });
+    L.polyline([from, m.ll(m.front)], st("#8FC0A1",2.5)).addTo(spokes);
+    L.polyline([from, m.ll(m.back)],  st("#F1EDE2",1.4,"5 6")).addTo(spokes);
+    L.polyline([from, m.ll(m.left)],  st("#C9A227",1.4,"3 5")).addTo(spokes);
+    L.polyline([from, m.ll(m.right)], st("#C9A227",1.4,"3 5")).addTo(spokes);
+    updateAlti(m);
+  }
+  drawMeas();
+  majBandeauFree();
+  render(m);
+}
+function render(m){
+  const nb = (v,n=0) => Number.isFinite(v) ? v.toFixed(n).replace(".",",") : "—";
+  const set = (id,v) => $(id).innerHTML = v === "—" ? "—" : v + "<i>m</i>";
+  const compet = $("compet").classList.contains("on");
+  if (!m || !S.sel){
+    $("gName").textContent = S.greens.length ? L_("Touchez un green") : (S.pos ? L_("Aucun green trouvé") : L_("En attente de position"));
+    $("gSub").textContent = "";
+    ["dFront","dBack","dLeft","dRight","dElev"].forEach(i => set(i,"—"));
+    $("blind").classList.remove("on"); $("cElev").className = "c";
+    $("clubName").textContent = "—"; $("clubMeta").textContent = L_("Choisissez un green");
+    $("clubIcon").innerHTML = ""; return;
+  }
+  $("gName").textContent = S.sel.name;
+  $("gSub").textContent = Math.round(m.width) + " m large"
+    + (S.sel.src === "approx" ? " · " + L_("estimé") : S.sel.mk === "point" ? " · " + L_("pointé") : S.sel.src === "draw" ? " · " + L_("tracé") : "");
+  set("dFront", nb(m.front.d)); set("dBack", nb(m.back.d));
+  set("dLeft", nb(m.left.d));   set("dRight", nb(m.right.d));
+
+  const a = S.alti, dz = (a && !compet) ? (a.centre - a.player) : 0;
+  if (a && !compet){
+    $("dElev").innerHTML = (dz>=0?"+":"−") + nb(Math.abs(dz),1) + "<i>m</i>";
+    $("cElev").className = "c " + (dz >= 0 ? "up" : "down");
+  } else { $("dElev").innerHTML = "—"; $("cElev").className = "c"; }
+  $("blind").classList.toggle("on", !!(a && a.blind && !compet));
+
+  const raw = S.target === "front" ? m.front.d : S.target === "back" ? m.back.d : (m.front.d + m.back.d)/2;
+  const target = raw + dz, p = pickClub(target);
+  const where = S.target === "front" ? L_("au bord avant") : S.target === "back" ? L_("au bord arrière") : L_("au centre");
+  if (!p){
+    $("clubIcon").innerHTML = ""; $("clubName").textContent = L_("Sac vide");
+    $("clubMeta").textContent = L_("Réglez vos distances dans SAC"); return;
+  }
+  $("clubIcon").innerHTML = clubSvg(p.club.n);
+  $("clubName").textContent = L_(p.club.n);
+  if (p.short){
+    $("clubMeta").textContent = L_("Hors de portée : {d} m {w}, il manque {g} m",{d:Math.round(target),w:where,g:Math.round(p.gap)});
+  } else {
+    const head = Math.round(target) + " m " + where + (dz ? " " + L_("(dénivelé compris)") : "") + " · " + L_("porte {d} m",{d:p.club.d});
+    $("clubMeta").textContent = p.gap <= 4 && p.alt
+      ? head + " — " + L_("limite, {c} si vous frappez long",{c:L_(p.alt.n).toLowerCase()})
+      : head + " — " + (p.gap >= 1 ? L_("marge de {g} m",{g:Math.round(p.gap)}) : L_("pile la distance"));
+  }
+}
+
+/* ---------- sac ---------- */
+function renderBag(){
+  const box = $("bagList"); box.innerHTML = "";
+  S.bag.forEach((c,i) => {
+    const row = document.createElement("div");
+    row.className = "club" + (c.on ? "" : " off");
+    row.innerHTML = '<span class="ic"></span><span class="nm"></span>'
+      + '<input type="number" min="0" max="400" step="1" inputmode="numeric">'
+      + '<span class="u">m</span><span class="tg"><input type="checkbox"><i></i></span>';
+    row.querySelector(".ic").innerHTML = clubSvg(c.n);
+    row.querySelector(".nm").textContent = L_(c.n);
+    const num = row.querySelector('input[type=number]');
+    num.value = c.d;
+    num.addEventListener("change", () => {
+      S.bag[i].d = Math.max(0, Math.min(400, Math.round(+num.value || 0)));
+      num.value = S.bag[i].d; saveBag(); refresh();
+    });
+    const tg = row.querySelector('input[type=checkbox]');
+    tg.checked = c.on;
+    tg.addEventListener("change", () => {
+      S.bag[i].on = tg.checked; row.classList.toggle("off", !tg.checked); saveBag(); refresh();
+    });
+    box.appendChild(row);
+  });
+}
+$("bBag").addEventListener("click", () => { renderBag(); $("bag").classList.add("on"); });
+$("bagClose").addEventListener("click", () => $("bag").classList.remove("on"));
+$("bagDone").addEventListener("click", () => $("bag").classList.remove("on"));
+document.querySelectorAll("#presets button").forEach(b => b.addEventListener("click", () => {
+  S.bag = preset(b.dataset.p); saveBag(); renderBag(); refresh();
+}));
+
+/* ---------- outils ---------- */
+const armTool = (id, mode, text) => $(id).addEventListener("click", () => {
+  const on = S.mode !== mode;
+  const resuming = !!S.replaceId;
+  closeBar(resuming);
+  if (!on){ if (resuming) msg(L_("Choisissez DÉTECT, TRACER ou POINTER, ou Fermer pour rétablir l'ancien contour.")); return; }
+  S.mode = mode; $(id).classList.add("armed");
+  const old = resuming ? S.greens.find(g => g.id === S.replaceId) : null;
+  if (mode === "point" && old && old.mk === "point" && old.c){
+    S.point = { lat:old.c[0], lon:old.c[1] };
+    $("rad").value = old.r || 14;
+    applyPoint();
+    return;
+  }
+  msg((old ? L_("Reprise de {n}.",{n:esc(old.name)}) + " " : "") + text);
+});
+armTool("bDetect","detect",L_("Touchez le centre du green : la zone s'étend par similarité de couleur."));
+armTool("bDraw","draw",L_("Touchez la carte pour poser les points du contour."));
+armTool("bPoint","point",L_("Touchez le centre du green, puis réglez le rayon."));
+armTool("bPos","pos",L_("Touchez la carte à l'endroit où vous vous trouvez."));
+$("bMeas").addEventListener("click", () => {
+  const on = S.mode !== "measure"; closeBar();
+  if (!on) return;
+  S.mode = "measure"; $("bMeas").classList.add("armed");
+  $("measWrap").classList.add("on");
+  $("bKeep").style.display = "none"; $("bAgain").textContent = "Effacer";
+  msg(S.meas ? L_("Touchez ailleurs pour déplacer le repère.") : L_("Touchez un point : la distance se met à jour en marchant."));
+  drawMeas();
+});
+$("bCarto").addEventListener("click", () => {
+  const on = $("carto").classList.toggle("on");
+  $("bCarto").classList.toggle("armed", on);
+  if (!on && ["detect","draw","point","pos"].indexOf(S.mode) >= 0) closeBar();
+});
+$("bRot").addEventListener("click", async () => {
+  if (compassPending){ await askCompass(); return; }
+  setRotMode(rotMode === "north" ? "free" : rotMode === "free" ? "compass" : "north");
+});
+$("bLoad").addEventListener("click", loadCourse);
+$("bMe").addEventListener("click", () => { follow = true; if (S.pos) map.setView([S.pos.lat,S.pos.lon], 18); });
+$("bCancel").addEventListener("click", closeBar);
+$("bAgain").addEventListener("click", () => {
+  if (S.mode === "measure"){
+    S.meas = null; drawMeas();
+    msg(L_("Repère effacé. Touchez un point pour mesurer."));
+    return;
+  }
+  /* Reprise d'un green existant (Retracer le contour) sans outil choisi :
+     Refaire annule les retouches et remet le contour d'origine, plutôt
+     que d'effacer et forcer à recommencer de zéro. */
+  if (!S.mode && S.resumeOriginal){
+    S.editRing = S.resumeNoReduce ? S.resumeOriginal.slice() : reduceRing(S.resumeOriginal, 14);
+    S.editDirty = false;
+    drawEditPoly(); drawEditHandles();
+    editMsg();
+    return;
+  }
+  tmpLayer.clearLayers(); S.detect = null; S.draft = []; S.point = null;
+  editHandles = []; editPoly = null; S.editRing = null; S.resumeOriginal = null; S.resumeNoReduce = false;
+  $("tolWrap").classList.remove("on"); $("radWrap").classList.remove("on");
+  msg(S.mode === "draw" ? L_("Points effacés. Touchez la carte pour recommencer.") : L_("Touchez à nouveau le centre du green."));
+});
+$("bKeep").addEventListener("click", async () => {
+  let ok = false;
+  if (S.mode === "draw"){
+    if (S.draft.length < 3){ msg(L_("Il faut au moins trois points.")); return; }
+    ok = await saveGreen(S.draft.slice(), { mk:"draw" });
+  } else if (S.mode === "point" && S.point && !S.editDirty && S.point.ring){
+    ok = await saveGreen(S.point.ring, { mk:"point", c:[S.point.lat, S.point.lon], r:S.point.r });
+  } else if (S.editRing){
+    /* DÉTECT retouché ou non, POINTER retouché à la main, ou reprise d'un
+       green existant : dans tous ces cas le contour affiché (S.editRing)
+       est la source de vérité à enregistrer. */
+    ok = await saveGreen(S.editRing.slice(), { mk: S.mode === "detect" ? "detect" : "draw" });
+  } else { msg(L_("Rien à garder pour l'instant.")); return; }
+  if (ok) closeBar();
+});
+$("tol").addEventListener("input", () => { $("tolLab").textContent = $("tol").value; applyDetect(); });
+$("rad").addEventListener("input", applyPoint);
+$("compet").addEventListener("click", () => {
+  const on = $("compet").classList.toggle("on");
+  $("compet").setAttribute("aria-pressed", on);
+  try{ Store.set("compet", on ? "1" : "0"); }catch(e){}
+  refresh();
+});
+if (Store.get("compet") === "1"){ $("compet").classList.add("on"); $("compet").setAttribute("aria-pressed","true"); }
+document.querySelectorAll("#seg button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#seg button").forEach(x => x.classList.remove("on"));
+  b.classList.add("on"); S.target = b.dataset.tt; refresh();
+}));
+setInterval(() => { if (S.pos && S.sel) refresh(); }, 2000);
+
+function boot(){
+  buildChips(); fitModals();
+  initMap();
+  initFs();
+  tryCompass();
+  startGeo();
+}
+window.boot = boot;
+window.rechargerGreens = () => { if (map) { drawGreens(); refresh(); } };
+window.rafraichirCarte = () => { if (map) { drawGreens(); refresh(); } };
+})();
+
+</script>
+</body>
+</html>
