@@ -26,7 +26,9 @@
 <meta name="twitter:image" content="https://julien67890.github.io/SwingUp-Telemetre/icons/og-banner.jpg">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.ico" sizes="any">
-<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,900;1,900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -47,9 +49,9 @@ body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
   background-attachment:fixed;height:100dvh;min-height:100%;-webkit-font-smoothing:antialiased;
   overscroll-behavior:none;overflow:hidden}
 .hidden{display:none!important}
-.mark{border-radius:6px;flex:0 0 auto;display:grid;place-items:center;overflow:hidden;
-  background:linear-gradient(145deg,#52b788,#1b4332);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 10px 22px -10px rgba(0,0,0,.6)}
-.mark svg{width:60%;height:60%}
+.mark{border-radius:50%;flex:0 0 auto;display:grid;place-items:center;overflow:hidden;
+  background:transparent;box-shadow:0 6px 16px -6px rgba(0,0,0,.55)}
+.mark img{width:100%;height:100%;object-fit:contain;display:block}
 
 /* ================= ecran de demarrage ================= */
 #boot{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;
@@ -59,18 +61,10 @@ body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
   transition:opacity .55s ease,visibility .55s}
 #boot.off{opacity:0;visibility:hidden;pointer-events:none}
 .bootin{text-align:center;padding:0 24px;transform:translateY(-5%)}
-.bootmark{width:98px;height:98px;margin:0 auto 24px;border-radius:24px;display:grid;place-items:center;
-  background:linear-gradient(145deg,#52b788,#1b4332);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 28px 52px -22px rgba(0,0,0,.8);
+.bootmark{width:112px;height:112px;margin:0 auto 24px;display:grid;place-items:center;
   animation:bootpop .65s cubic-bezier(.2,.9,.3,1.25) both}
-.bootmark svg{width:54px;height:54px;overflow:visible}
-.bootmark .pole{stroke-dasharray:60;stroke-dashoffset:60;animation:bootdraw .8s .2s cubic-bezier(.4,0,.2,1) forwards}
-.bootmark .foot{opacity:0;animation:bootfoot .3s .9s ease forwards}
-.bootmark .ball{opacity:0;transform-box:fill-box;transform-origin:center;animation:bootball .6s 1s cubic-bezier(.3,1.5,.5,1) forwards}
+.bootmark img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 16px 30px rgba(0,0,0,.6))}
 @keyframes bootpop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
-@keyframes bootdraw{to{stroke-dashoffset:0}}
-@keyframes bootfoot{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
-@keyframes bootball{0%{opacity:0;transform:translateY(-10px) scale(.5)}55%{opacity:1}100%{opacity:1;transform:none}}
 .bootword{font-family:var(--serif);font-weight:900;font-size:2rem;line-height:1;letter-spacing:-.025em;color:var(--cream);
   opacity:0;animation:rise .55s .45s cubic-bezier(.2,.7,.3,1) forwards}
 .bootword em{font-style:italic;color:var(--green-glow)}
@@ -85,8 +79,7 @@ body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
 .auth-wrap{min-height:100dvh;max-width:560px;margin:0 auto;display:flex;flex-direction:column;justify-content:center;
   padding:calc(24px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom))}
 .auth-head{text-align:center;margin-bottom:22px}
-.auth-head .mark{width:60px;height:60px;margin:0 auto 16px;border-radius:8px}
-.auth-head .mark svg{width:34px;height:34px}
+.auth-head .mark{width:64px;height:64px;margin:0 auto 16px;border-radius:50%}
 .auth-head h1{font-family:var(--serif);font-weight:900;color:var(--cream);font-size:1.7rem;line-height:1.05;letter-spacing:-.02em}
 .auth-head p{color:var(--green-glow);font-size:.82rem;margin-top:8px}
 .surface{background:linear-gradient(180deg,var(--cream),#efebdd);border-radius:6px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.4);overflow:hidden}
@@ -361,13 +354,7 @@ header .mark{width:46px;height:46px}
 <!-- ====================== ECRAN DE DEMARRAGE ====================== -->
 <div id="boot">
   <div class="bootin">
-    <div class="bootmark">
-      <svg viewBox="0 0 24 24" fill="none">
-        <path class="pole" d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-        <circle class="foot" cx="6" cy="21" r="1.6" fill="#f6f3e9"/>
-        <g class="ball"><circle cx="14.6" cy="19.4" r="2.7" fill="#d62828"/><circle cx="13.8" cy="18.6" r=".75" fill="#fff" fill-opacity=".55"/></g>
-      </svg>
-    </div>
+    <div class="bootmark"><img src="icons/icon-192.png" alt="SwingUp Golf Rangefinder" width="112" height="112"></div>
     <h1 class="bootword">Swing<em>Up</em></h1>
     <p class="boottag">Télémètre</p>
     <div class="bootbar"><i></i></div>
@@ -378,7 +365,7 @@ header .mark{width:46px;height:46px}
 <section id="auth" class="hidden">
   <div class="auth-wrap">
     <div class="auth-head">
-      <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/><circle cx="14" cy="19" r="2.6" fill="#d62828"/></svg></div>
+      <div class="mark"><img src="icons/icon-192.png" alt="SwingUp Golf Rangefinder"></div>
       <h1 data-t>Télémètre</h1>
       <p id="authTagline" data-t>Connecte-toi pour retrouver tes parcours</p>
     </div>
@@ -418,7 +405,7 @@ header .mark{width:46px;height:46px}
 <div id="app" class="hidden">
 
   <header>
-    <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/><circle cx="14" cy="19" r="2.6" fill="#d62828"/></svg></div>
+    <div class="mark"><img src="icons/icon-192.png" alt="SwingUp Golf Rangefinder"></div>
     <div class="brand"><h1 data-t>Télémètre</h1><p id="courseName" data-t>Chargement des parcours…</p></div>
     <span class="betapill hidden" id="betaPill">Bêta</span>
     <button class="acctbtn" id="btnAcct" aria-label="Mon compte"><span class="who" id="acctWho">—</span><span class="av" id="acctAv">?</span></button>
@@ -521,7 +508,7 @@ header .mark{width:46px;height:46px}
 <!-- ====================== SAC ====================== -->
 <div id="bag" role="dialog">
   <div id="bagTop">
-    <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/><circle cx="14" cy="19" r="2.6" fill="#d62828"/></svg></div>
+    <div class="mark"><img src="icons/icon-192.png" alt="SwingUp Golf Rangefinder"></div>
     <h2 data-t>Mon sac</h2>
     <button class="tbtn" id="bagClose" data-t>Fermer</button>
   </div>
