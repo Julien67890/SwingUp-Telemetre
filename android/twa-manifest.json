@@ -25,7 +25,11 @@
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://julien67890.github.io/SwingUp-Telemetre/manifest.json",
   "fallbackType": "customtabs",
-  "features": {},
+  "features": {
+    "playBilling": {
+      "enabled": true
+    }
+  },
   "alphaDependencies": {
     "enabled": false
   },
