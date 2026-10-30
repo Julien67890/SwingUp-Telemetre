@@ -667,7 +667,7 @@ const PREMIUM = {
      verifyUrl = Cloud Function verifierAchatPlay (functions/index.js). Tant
      qu'elle vaut null, aucun achat Play n'est proposé : un achat non validé
      par le serveur serait remboursé automatiquement par Google sous 3 jours. */
-  play:{ produits:{ mois:'premium_mois', an:'premium_an' }, verifyUrl:null }
+  play:{ produits:{ mois:'premium_mois', an:'premium_an' }, verifyUrl:'https://europe-west1-swingup-telemetre.cloudfunctions.net/verifierAchatPlay' }
 };
 
 /* Phase bêta : actif:true → l'app est entièrement ouverte, rien n'est vendu.
