@@ -423,7 +423,7 @@ header .mark{width:46px;height:46px}
       </button>
       <button class="tool" id="bRot" title="Orientation">
         <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M12 3 L16 20 L12 16.5 L8 20 Z" fill="currentColor"/></svg>
-        <span id="rotLab">NORD</span>
+        <span id="rotLab" data-t>NORD</span>
       </button>
       <button class="tool" id="bMe" title="Me recentrer"><span data-t>MOI</span></button>
       <button class="tool" id="bMeas" title="Mesurer">
@@ -691,6 +691,7 @@ const ANALYTICS = { id:'G-FCS3VQQJSZ' };
 const LANGS = {
 
 en:{
+'NORD':'NORTH','LIBRE':'FREE','CAP':'HEADING',
 "Tu aimes SwingUp ?":"Enjoying SwingUp?","Un avis sur Google Play aide beaucoup d'autres golfeurs à trouver l'app.":"A review on Google Play really helps other golfers find the app.","Non merci":"No thanks","Plus tard":"Later","Donner mon avis":"Leave a review",
 "Version bêta : tout est offert pour le moment. Ensuite, 1 mois de sauvegarde offert, puis {m} ou {a}, sans engagement.":"Beta version: everything is free for now. After that, 1 month of free saving, then {m} or {a}, no commitment.","Sauvegarde de tes greens offerte pendant 1 mois. Ensuite, {m} ou {a}, sans engagement. La mesure reste gratuite.":"Saving your greens is free for 1 month. After that, {m} or {a}, no commitment. Measuring stays free.","ou {a}":"or {a}","Essai gratuit":"Free trial","Sauvegarde offerte jusqu'au {d}":"Free saving until {d}","Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.":"Your online greens will be deleted on {d}. Subscribe to keep them.","Plus que {n} jour(s) de sauvegarde offerte":"{n} day(s) of free saving left","Greens bientôt supprimés":"Greens will be deleted soon","Supprimés le {d} sans abonnement":"Deleted on {d} without a subscription","2,90 € / mois":"€2.90 / month","2,90 €/mois":"€2.90/month","24,90 € / an":"€24.90 / year","Sans engagement, résiliable à tout moment.":"No commitment, cancel anytime.",
 'Télémètre':'Rangefinder','Connecte-toi pour retrouver tes parcours':'Sign in to find your courses',
@@ -814,6 +815,7 @@ en:{
 },
 
 es:{
+'NORD':'NORTE','LIBRE':'LIBRE','CAP':'RUMBO',
 "Tu aimes SwingUp ?":"¿Te gusta SwingUp?","Un avis sur Google Play aide beaucoup d'autres golfeurs à trouver l'app.":"Una reseña en Google Play ayuda mucho a otros golfistas a encontrar la app.","Non merci":"No, gracias","Plus tard":"Más tarde","Donner mon avis":"Dejar una reseña",
 "Version bêta : tout est offert pour le moment. Ensuite, 1 mois de sauvegarde offert, puis {m} ou {a}, sans engagement.":"Versión beta: todo es gratis por ahora. Después, 1 mes de guardado gratis y luego {m} o {a}, sin compromiso.","Sauvegarde de tes greens offerte pendant 1 mois. Ensuite, {m} ou {a}, sans engagement. La mesure reste gratuite.":"Guardar tus greens es gratis durante 1 mes. Después, {m} o {a}, sin compromiso. Medir sigue siendo gratis.","ou {a}":"o {a}","Essai gratuit":"Prueba gratuita","Sauvegarde offerte jusqu'au {d}":"Guardado gratis hasta el {d}","Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.":"Tus greens en línea se eliminarán el {d}. Suscríbete para conservarlos.","Plus que {n} jour(s) de sauvegarde offerte":"Quedan {n} día(s) de guardado gratis","Greens bientôt supprimés":"Greens pronto eliminados","Supprimés le {d} sans abonnement":"Eliminados el {d} sin suscripción","2,90 € / mois":"2,90 € / mes","2,90 €/mois":"2,90 €/mes","24,90 € / an":"24,90 € / año","Sans engagement, résiliable à tout moment.":"Sin compromiso, cancela cuando quieras.",
 'Télémètre':'Telémetro','Connecte-toi pour retrouver tes parcours':'Inicia sesión para encontrar tus campos',
@@ -942,6 +944,7 @@ es:{
 },
 
 de:{
+'NORD':'NORD','LIBRE':'FREI','CAP':'KOMPASS',
 "Tu aimes SwingUp ?":"Gefällt dir SwingUp?","Un avis sur Google Play aide beaucoup d'autres golfeurs à trouver l'app.":"Eine Bewertung bei Google Play hilft anderen Golfern sehr, die App zu finden.","Non merci":"Nein danke","Plus tard":"Später","Donner mon avis":"Bewerten",
 "Version bêta : tout est offert pour le moment. Ensuite, 1 mois de sauvegarde offert, puis {m} ou {a}, sans engagement.":"Beta-Version: Alles ist vorerst kostenlos. Danach 1 Monat kostenloses Speichern, dann {m} oder {a}, ohne Bindung.","Sauvegarde de tes greens offerte pendant 1 mois. Ensuite, {m} ou {a}, sans engagement. La mesure reste gratuite.":"Das Speichern deiner Grüns ist 1 Monat kostenlos. Danach {m} oder {a}, ohne Bindung. Messen bleibt kostenlos.","ou {a}":"oder {a}","Essai gratuit":"Kostenloser Test","Sauvegarde offerte jusqu'au {d}":"Kostenloses Speichern bis zum {d}","Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.":"Deine Online-Grüns werden am {d} gelöscht. Abonniere, um sie zu behalten.","Plus que {n} jour(s) de sauvegarde offerte":"Noch {n} Tag(e) kostenloses Speichern","Greens bientôt supprimés":"Grüns werden bald gelöscht","Supprimés le {d} sans abonnement":"Gelöscht am {d} ohne Abo","2,90 € / mois":"2,90 € / Monat","2,90 €/mois":"2,90 €/Monat","24,90 € / an":"24,90 € / Jahr","Sans engagement, résiliable à tout moment.":"Ohne Bindung, jederzeit kündbar.",
 'Télémètre':'Entfernungsmesser',
@@ -1819,7 +1822,7 @@ function applyRot(){
 function setRot(d){ rot = wrap(d); applyRot(); }
 function snapNorth(){
   if (rotAnim){ cancelAnimationFrame(rotAnim); rotAnim = null; }
-  rotMode = "north"; $("rotLab").textContent = "NORD";
+  rotMode = "north"; $("rotLab").textContent = L_("NORD");
   $("bRot").classList.remove("follow"); setRot(0);
 }
 function animRotTo(t){
@@ -1833,7 +1836,7 @@ function animRotTo(t){
 }
 function setRotMode(m, quiet){
   rotMode = m;
-  $("rotLab").textContent = m === "north" ? "NORD" : m === "free" ? "LIBRE" : "CAP";
+  $("rotLab").textContent = L_(m === "north" ? "NORD" : m === "free" ? "LIBRE" : "CAP");
   $("bRot").classList.toggle("follow", m === "compass");
   if (m === "north") animRotTo(0);
   if (m === "compass" && S.heading === null && !quiet) msg(L_("Boussole indisponible sur cet appareil."));
