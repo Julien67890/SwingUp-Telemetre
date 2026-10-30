@@ -20,7 +20,7 @@
     "path": "./signing.keystore",
     "alias": "my-key-alias"
   },
-  "appVersionCode": 3,
+  "appVersionCode": 4,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://julien67890.github.io/SwingUp-Telemetre/manifest.json",
@@ -43,6 +43,6 @@
   "additionalTrustedOrigins": [],
   "retainedBundles": [],
   "displayOverride": [],
-  "appVersionName": "1.0.2",
-  "appVersion": "1.0.2"
+  "appVersionName": "1.0.3",
+  "appVersion": "1.0.3"
 }
