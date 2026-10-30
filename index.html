@@ -1177,8 +1177,13 @@ function finEssai(){
 }
 const enEssai=()=>{const f=finEssai();return !!f&&Date.now()<f;};
 const joursEssaiRestants=()=>Math.max(0,Math.ceil((finEssai()-Date.now())/JOUR));
+/* Comptes de test (Test des licences Play) : voient l'offre réelle même
+   pendant la bêta, pour tester l'achat sans être débités. */
+const TESTEURS_ACHAT=['developpement24.web@gmail.com','developpement.web@gmail.com','guioniejulien@gmail.com'];
+const testeurAchat=()=>!!(currentUser&&currentUser.email&&TESTEURS_ACHAT.indexOf(currentUser.email.toLowerCase())>=0);
 function isPremium(){
   if(PREMIUM.test!==null)return !!PREMIUM.test;
+  if(testeurAchat())return abonneActif();
   if(BETA.actif)return true;
   return abonneActif()||enEssai();
 }
