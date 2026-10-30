@@ -1,0 +1,31 @@
+# Déploie les Cloud Functions (functions/) sur le projet Firebase swingup-telemetre.
+#
+# Lancement : onglet « Actions » → « Déployer les fonctions » → « Run workflow ».
+# Secret requis : FIREBASE_SA_KEY = clé JSON d'un compte de service du projet
+# ayant les rôles « Administrateur Cloud Functions », « Utilisateur du compte
+# de service » et « Administrateur Firebase ».
+name: Déployer les fonctions
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Installer les dépendances
+        run: npm ci
+        working-directory: functions
+      - name: Déployer
+        env:
+          SA_KEY: ${{ secrets.FIREBASE_SA_KEY }}
+        run: |
+          if [ -z "$SA_KEY" ]; then echo "::error::Secret FIREBASE_SA_KEY manquant"; exit 1; fi
+          echo "$SA_KEY" > "$RUNNER_TEMP/sa.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
+          npx --yes firebase-tools@14 deploy --only functions --project swingup-telemetre --non-interactive --force
+          rm -f "$RUNNER_TEMP/sa.json"

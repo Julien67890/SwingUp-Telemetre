@@ -662,7 +662,12 @@ const PREMIUM = {
   checkoutUrl:null,
   portalUrl:null,
   /* null = comportement normal · true = tout ouvert · false = tout verrouillé */
-  test:null
+  test:null,
+  /* Google Play (app Android) : deux abonnements créés dans la Play Console.
+     verifyUrl = Cloud Function verifierAchatPlay (functions/index.js). Tant
+     qu'elle vaut null, aucun achat Play n'est proposé : un achat non validé
+     par le serveur serait remboursé automatiquement par Google sous 3 jours. */
+  play:{ produits:{ mois:'premium_mois', an:'premium_an' }, verifyUrl:null }
 };
 
 /* Phase bêta : actif:true → l'app est entièrement ouverte, rien n'est vendu.
@@ -1150,7 +1155,7 @@ async function pullPremium(){
   try{
     const s=await fs.collection('users').doc(currentUser.uid).collection('billing').doc('status').get();
     if(s.exists){const d=s.data()||{};
-      premium={status:d.status||'free',until:d.currentPeriodEnd||null,plan:d.plan||null};
+      premium={status:d.status||'free',until:d.currentPeriodEnd||null,plan:d.plan||null,source:d.source||null};
     }else premium={status:'free'};
     Store.set(premKey(),JSON.stringify(premium));
   }catch(e){ readPremiumCache(); }
@@ -1203,8 +1208,61 @@ function texteOffre(){
    restent gratuits, y compris sans compte. */
 const peutSauvegarderCloud=()=>fbReady&&!!currentUser&&isPremium();
 
-async function startCheckout(){
-  if(!PREMIUM.checkoutUrl||!currentUser){
+/* ---------- Google Play Billing (app Android installée) ----------
+   Dans l'app du Play Store, Google impose son propre paiement : Stripe n'y
+   est jamais proposé. On le détecte au premier chargement (referrer
+   android-app://) et via la Digital Goods API. */
+const PKG_ANDROID='app.emqgroup.swinguprangefinder';
+try{ if(document.referrer.indexOf('android-app://'+PKG_ANDROID)===0)sessionStorage.setItem('twa','1'); }catch(e){}
+const dansAppAndroid=()=>{try{return sessionStorage.getItem('twa')==='1';}catch(e){return false;}};
+let dgService;
+async function serviceGooglePlay(){
+  if(dgService!==undefined)return dgService;
+  dgService=null;
+  if('getDigitalGoodsService' in window){
+    try{ dgService=await window.getDigitalGoodsService('https://play.google.com/billing'); }catch(e){ dgService=null; }
+  }
+  return dgService;
+}
+async function envoyerAchatPlay(token,produit){
+  if(!PREMIUM.play.verifyUrl||!currentUser)return false;
+  try{
+    const idt=await currentUser.getIdToken();
+    const r=await fetch(PREMIUM.play.verifyUrl,{method:'POST',
+      headers:{'Content-Type':'application/json',Authorization:'Bearer '+idt},
+      body:JSON.stringify({packageName:PKG_ANDROID,productId:produit,purchaseToken:token})});
+    return r.ok;
+  }catch(e){ return false; }
+}
+async function acheterPlay(plan){
+  const sku=PREMIUM.play.produits[plan]||PREMIUM.play.produits.mois;
+  try{
+    const req=new PaymentRequest([{supportedMethods:'https://play.google.com/billing',data:{sku}}],
+      {total:{label:'Total',amount:{currency:'EUR',value:'0'}}});
+    const resp=await req.show();
+    const ok=await envoyerAchatPlay(resp.details.purchaseToken,sku);
+    await resp.complete(ok?'success':'fail');
+    if(ok){ await pullPremium(); majCompteUI(); closeModal(); toast(T('Premium activé'));
+      if(typeof majBandeauFree==='function')majBandeauFree(); if(typeof pullGreens==='function')pullGreens(); }
+    else toast(T('Paiement indisponible'));
+  }catch(e){ if(!e||e.name!=='AbortError')toast(T('Paiement indisponible')); }
+}
+/* À chaque connexion : renvoie au serveur les abonnements Play actifs du
+   téléphone. Ça restaure l'accès après une réinstallation, prolonge la date
+   d'échéance à chaque renouvellement et valide un achat resté en attente. */
+async function restaurerAchatsPlay(){
+  if(!PREMIUM.play.verifyUrl||!currentUser)return;
+  const svc=await serviceGooglePlay(); if(!svc)return;
+  try{
+    const ps=await svc.listPurchases();
+    for(const p of ps)await envoyerAchatPlay(p.purchaseToken,p.itemId);
+    if(ps.length){ await pullPremium(); majCompteUI(); if(typeof majBandeauFree==='function')majBandeauFree(); }
+  }catch(e){}
+}
+async function startCheckout(plan){
+  if(typeof plan!=='string')plan='mois';
+  if(currentUser&&PREMIUM.play.verifyUrl&&await serviceGooglePlay()){ acheterPlay(plan); return; }
+  if(dansAppAndroid()||!PREMIUM.checkoutUrl||!currentUser){
     openModal('<h3>'+esc(T('Bientôt disponible'))+'</h3><p class="txt">'+esc(T('Le paiement arrive bientôt.'))+'</p>'
       +'<div class="row"><button class="btn btn-ghost" id="mClose">'+esc(T('Fermer'))+'</button></div>');
     $id('mClose').onclick=closeModal; return;
@@ -1213,12 +1271,16 @@ async function startCheckout(){
     const token=await currentUser.getIdToken();
     const res=await fetch(PREMIUM.checkoutUrl,{method:'POST',
       headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},
-      body:JSON.stringify({returnUrl:location.origin+location.pathname})});
+      body:JSON.stringify({returnUrl:location.origin+location.pathname,plan})});
     const data=await res.json();
     if(data&&data.url)location.href=data.url; else toast(T('Paiement indisponible'));
   }catch(e){ toast(T('Paiement indisponible')); }
 }
 async function openPortal(){
+  if(premium&&premium.source==='play'){
+    window.open('https://play.google.com/store/account/subscriptions?package='+PKG_ANDROID+(premium.plan?'&sku='+encodeURIComponent(premium.plan):''),'_blank');
+    return;
+  }
   if(!PREMIUM.portalUrl||!currentUser){toast(T('Le paiement arrive bientôt.'));return;}
   try{
     const token=await currentUser.getIdToken();
@@ -1253,10 +1315,12 @@ function ecranPremium(origine){
     +'<div class="row">'
     +'<button class="btn btn-ghost" id="mClose">'+esc(T('Fermer'))+'</button>'
     +(pro?'<button class="btn btn-primary" id="mPortal">'+esc(T('Gérer mon abonnement'))+'</button>'
-         :'<button class="btn btn-primary" id="mGo">'+esc(T('Débloquer'))+' · '+esc(T(PREMIUM.priceShort))+'</button>')
+         :'<button class="btn btn-ghost" id="mGoY">'+esc(T(PREMIUM.priceYear))+'</button>'
+          +'<button class="btn btn-primary" id="mGo">'+esc(T('Débloquer'))+' · '+esc(T(PREMIUM.priceShort))+'</button>')
     +'</div>');
   $id('mClose').onclick=closeModal;
-  if($id('mGo'))$id('mGo').onclick=startCheckout;
+  if($id('mGo'))$id('mGo').onclick=()=>startCheckout('mois');
+  if($id('mGoY'))$id('mGoY').onclick=()=>startCheckout('an');
   if($id('mPortal'))$id('mPortal').onclick=openPortal;
 }
 const feat=(t,s)=>'<div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>'+esc(t)+'</b><span>'+esc(s)+'</span></div></div>';
@@ -1551,7 +1615,9 @@ document.addEventListener('DOMContentLoaded',()=>{
       Store.del('gRedirect');
       profileName=(u.displayName||profileName||(u.email||'').split('@')[0]||'').slice(0,14);
       await pullProfil(); await pullPremium();
-      purgerGreensExpires();
+      /* La purge attend la restauration Play : un abonné qui vient de se
+         réabonner sur un autre appareil ne doit jamais perdre ses greens. */
+      restaurerAchatsPlay().then(purgerGreensExpires);
       entrerDansApp(); afterCheckout();
       if(typeof majBandeauFree==='function')majBandeauFree();
       if(typeof pullGreens==='function')await pullGreens();
