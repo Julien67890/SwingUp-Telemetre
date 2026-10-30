@@ -387,6 +387,7 @@ header .mark{width:46px;height:46px}
         <label data-t>Mot de passe</label>
         <input type="password" id="auPass" autocomplete="current-password">
       </div>
+      <p class="hintsm hidden" id="signupInfo" style="margin:0 0 12px"></p>
       <button class="btn btn-primary" id="btnAuth" data-t>Se connecter</button>
       <div class="authsep"><span data-t>ou</span></div>
       <button class="btn btn-google" id="btnGoogle">
@@ -654,6 +655,7 @@ const PREMIUM = {
   name:'Télémètre Premium',
   price:'2,90 € / mois',
   priceShort:'2,90 €/mois',
+  priceYear:'24,90 € / an',
   note:'Sans engagement, résiliable à tout moment.',
   /* Cloud Functions du projet du télémètre. Tant qu'elles valent null,
      le bouton annonce simplement que le paiement arrive bientôt. */
@@ -664,13 +666,21 @@ const PREMIUM = {
 };
 
 /* Phase bêta : actif:true → l'app est entièrement ouverte, rien n'est vendu.
-   Le jour de la bascule, passer actif à false : les comptes créés avant
-   « limite » gardent leur accès à vie. */
+   Le jour où le paiement est prêt : passer actif à false ET renseigner
+   bascule avec la date du jour, par ex. Date.parse('2027-01-04T00:00:00+01:00').
+   Chaque compte — ancien comme nouveau — reçoit alors ESSAI.jours de
+   sauvegarde offerte, comptés depuis la bascule ou depuis sa création si
+   elle est postérieure. Il n'existe AUCUN accès à vie. */
 const BETA = {
   actif:true,
-  fin:'27 septembre 2026',
-  limite:Date.parse('2026-09-27T23:59:59+02:00')
+  fin:Date.parse('2026-12-31T23:59:59+01:00'),
+  bascule:null
 };
+/* Essai gratuit, puis délai de grâce : sans abonnement à la fin de l'essai
+   (ou de l'abonnement), les greens en ligne restent conservés ESSAI.grace
+   jours avec un avertissement, puis sont supprimés. Rappel affiché quand
+   il reste ESSAI.rappel jours d'essai. */
+const ESSAI = { jours:30, grace:30, rappel:5 };
 
 /* Mesure d'audience. Tant que id est vide, aucun script, aucune bannière. */
 const ANALYTICS = { id:'G-FCS3VQQJSZ' };
@@ -681,6 +691,8 @@ const ANALYTICS = { id:'G-FCS3VQQJSZ' };
 const LANGS = {
 
 en:{
+"Tu aimes SwingUp ?":"Enjoying SwingUp?","Un avis sur Google Play aide beaucoup d'autres golfeurs à trouver l'app.":"A review on Google Play really helps other golfers find the app.","Non merci":"No thanks","Plus tard":"Later","Donner mon avis":"Leave a review",
+"Version bêta : tout est offert pour le moment. Ensuite, 1 mois de sauvegarde offert, puis {m} ou {a}, sans engagement.":"Beta version: everything is free for now. After that, 1 month of free saving, then {m} or {a}, no commitment.","Sauvegarde de tes greens offerte pendant 1 mois. Ensuite, {m} ou {a}, sans engagement. La mesure reste gratuite.":"Saving your greens is free for 1 month. After that, {m} or {a}, no commitment. Measuring stays free.","ou {a}":"or {a}","Essai gratuit":"Free trial","Sauvegarde offerte jusqu'au {d}":"Free saving until {d}","Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.":"Your online greens will be deleted on {d}. Subscribe to keep them.","Plus que {n} jour(s) de sauvegarde offerte":"{n} day(s) of free saving left","Greens bientôt supprimés":"Greens will be deleted soon","Supprimés le {d} sans abonnement":"Deleted on {d} without a subscription","2,90 € / mois":"€2.90 / month","2,90 €/mois":"€2.90/month","24,90 € / an":"€24.90 / year","Sans engagement, résiliable à tout moment.":"No commitment, cancel anytime.",
 'Télémètre':'Rangefinder','Connecte-toi pour retrouver tes parcours':'Sign in to find your courses',
 'Se connecter':'Sign in','Créer un compte':'Create account','Prénom / pseudo':'First name / nickname',
 'Adresse e-mail':'Email address','Mot de passe':'Password','ou':'or','Continuer avec Google':'Continue with Google',
@@ -802,6 +814,8 @@ en:{
 },
 
 es:{
+"Tu aimes SwingUp ?":"¿Te gusta SwingUp?","Un avis sur Google Play aide beaucoup d'autres golfeurs à trouver l'app.":"Una reseña en Google Play ayuda mucho a otros golfistas a encontrar la app.","Non merci":"No, gracias","Plus tard":"Más tarde","Donner mon avis":"Dejar una reseña",
+"Version bêta : tout est offert pour le moment. Ensuite, 1 mois de sauvegarde offert, puis {m} ou {a}, sans engagement.":"Versión beta: todo es gratis por ahora. Después, 1 mes de guardado gratis y luego {m} o {a}, sin compromiso.","Sauvegarde de tes greens offerte pendant 1 mois. Ensuite, {m} ou {a}, sans engagement. La mesure reste gratuite.":"Guardar tus greens es gratis durante 1 mes. Después, {m} o {a}, sin compromiso. Medir sigue siendo gratis.","ou {a}":"o {a}","Essai gratuit":"Prueba gratuita","Sauvegarde offerte jusqu'au {d}":"Guardado gratis hasta el {d}","Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.":"Tus greens en línea se eliminarán el {d}. Suscríbete para conservarlos.","Plus que {n} jour(s) de sauvegarde offerte":"Quedan {n} día(s) de guardado gratis","Greens bientôt supprimés":"Greens pronto eliminados","Supprimés le {d} sans abonnement":"Eliminados el {d} sin suscripción","2,90 € / mois":"2,90 € / mes","2,90 €/mois":"2,90 €/mes","24,90 € / an":"24,90 € / año","Sans engagement, résiliable à tout moment.":"Sin compromiso, cancela cuando quieras.",
 'Télémètre':'Telémetro','Connecte-toi pour retrouver tes parcours':'Inicia sesión para encontrar tus campos',
 'Se connecter':'Iniciar sesión','Créer un compte':'Crear una cuenta','Prénom / pseudo':'Nombre / apodo',
 'Adresse e-mail':'Correo electrónico','Mot de passe':'Contraseña','ou':'o',
@@ -928,6 +942,8 @@ es:{
 },
 
 de:{
+"Tu aimes SwingUp ?":"Gefällt dir SwingUp?","Un avis sur Google Play aide beaucoup d'autres golfeurs à trouver l'app.":"Eine Bewertung bei Google Play hilft anderen Golfern sehr, die App zu finden.","Non merci":"Nein danke","Plus tard":"Später","Donner mon avis":"Bewerten",
+"Version bêta : tout est offert pour le moment. Ensuite, 1 mois de sauvegarde offert, puis {m} ou {a}, sans engagement.":"Beta-Version: Alles ist vorerst kostenlos. Danach 1 Monat kostenloses Speichern, dann {m} oder {a}, ohne Bindung.","Sauvegarde de tes greens offerte pendant 1 mois. Ensuite, {m} ou {a}, sans engagement. La mesure reste gratuite.":"Das Speichern deiner Grüns ist 1 Monat kostenlos. Danach {m} oder {a}, ohne Bindung. Messen bleibt kostenlos.","ou {a}":"oder {a}","Essai gratuit":"Kostenloser Test","Sauvegarde offerte jusqu'au {d}":"Kostenloses Speichern bis zum {d}","Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.":"Deine Online-Grüns werden am {d} gelöscht. Abonniere, um sie zu behalten.","Plus que {n} jour(s) de sauvegarde offerte":"Noch {n} Tag(e) kostenloses Speichern","Greens bientôt supprimés":"Grüns werden bald gelöscht","Supprimés le {d} sans abonnement":"Gelöscht am {d} ohne Abo","2,90 € / mois":"2,90 € / Monat","2,90 €/mois":"2,90 €/Monat","24,90 € / an":"24,90 € / Jahr","Sans engagement, résiliable à tout moment.":"Ohne Bindung, jederzeit kündbar.",
 'Télémètre':'Entfernungsmesser',
 'Connecte-toi pour retrouver tes parcours':'Melde dich an, um deine Plätze wiederzufinden','Se connecter':'Anmelden',
 'Créer un compte':'Konto erstellen','Prénom / pseudo':'Vorname / Spitzname','Adresse e-mail':'E-Mail-Adresse',
@@ -1133,13 +1149,49 @@ async function pullPremium(){
     Store.set(premKey(),JSON.stringify(premium));
   }catch(e){ readPremiumCache(); }
 }
+const JOUR=864e5;
+const dateLoc=ts=>new Date(ts).toLocaleDateString(({fr:'fr-FR',en:'en-GB',es:'es-ES',de:'de-DE'})[LANG]||undefined,{day:'numeric',month:'long',year:'numeric'});
+function abonneActif(){
+  if(!premium||['active','trialing'].indexOf(premium.status)<0)return false;
+  if(premium.until&&Date.now()>premium.until+3*JOUR)return false;
+  return true;
+}
+/* Fin du mois offert, ou 0 tant que la bêta tourne (ou compte inconnu). */
+function finEssai(){
+  if(BETA.actif||!BETA.bascule||!currentUser||!accountCreated)return 0;
+  return Math.max(accountCreated,BETA.bascule)+ESSAI.jours*JOUR;
+}
+const enEssai=()=>{const f=finEssai();return !!f&&Date.now()<f;};
+const joursEssaiRestants=()=>Math.max(0,Math.ceil((finEssai()-Date.now())/JOUR));
 function isPremium(){
   if(PREMIUM.test!==null)return !!PREMIUM.test;
   if(BETA.actif)return true;
-  if(accountCreated&&BETA.limite&&accountCreated<=BETA.limite)return true;
-  if(!premium||['active','trialing'].indexOf(premium.status)<0)return false;
-  if(premium.until&&Date.now()>premium.until+3*864e5)return false;
-  return true;
+  return abonneActif()||enEssai();
+}
+/* Date de suppression des greens en ligne, ou 0 si aucune n'est prévue
+   (bêta, abonné, essai en cours ou date de création inconnue). */
+function dateSuppression(){
+  if(BETA.actif||!currentUser||isPremium())return 0;
+  let fin=finEssai();
+  if(!fin)return 0;
+  if(premium&&premium.until)fin=Math.max(fin,premium.until+3*JOUR);
+  return fin+ESSAI.grace*JOUR;
+}
+const enGrace=()=>{const d=dateSuppression();return !!d&&Date.now()<d;};
+async function purgerGreensExpires(){
+  const d=dateSuppression();
+  if(!d||Date.now()<d||!fbReady)return;
+  try{
+    const snap=await fs.collection('users').doc(currentUser.uid).collection('courses').get();
+    await Promise.all(snap.docs.map(x=>x.ref.delete()));
+  }catch(e){ console.warn('Purge des greens échouée :',e); }
+}
+/* Texte d'offre affiché à l'inscription et sur l'écran Premium. */
+function texteOffre(){
+  const v={m:T(PREMIUM.price),a:T(PREMIUM.priceYear)};
+  return BETA.actif
+    ? T('Version bêta : tout est offert pour le moment. Ensuite, 1 mois de sauvegarde offert, puis {m} ou {a}, sans engagement.',v)
+    : T('Sauvegarde de tes greens offerte pendant 1 mois. Ensuite, {m} ou {a}, sans engagement. La mesure reste gratuite.',v);
 }
 /* La sauvegarde en ligne est le seul verrou : mesurer et cartographier
    restent gratuits, y compris sans compte. */
@@ -1188,12 +1240,14 @@ function ecranPremium(origine){
     +feat(T('Parcours illimités'),T('Cartographie sans limite de nombre de greens.'))
     +feat(T('Vue satellite illimitée'),T('300 tuiles gratuites par mois hors France, à volonté avec Premium.'))
     +feat(T('Mesure et cartographie restent gratuites'),T("L'abonnement ne porte que sur la conservation de tes tracés."))
-    +'<div class="price">'+esc(PREMIUM.price)+'</div><p class="pnote">'+esc(PREMIUM.note)+'</p></div>'
-    +(BETA.actif?'<div class="subline on"><b>'+esc(T('Version bêta'))+'</b><span>'+esc(T('Tout est ouvert jusqu\'au {d}.',{d:BETA.fin}))+'</span></div>':'')
+    +'<div class="price">'+esc(T(PREMIUM.price))+'</div><p class="pnote">'+esc(T('ou {a}',{a:T(PREMIUM.priceYear)}))+' · '+esc(T(PREMIUM.note))+'</p></div>'
+    +(BETA.actif?'<div class="subline on"><b>'+esc(T('Version bêta'))+'</b><span>'+esc(T('Tout est ouvert jusqu\'au {d}.',{d:dateLoc(BETA.fin)}))+'</span></div>':'')
+    +(!BETA.actif&&enEssai()&&!abonneActif()?'<div class="subline on"><b>'+esc(T('Essai gratuit'))+'</b><span>'+esc(T("Sauvegarde offerte jusqu'au {d}",{d:dateLoc(finEssai())}))+'</span></div>':'')
+    +(enGrace()?'<p class="warn">'+esc(T('Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.',{d:dateLoc(dateSuppression())}))+'</p>':'')
     +'<div class="row">'
     +'<button class="btn btn-ghost" id="mClose">'+esc(T('Fermer'))+'</button>'
     +(pro?'<button class="btn btn-primary" id="mPortal">'+esc(T('Gérer mon abonnement'))+'</button>'
-         :'<button class="btn btn-primary" id="mGo">'+esc(T('Débloquer'))+' · '+esc(PREMIUM.priceShort)+'</button>')
+         :'<button class="btn btn-primary" id="mGo">'+esc(T('Débloquer'))+' · '+esc(T(PREMIUM.priceShort))+'</button>')
     +'</div>');
   $id('mClose').onclick=closeModal;
   if($id('mGo'))$id('mGo').onclick=startCheckout;
@@ -1214,6 +1268,7 @@ function majOngletsAuth(){
   $id('tabLogin').classList.toggle('on',!modeSignup);
   $id('tabSignup').classList.toggle('on',modeSignup);
   $id('fldName').classList.toggle('hidden',!modeSignup);
+  const si=$id('signupInfo'); if(si){si.textContent=texteOffre();si.classList.toggle('hidden',!modeSignup);}
   $id('auPass').autocomplete=modeSignup?'new-password':'current-password';
   const b=$id('btnAuth');b.dataset.src=modeSignup?'Créer un compte':'Se connecter';
   b.textContent=T(b.dataset.src);
@@ -1336,18 +1391,20 @@ function majCompteUI(){
   $id('acctAv').textContent=(nom[0]||'?').toUpperCase();
 }
 function ecranCompte(){
-  const ok=isPremium(), betaTesteur=!BETA.actif&&accountCreated&&BETA.limite&&accountCreated<=BETA.limite;
+  const ok=isPremium();
   const jusqu=premium&&premium.until?' · '+T("jusqu'au")+' '+new Date(premium.until).toLocaleDateString():'';
   let abo;
   if(BETA.actif){
-    abo='<div class="subline on"><b>'+esc(T('Version bêta'))+'</b><span>'+esc(T('Accès complet offert'))+' '+esc(T("jusqu'au"))+' '+esc(BETA.fin)+'</span></div>';
-  }else if(betaTesteur){
-    abo='<div class="subline on"><b>'+esc(T('Accès bêta-testeur'))+'</b><span>'+esc(T("Accès complet conservé, sans abonnement. Merci d'avoir été là au début."))+'</span></div>';
+    abo='<div class="subline on"><b>'+esc(T('Version bêta'))+'</b><span>'+esc(T('Accès complet offert'))+' '+esc(T("jusqu'au"))+' '+esc(dateLoc(BETA.fin))+'</span></div>';
+  }else if(ok&&!abonneActif()){
+    abo='<div class="subline on"><b>'+esc(T('Essai gratuit'))+'</b><span>'+esc(T("Sauvegarde offerte jusqu'au {d}",{d:dateLoc(finEssai())}))+'</span></div>'
+      +'<button class="btn btn-primary" id="mUp" style="margin-top:10px">'+esc(T('Découvrir Premium'))+'</button>';
   }else if(ok){
     abo='<div class="subline on"><b>'+esc(PREMIUM.name)+'</b><span>'+esc(premium&&premium.status==='trialing'?T("Période d'essai"):T('Abonnement actif'))+esc(jusqu)+'</span></div>'
       +(PREMIUM.portalUrl?'<button class="btn btn-ghost" id="mPortal" style="margin-top:10px">'+esc(T('Gérer mon abonnement'))+'</button>':'');
   }else{
     abo='<div class="subline"><b>'+esc(T('Offre gratuite'))+'</b><span>'+esc(T('Greens non sauvegardés'))+'</span></div>'
+      +(enGrace()?'<p class="warn">'+esc(T('Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.',{d:dateLoc(dateSuppression())}))+'</p>':'')
       +'<button class="btn btn-primary" id="mUp" style="margin-top:10px">'+esc(T('Découvrir Premium'))+'</button>';
   }
   const parMdp=!!(currentUser&&currentUser.providerData&&currentUser.providerData.some(p=>p&&p.providerId==='password'));
@@ -1488,6 +1545,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       Store.del('gRedirect');
       profileName=(u.displayName||profileName||(u.email||'').split('@')[0]||'').slice(0,14);
       await pullProfil(); await pullPremium();
+      purgerGreensExpires();
       entrerDansApp(); afterCheckout();
       if(typeof majBandeauFree==='function')majBandeauFree();
       if(typeof pullGreens==='function')await pullGreens();
@@ -1943,7 +2001,34 @@ function setPos(lat, lon, acc, manual){
   if (first) loadCourse();
   refresh();
 }
+/* ---------- mode démo (captures d'écran) ----------
+   ?demo=marmande (ou ?demo=lat,lon) fige la position sur un vrai parcours.
+   Le réglage est mémorisé 24 h pour que l'app installée l'utilise aussi
+   (elle partage le stockage de Chrome) ; ?demo=off l'arrête tout de suite. */
+const DEMO_SPOTS = {
+  /* Golf de Marmande, trou 2 (par 5), à ~140 m du green. */
+  marmande: [44.49561, 0.20076]
+};
+function demoPos(){
+  try{
+    const q = new URLSearchParams(location.search).get("demo");
+    if (q === "off"){ Store.del("demo"); return null; }
+    if (q){
+      const p = DEMO_SPOTS[q.toLowerCase()] || q.split(",").map(Number);
+      if (p.length === 2 && p.every(Number.isFinite)){
+        Store.set("demo", JSON.stringify({ p:p, t:Date.now() }));
+        return p;
+      }
+    }
+    const m = JSON.parse(Store.get("demo") || "null");
+    if (m && Date.now() - m.t < 864e5) return m.p;
+    Store.del("demo");
+  }catch(e){}
+  return null;
+}
 function startGeo(){
+  const dp = demoPos();
+  if (dp){ hideWarn(); setPos(dp[0], dp[1], 4, false); return; }
   if (!window.isSecureContext){
     warn(L_("Page non servie en HTTPS : le navigateur bloque GPS et boussole. Touchez POS. pour vous placer à la main."));
     openCarto(); $("bPos").classList.remove("hide"); return;
@@ -2523,9 +2608,24 @@ function writeCustom(){
 function majBandeauFree(){
   const bar = $("freeBar");
   if (!bar) return;
-  if (peutSauvegarderCloud()){ bar.classList.add("hidden"); return; }
+  const titre = bar.querySelector(".ftx b");
+  if (peutSauvegarderCloud()){
+    /* Rappel quelques jours avant la fin du mois offert. */
+    const j = (typeof enEssai==="function" && enEssai() && !abonneActif()) ? joursEssaiRestants() : 99;
+    if (j > ESSAI.rappel){ bar.classList.add("hidden"); return; }
+    bar.classList.remove("hidden");
+    titre.textContent = L_("Essai gratuit");
+    $("freeSub").textContent = L_("Plus que {n} jour(s) de sauvegarde offerte",{n:j});
+    return;
+  }
   const n = S.greens.filter(g => g.src === "draw").length;
   bar.classList.remove("hidden");
+  if (typeof enGrace==="function" && enGrace()){
+    titre.textContent = L_("Greens bientôt supprimés");
+    $("freeSub").textContent = L_("Supprimés le {d} sans abonnement",{d:dateLoc(dateSuppression())});
+    return;
+  }
+  titre.textContent = L_("Greens non conservés");
   $("freeSub").textContent = n
     ? L_("{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.",{n:n})
     : L_("Passe en Premium pour garder tes tracés");
@@ -2787,6 +2887,7 @@ function refresh(){
   const m = S.sel ? measure(S.sel, S.pos) : null;
   spokes.clearLayers();
   if (m){
+    noteMesure(S.sel.id);
     const from = [S.pos.lat, S.pos.lon];
     const st = (c,w,dash) => ({ color:c, weight:w, opacity:.9, dashArray:dash, interactive:false });
     L.polyline([from, m.ll(m.front)], st("#8FC0A1",2.5)).addTo(spokes);
@@ -2967,12 +3068,43 @@ document.querySelectorAll("#seg button").forEach(b => b.addEventListener("click"
 }));
 setInterval(() => { if (S.pos && S.sel) refresh(); }, 2000);
 
+/* ---------- demande d'avis Google Play ----------
+   Jamais pendant une mesure : seulement à l'ouverture de l'app, une fois
+   que l'utilisateur a mesuré au moins 15 greens différents sur 2 jours
+   distincts. « Plus tard » repousse de 14 jours, « Non merci » est définitif. */
+const AVIS = { greens:15, jours:2, report:14, url:"https://play.google.com/store/apps/details?id=app.emqgroup.swinguprangefinder" };
+let dernierGreenMesure = null;
+function lireAvis(){ try{ return JSON.parse(Store.get("avis")||"null") || { ids:[], jours:[] }; }catch(e){ return { ids:[], jours:[] }; } }
+function noteMesure(id){
+  if (id === dernierGreenMesure || demoPos()) return;
+  dernierGreenMesure = id;
+  const a = lireAvis(), j = new Date().toISOString().slice(0,10);
+  if (a.ids.indexOf(id) < 0){ a.ids.push(id); if (a.ids.length > 50) a.ids.shift(); }
+  if (a.jours.indexOf(j) < 0){ a.jours.push(j); if (a.jours.length > 10) a.jours.shift(); }
+  try{ Store.set("avis", JSON.stringify(a)); }catch(e){}
+}
+function proposerAvis(){
+  if (!/Android/i.test(navigator.userAgent) || demoPos()) return;
+  const a = lireAvis();
+  if (a.jamais || (a.apres && Date.now() < a.apres)) return;
+  if (a.ids.length < AVIS.greens || a.jours.length < AVIS.jours) return;
+  const garder = o => { try{ Store.set("avis", JSON.stringify(Object.assign(lireAvis(), o))); }catch(e){} };
+  openModal('<h3>'+esc(L_("Tu aimes SwingUp ?"))+'</h3>'
+    +'<p class="txt">'+esc(L_("Un avis sur Google Play aide beaucoup d'autres golfeurs à trouver l'app."))+'</p>'
+    +'<div class="row"><button class="btn btn-ghost" id="avNon">'+esc(L_("Non merci"))+'</button>'
+    +'<button class="btn btn-ghost" id="avTard">'+esc(L_("Plus tard"))+'</button>'
+    +'<button class="btn btn-primary" id="avOui">'+esc(L_("Donner mon avis"))+'</button></div>');
+  document.getElementById("avNon").onclick = () => { garder({ jamais:true }); closeModal(); };
+  document.getElementById("avTard").onclick = () => { garder({ apres:Date.now()+AVIS.report*864e5 }); closeModal(); };
+  document.getElementById("avOui").onclick = () => { garder({ jamais:true }); closeModal(); window.open(AVIS.url, "_blank"); };
+}
 function boot(){
   buildChips(); fitModals();
   initMap();
   initFs();
   tryCompass();
   startGeo();
+  setTimeout(proposerAvis, 4000);
 }
 window.boot = boot;
 window.rechargerGreens = () => { if (map) { drawGreens(); refresh(); } };

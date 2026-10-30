@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Politique de confidentialité — SwingUp - Télémètre</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.6; max-width: 760px; margin: 0 auto; padding: 40px 20px 80px; color: #1a2b20; background: #fbfaf5; }
+  h1 { font-size: 26px; margin-bottom: 4px; color: #1b4332; }
+  .updated { color: #667a6a; font-size: 14px; margin-bottom: 32px; }
+  h2 { font-size: 19px; margin-top: 36px; color: #1b4332; border-bottom: 1px solid #dfe6e0; padding-bottom: 6px; }
+  h3 { font-size: 15.5px; margin-top: 20px; }
+  p, li { font-size: 15px; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #e4e0d2; vertical-align: top; }
+  th { background: #f0ede0; }
+  .note { background: #eef4ef; border-left: 3px solid #1b4332; padding: 10px 14px; margin: 16px 0; font-size: 14px; }
+  a { color: #1b4332; }
+  footer { margin-top: 48px; font-size: 13px; color: #8a998c; }
+</style>
+
+</head>
+<body>
+<h1>Politique de confidentialité — SwingUp - Télémètre</h1>
+<p class="updated">Dernière mise à jour : 30 octobre 2026 · <a href="privacy.html">English version</a></p>
+
+<p>SwingUp - Télémètre (« l'application », « nous ») est éditée par Julien Guionie, développeur indépendant,
+joignable à <a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a>. Cette politique décrit les données collectées par l'application, leur usage,
+et la façon dont tu peux les contrôler ou les supprimer.</p>
+
+<h2>1. Données collectées</h2>
+<h3>1.1 Compte utilisateur (facultatif)</h3>
+<p>Si tu crées un compte, nous collectons via Firebase Authentication (Google) :</p>
+<ul>
+<li>ton adresse e-mail ;</li>
+<li>ton mot de passe (jamais stocké en clair : il est chiffré et géré par Firebase Authentication) ;</li>
+<li>ton prénom ou pseudo, si tu le renseignes ;</li>
+<li>avec « Continuer avec Google » : les informations de profil de base transmises par Google (nom, e-mail, photo).</li>
+</ul>
+<h3>1.2 Données que tu crées dans l'application</h3>
+<p>Une fois connecté·e, et pendant ton essai gratuit ou ton abonnement, les éléments suivants sont enregistrés dans
+notre base de données (Firestore, hébergée par Google) pour être synchronisés entre tes appareils :</p>
+<ul>
+<li>la configuration de ton sac (distance par club) ;</li>
+<li>les contours de greens que tu traces sur la carte ;</li>
+<li>les noms de parcours et libellés que tu ajoutes.</li>
+</ul>
+<h3>1.3 Localisation</h3>
+<p>L'application utilise ta position GPS précise, avec ton autorisation explicite, pour calculer les distances au green
+(centre, fond, gauche, droite) et le dénivelé. Cette position est utilisée sur ton appareil pour le calcul ; elle n'est
+ni enregistrée dans notre base de données ni transmise à des tiers à des fins commerciales.</p>
+<h3>1.4 Mesure d'audience</h3>
+<p>Avec ton accord (bannière affichée à la première visite), nous utilisons Google Analytics pour mesurer l'utilisation
+globale de l'application et l'améliorer. Ces données ne sont jamais vendues. Tu peux refuser ce suivi depuis la
+bannière ; l'application reste entièrement utilisable.</p>
+<h3>1.5 Abonnement et paiement (fonction à venir)</h3>
+<p>La mesure et la cartographie sont gratuites. La sauvegarde des greens fera l'objet d'un abonnement optionnel,
+précédé d'un mois d'essai gratuit. Le paiement n'est pas encore actif. Une fois disponible :</p>
+<ul>
+<li>dans l'application Android installée depuis Google Play, le paiement est traité par <b>Google Play</b> selon
+<a href="https://policies.google.com/privacy">ses propres règles de confidentialité</a> ;</li>
+<li>sur la version web, le paiement est traité par <b>Stripe</b> selon
+<a href="https://stripe.com/fr/privacy">sa propre politique de confidentialité</a>.</li>
+</ul>
+<p>Nous ne recevons jamais tes données bancaires : nous conservons uniquement l'état de ton abonnement (actif, en essai,
+terminé) et sa date d'échéance.</p>
+
+<h2>2. Prestataires utilisés</h2>
+<table>
+<tr><th>Service</th><th>Usage</th><th>Données concernées</th></tr>
+<tr><td>Firebase (Google)</td><td>Authentification et base de données (Firestore)</td><td>E-mail, mot de passe, sac, greens</td></tr>
+<tr><td>Esri / ArcGIS Location Platform</td><td>Imagerie satellite</td><td>Adresse IP, zone géographique affichée</td></tr>
+<tr><td>IGN Géoplateforme</td><td>Altimétrie (France)</td><td>Coordonnées des points mesurés</td></tr>
+<tr><td>OpenStreetMap / Overpass</td><td>Contours de greens publics</td><td>Zone géographique affichée</td></tr>
+<tr><td>Google Analytics</td><td>Mesure d'audience (avec accord)</td><td>Données d'usage</td></tr>
+<tr><td>Google Fonts</td><td>Polices d'affichage</td><td>Adresse IP</td></tr>
+<tr><td>Google Play / Stripe</td><td>Paiement de l'abonnement (à venir)</td><td>Données bancaires — non conservées par nous</td></tr>
+</table>
+
+<h2>3. Durée de conservation</h2>
+<ul>
+<li>Ton compte, ton sac et ton profil sont conservés tant que ton compte existe.</li>
+<li>Tes greens sauvegardés sont conservés pendant ton essai gratuit et ton abonnement. Si l'essai ou l'abonnement
+se termine sans renouvellement, ils restent conservés <b>30 jours</b>, avec un avertissement dans l'application,
+puis sont <b>supprimés définitivement</b>.</li>
+</ul>
+
+<h2>4. Tes droits (RGPD)</h2>
+<p>Tu disposes d'un droit d'accès, de rectification, d'effacement, de portabilité et d'opposition sur tes données
+personnelles. Pour les exercer, écris à <a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a>. Tu peux aussi introduire une réclamation auprès de la CNIL
+(<a href="https://www.cnil.fr">cnil.fr</a>).</p>
+
+<h2>5. Supprimer ton compte</h2>
+<p>Depuis l'application : <b>Mon compte → Supprimer mon compte</b>. Ton compte, tes greens et ton sac sont effacés
+immédiatement et définitivement. Tu peux aussi en faire la demande par e-mail à <a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a> depuis l'adresse liée à ton
+compte ; la demande est traitée sous 30 jours. Si tu as un abonnement en cours, pense à le résilier depuis
+Google Play ou depuis la gestion de ton abonnement avant de supprimer ton compte.</p>
+
+<h2>6. Sécurité</h2>
+<p>Les mots de passe sont chiffrés et gérés par Firebase Authentication ; nous n'y avons jamais accès en clair.
+Toutes les communications passent par des connexions chiffrées (HTTPS).</p>
+
+<h2>7. Public visé</h2>
+<p>SwingUp - Télémètre n'est pas destinée aux enfants de moins de 13 ans et ne collecte pas sciemment de données les concernant.</p>
+
+<h2>8. Modifications</h2>
+<p>Cette politique peut évoluer, notamment à l'activation du paiement. Toute modification importante sera signalée
+dans l'application ou sur cette page, avec une nouvelle date de mise à jour.</p>
+
+<h2>9. Contact</h2>
+<p>Pour toute question sur cette politique ou sur tes données : <a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a>.</p>
+
+<footer>SwingUp - Télémètre — julien67890.github.io/SwingUp-Telemetre</footer>
+</body>
+</html>

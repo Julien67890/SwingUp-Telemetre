@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Privacy Policy — SwingUp Rangefinder</title>
+<title>Privacy Policy — SwingUp - Télémètre</title>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.6; max-width: 760px; margin: 0 auto; padding: 40px 20px 80px; color: #1a2b20; background: #fbfaf5; }
   h1 { font-size: 26px; margin-bottom: 4px; color: #1b4332; }
@@ -18,74 +18,93 @@
   a { color: #1b4332; }
   footer { margin-top: 48px; font-size: 13px; color: #8a998c; }
 </style>
+
 </head>
 <body>
-<h1>Privacy Policy — SwingUp Rangefinder</h1>
-<p class="updated">Last updated: August 27, 2026</p>
-<p>SwingUp Rangefinder ("the app", "we") is published by Julien Guionie, an independent developer,
-reachable at <a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a>. This policy describes
-what data the app collects, why, and how you can control or delete it.</p>
+<h1>Privacy Policy — SwingUp - Télémètre</h1>
+<p class="updated">Last updated: October 30, 2026 · <a href="confidentialite.html">Version française</a></p>
+
+<p>SwingUp - Télémètre ("the app", "we") is published by Julien Guionie, an independent developer,
+reachable at <a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a>. This policy describes what data the app collects, why, and how you can control or delete it.</p>
+
 <h2>1. Data we collect</h2>
 <h3>1.1 User account (optional)</h3>
-<p>If you create an account to save your setup, we collect the following through Firebase Authentication (Google):</p>
+<p>If you create an account, we collect the following through Firebase Authentication (Google):</p>
 <ul>
-  <li>Your email address</li>
-  <li>Your password (never stored in plain text — handled and encrypted by Firebase Authentication)</li>
-  <li>Your first name / nickname, if provided</li>
-  <li>If you use "Sign in with Google": basic profile information (name, email, photo) provided by Google</li>
+<li>your email address;</li>
+<li>your password (never stored in plain text — encrypted and handled by Firebase Authentication);</li>
+<li>your first name or nickname, if provided;</li>
+<li>with "Continue with Google": basic profile information provided by Google (name, email, photo).</li>
 </ul>
 <h3>1.2 Data you create in the app</h3>
-<p>Once signed in, the following is saved in our database (Firestore, hosted by Google) so it can sync across your devices:</p>
+<p>Once signed in, and during your free trial or subscription, the following is saved in our database
+(Firestore, hosted by Google) so it can sync across your devices:</p>
 <ul>
-  <li>Your bag setup (distance per club)</li>
-  <li>Green outlines you trace on the map</li>
-  <li>Course names and custom labels you add</li>
+<li>your bag setup (distance per club);</li>
+<li>green outlines you trace on the map;</li>
+<li>course names and custom labels you add.</li>
 </ul>
 <h3>1.3 Location</h3>
 <p>The app uses your precise GPS location, with your explicit permission, to calculate distances to the green
-(center, back, left, right) and elevation change. This location is used locally on your device for the distance
-calculation and is not stored in our database or shared with third parties for commercial purposes.</p>
+(center, back, left, right) and elevation change. This location is used on your device for the calculation; it is not
+stored in our database or shared with third parties for commercial purposes.</p>
 <h3>1.4 Audience measurement</h3>
-<p>With your consent (banner shown on first visit), we use Google Analytics to measure overall app usage (page views,
-traffic) and improve it. Usage data is never sold to third parties. You can decline this tracking from the consent
-banner; the app remains fully functional without it.</p>
-<h3>1.5 Payments (upcoming feature)</h3>
-<p>A payment feature via Stripe is in preparation and is not yet active. Once available, payment information
-(card number, etc.) will be processed directly by Stripe under
-<a href="https://stripe.com/privacy" target="_blank" rel="noopener">its own privacy policy</a> — we never store this
-information on our servers.</p>
+<p>With your consent (banner shown on first visit), we use Google Analytics to measure overall app usage and improve it.
+This data is never sold. You can decline this tracking from the banner; the app remains fully functional.</p>
+<h3>1.5 Subscription and payment (upcoming)</h3>
+<p>Measuring and mapping are free. Saving your greens will be an optional subscription, preceded by a one-month free
+trial. Payment is not active yet. Once available:</p>
+<ul>
+<li>in the Android app installed from Google Play, payment is processed by <b>Google Play</b> under
+<a href="https://policies.google.com/privacy">its own privacy policy</a>;</li>
+<li>on the web version, payment is processed by <b>Stripe</b> under
+<a href="https://stripe.com/privacy">its own privacy policy</a>.</li>
+</ul>
+<p>We never receive your banking details: we only keep your subscription status (active, trial, ended) and its end date.</p>
+
 <h2>2. Third-party providers we use</h2>
 <table>
-  <tr><th>Service</th><th>Purpose</th><th>Data involved</th></tr>
-  <tr><td>Firebase (Google)</td><td>Authentication and database (Firestore)</td><td>Email, password, bag/green data</td></tr>
-  <tr><td>Esri / ArcGIS Location Platform</td><td>Satellite map imagery</td><td>IP address, geographic area viewed</td></tr>
-  <tr><td>Google Analytics</td><td>Audience measurement (with consent)</td><td>Anonymized usage data</td></tr>
-  <tr><td>Google Fonts</td><td>Display typefaces</td><td>IP address (font loading request)</td></tr>
-  <tr><td>Stripe</td><td>Payments (upcoming)</td><td>Banking data — not stored by us</td></tr>
+<tr><th>Service</th><th>Purpose</th><th>Data involved</th></tr>
+<tr><td>Firebase (Google)</td><td>Authentication and database (Firestore)</td><td>Email, password, bag, greens</td></tr>
+<tr><td>Esri / ArcGIS Location Platform</td><td>Satellite imagery</td><td>IP address, geographic area viewed</td></tr>
+<tr><td>IGN Géoplateforme</td><td>Elevation data (France)</td><td>Coordinates of measured points</td></tr>
+<tr><td>OpenStreetMap / Overpass</td><td>Public green outlines</td><td>Geographic area viewed</td></tr>
+<tr><td>Google Analytics</td><td>Audience measurement (with consent)</td><td>Usage data</td></tr>
+<tr><td>Google Fonts</td><td>Display typefaces</td><td>IP address</td></tr>
+<tr><td>Google Play / Stripe</td><td>Subscription payment (upcoming)</td><td>Banking data — not stored by us</td></tr>
 </table>
+
 <h2>3. Data retention</h2>
-<p>Account and gameplay data is kept for as long as your account exists. You can request full deletion of your
-account and associated data at any time (see section 5).</p>
+<ul>
+<li>Your account, bag and profile are kept for as long as your account exists.</li>
+<li>Your saved greens are kept during your free trial and subscription. If the trial or subscription ends without
+renewal, they are kept for <b>30 days</b>, with a warning in the app, and then <b>permanently deleted</b>.</li>
+</ul>
+
 <h2>4. Your rights (GDPR)</h2>
-<p>If you live in the European Union or another territory covered by the GDPR, you have the right to access, correct,
-delete, port, and object to the processing of your personal data. You can exercise these rights by contacting us at
-<a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a>.</p>
+<p>You have the right to access, correct, delete, port, and object to the processing of your personal data.
+To exercise these rights, contact <a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a>. You may also lodge a complaint with your data protection authority.</p>
+
 <h2>5. Deleting your account</h2>
-<p>To delete your account and all associated data, send a request to
-<a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a> from the email address linked to your
-account. Your request will be processed within 30 days.</p>
+<p>In the app: <b>My account → Delete my account</b>. Your account, greens and bag are deleted immediately and
+permanently. You can also email <a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a> from the address linked to your account; requests are processed within
+30 days. If you have an active subscription, cancel it from Google Play or your subscription settings before
+deleting your account.</p>
+
 <h2>6. Security</h2>
-<p>Passwords are managed and encrypted by Firebase Authentication; we never have access to them in plain text. The
-app communicates with its servers over encrypted (HTTPS) connections.</p>
+<p>Passwords are encrypted and handled by Firebase Authentication; we never see them in plain text. All communication
+uses encrypted (HTTPS) connections.</p>
+
 <h2>7. Intended audience</h2>
-<p>SwingUp Rangefinder is not intended for children under 13 and does not knowingly collect data from children of
-that age.</p>
+<p>SwingUp - Télémètre is not intended for children under 13 and does not knowingly collect data from them.</p>
+
 <h2>8. Changes to this policy</h2>
-<p>This policy may change, in particular when the Stripe payment feature is activated. Any material change will be
-noted in the app or on this page, with an updated date at the top of this document.</p>
+<p>This policy may change, in particular when payment is activated. Any material change will be noted in the app or on
+this page, with an updated date at the top.</p>
+
 <h2>9. Contact</h2>
-<p>For any question about this policy or your data, write to us at
-<a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a>.</p>
-<footer>SwingUp Rangefinder — <a href="https://julien67890.github.io/SwingUp-Telemetre/">julien67890.github.io/SwingUp-Telemetre</a></footer>
+<p>For any question about this policy or your data: <a href="mailto:developpement24.web@gmail.com">developpement24.web@gmail.com</a>.</p>
+
+<footer>SwingUp - Télémètre — julien67890.github.io/SwingUp-Telemetre</footer>
 </body>
 </html>
