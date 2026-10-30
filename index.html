@@ -2177,8 +2177,21 @@ function bindCompass(){
       setRot(rot + 0.10*wrap(-S.heading - rot));
     }
   };
-  addEventListener("deviceorientationabsolute", on);
-  addEventListener("deviceorientation", on);
+  const brancher = () => {
+    removeEventListener("deviceorientationabsolute", on);
+    removeEventListener("deviceorientation", on);
+    addEventListener("deviceorientationabsolute", on);
+    addEventListener("deviceorientation", on);
+  };
+  brancher();
+  /* Certains Chrome Android (et la TWA) n'envoient la boussole qu'après un
+     premier geste sur la page : on rebranche au premier appui, quel qu'il soit,
+     au lieu d'attendre un appui sur le bouton d'orientation. */
+  const auGeste = () => {
+    ["pointerdown","touchstart","keydown"].forEach(t => removeEventListener(t, auGeste, true));
+    if (S.heading === null) brancher();
+  };
+  ["pointerdown","touchstart","keydown"].forEach(t => addEventListener(t, auGeste, { capture:true, passive:true }));
 }
 
 /* ---------- plein écran ---------- */
