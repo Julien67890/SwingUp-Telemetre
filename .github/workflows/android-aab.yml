@@ -10,6 +10,9 @@ name: AAB Google Play
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -51,3 +54,16 @@ jobs:
           name: aab-google-play
           path: dist/*.aab
           retention-days: 14
+
+      # Copie aussi l'AAB sur la branche « builds » (sans historique lourd :
+      # un seul commit à chaque fois), pour le récupérer sans passer par l'artefact.
+      - name: Publier sur la branche builds
+        working-directory: .
+        run: |
+          mkdir -p /tmp/builds && cp dist/*.aab /tmp/builds/
+          cd /tmp/builds
+          git init -q -b builds
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add . && git commit -qm "AAB #${{ github.run_number }} (${{ github.sha }})"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" builds
