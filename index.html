@@ -2381,8 +2381,8 @@ function runDetect(ll){
   S.detect = { px, ll }; applyDetect();
 }
 /* Un contour à 72 points (une par angle de rayon) est trop dense pour être
-   corrigé au doigt un par un ; on le ramène à une quinzaine de poignées
-   réparties tout autour, largement suffisant pour suivre la forme d'un
+   corrigé au doigt un par un ; on le ramène à quelques poignées
+   réparties tout autour (10 pour DÉTECT, 8 pour POINTER), largement suffisant pour suivre la forme d'un
    green tout en restant maniable sur un écran de téléphone. */
 function reduceRing(ring, k){
   if (ring.length <= k) return ring.map(p => [p[0], p[1]]);
@@ -2484,7 +2484,7 @@ function applyDetect(){
      savoir que c'est le TAP qui était mal placé plutôt que la détection. */
   L.circleMarker(ll, { radius:5, color:"#fff", weight:2, fillColor:"#C9A227", fillOpacity:1, interactive:false }).addTo(tmpLayer);
   if (!c){ S.editRing = null; msg(L_("Rien de cohérent ici. Visez le centre du green ou montez la tolérance.")); return; }
-  S.editRing = reduceRing(c.ring, 14);
+  S.editRing = reduceRing(c.ring, 10);
   S.editDirty = false;
   drawEditPoly();
   drawEditHandles();
@@ -2511,7 +2511,7 @@ function applyPoint(){
   tmpLayer.clearLayers(); editHandles = []; editPoly = null;
   L.circleMarker([S.point.lat, S.point.lon], { radius:4, color:"#C9A227", fillOpacity:1, interactive:false }).addTo(tmpLayer);
   $("radWrap").classList.add("on");
-  S.editRing = reduceRing(S.point.ring, 14);
+  S.editRing = reduceRing(S.point.ring, 8);
   S.editDirty = false;
   drawEditPoly();
   drawEditHandles(pointMsg);
