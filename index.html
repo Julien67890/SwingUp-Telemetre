@@ -696,6 +696,7 @@ const ANALYTICS = { id:'G-FCS3VQQJSZ' };
 const LANGS = {
 
 en:{
+"{p} / mois":"{p} / month","{p} / an":"{p} / year",
 'Bêta':'Beta','{w} m de large':'{w} m wide','Effacer':'Clear',
 'NORD':'NORTH','LIBRE':'FREE','CAP':'HEADING',
 "Tu aimes SwingUp ?":"Enjoying SwingUp?","Un avis sur Google Play aide beaucoup d'autres golfeurs à trouver l'app.":"A review on Google Play really helps other golfers find the app.","Non merci":"No thanks","Plus tard":"Later","Donner mon avis":"Leave a review",
@@ -821,6 +822,7 @@ en:{
 },
 
 es:{
+"{p} / mois":"{p} / mes","{p} / an":"{p} / a\u00f1o",
 'Bêta':'Beta','{w} m de large':'{w} m de ancho','Effacer':'Borrar',
 'NORD':'NORTE','LIBRE':'LIBRE','CAP':'RUMBO',
 "Tu aimes SwingUp ?":"¿Te gusta SwingUp?","Un avis sur Google Play aide beaucoup d'autres golfeurs à trouver l'app.":"Una reseña en Google Play ayuda mucho a otros golfistas a encontrar la app.","Non merci":"No, gracias","Plus tard":"Más tarde","Donner mon avis":"Dejar una reseña",
@@ -951,6 +953,7 @@ es:{
 },
 
 de:{
+"{p} / mois":"{p} / Monat","{p} / an":"{p} / Jahr",
 'Bêta':'Beta','{w} m de large':'{w} m breit','Effacer':'Löschen',
 'NORD':'NORD','LIBRE':'FREI','CAP':'KOMPASS',
 "Tu aimes SwingUp ?":"Gefällt dir SwingUp?","Un avis sur Google Play aide beaucoup d'autres golfeurs à trouver l'app.":"Eine Bewertung bei Google Play hilft anderen Golfern sehr, die App zu finden.","Non merci":"Nein danke","Plus tard":"Später","Donner mon avis":"Bewerten",
@@ -1259,6 +1262,20 @@ async function restaurerAchatsPlay(){
     if(ps.length){ await pullPremium(); majCompteUI(); if(typeof majBandeauFree==='function')majBandeauFree(); }
   }catch(e){}
 }
+/* Dans l'app Android, affiche les prix réels de Google Play (devise et
+   montant du pays de l'utilisateur) à la place des prix en euros codés en dur. */
+async function afficherPrixPlay(){
+  const svc=await serviceGooglePlay(); if(!svc)return;
+  try{
+    const d=await svc.getDetails([PREMIUM.play.produits.mois,PREMIUM.play.produits.an]);
+    const fmt=it=>new Intl.NumberFormat(({fr:'fr-FR',en:'en-US',es:'es-ES',de:'de-DE'})[LANG]||undefined,{style:'currency',currency:it.price.currency}).format(it.price.value);
+    const m=d.find(x=>x.itemId===PREMIUM.play.produits.mois), a=d.find(x=>x.itemId===PREMIUM.play.produits.an);
+    if(m&&$id('prixMois'))$id('prixMois').textContent=T('{p} / mois',{p:fmt(m)});
+    if(a&&$id('prixAn'))$id('prixAn').textContent=T('ou {a}',{a:T('{p} / an',{p:fmt(a)})});
+    if(m&&$id('mGo'))$id('mGo').textContent=T('Débloquer')+' · '+fmt(m);
+    if(a&&$id('mGoY'))$id('mGoY').textContent=T('{p} / an',{p:fmt(a)});
+  }catch(e){}
+}
 async function startCheckout(plan){
   if(typeof plan!=='string')plan='mois';
   if(currentUser&&PREMIUM.play.verifyUrl&&await serviceGooglePlay()){ acheterPlay(plan); return; }
@@ -1308,7 +1325,7 @@ function ecranPremium(origine){
     +feat(T('Parcours illimités'),T('Cartographie sans limite de nombre de greens.'))
     +feat(T('Vue satellite illimitée'),T('300 tuiles gratuites par mois hors France, à volonté avec Premium.'))
     +feat(T('Mesure et cartographie restent gratuites'),T("L'abonnement ne porte que sur la conservation de tes tracés."))
-    +'<div class="price">'+esc(T(PREMIUM.price))+'</div><p class="pnote">'+esc(T('ou {a}',{a:T(PREMIUM.priceYear)}))+' · '+esc(T(PREMIUM.note))+'</p></div>'
+    +'<div class="price" id="prixMois">'+esc(T(PREMIUM.price))+'</div><p class="pnote"><span id="prixAn">'+esc(T('ou {a}',{a:T(PREMIUM.priceYear)}))+'</span> · '+esc(T(PREMIUM.note))+'</p></div>'
     +(BETA.actif?'<div class="subline on"><b>'+esc(T('Version bêta'))+'</b><span>'+esc(T('Tout est ouvert jusqu\'au {d}.',{d:dateLoc(BETA.fin)}))+'</span></div>':'')
     +(!BETA.actif&&enEssai()&&!abonneActif()?'<div class="subline on"><b>'+esc(T('Essai gratuit'))+'</b><span>'+esc(T("Sauvegarde offerte jusqu'au {d}",{d:dateLoc(finEssai())}))+'</span></div>':'')
     +(enGrace()?'<p class="warn">'+esc(T('Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.',{d:dateLoc(dateSuppression())}))+'</p>':'')
@@ -1321,6 +1338,7 @@ function ecranPremium(origine){
   $id('mClose').onclick=closeModal;
   if($id('mGo'))$id('mGo').onclick=()=>startCheckout('mois');
   if($id('mGoY'))$id('mGoY').onclick=()=>startCheckout('an');
+  afficherPrixPlay();
   if($id('mPortal'))$id('mPortal').onclick=openPortal;
 }
 const feat=(t,s)=>'<div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>'+esc(t)+'</b><span>'+esc(s)+'</span></div></div>';
