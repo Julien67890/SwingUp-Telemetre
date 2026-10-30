@@ -408,7 +408,7 @@ header .mark{width:46px;height:46px}
   <header>
     <div class="mark"><img src="icons/icon-192.png" alt="SwingUp Golf Rangefinder"></div>
     <div class="brand"><h1 data-t>Télémètre</h1><p id="courseName" data-t>Chargement des parcours…</p></div>
-    <span class="betapill hidden" id="betaPill">Bêta</span>
+    <span class="betapill hidden" id="betaPill" data-t>Bêta</span>
     <button class="acctbtn" id="btnAcct" aria-label="Mon compte"><span class="who" id="acctWho">—</span><span class="av" id="acctAv">?</span></button>
   </header>
 
@@ -691,6 +691,7 @@ const ANALYTICS = { id:'G-FCS3VQQJSZ' };
 const LANGS = {
 
 en:{
+'Bêta':'Beta','{w} m de large':'{w} m wide','Effacer':'Clear',
 'NORD':'NORTH','LIBRE':'FREE','CAP':'HEADING',
 "Tu aimes SwingUp ?":"Enjoying SwingUp?","Un avis sur Google Play aide beaucoup d'autres golfeurs à trouver l'app.":"A review on Google Play really helps other golfers find the app.","Non merci":"No thanks","Plus tard":"Later","Donner mon avis":"Leave a review",
 "Version bêta : tout est offert pour le moment. Ensuite, 1 mois de sauvegarde offert, puis {m} ou {a}, sans engagement.":"Beta version: everything is free for now. After that, 1 month of free saving, then {m} or {a}, no commitment.","Sauvegarde de tes greens offerte pendant 1 mois. Ensuite, {m} ou {a}, sans engagement. La mesure reste gratuite.":"Saving your greens is free for 1 month. After that, {m} or {a}, no commitment. Measuring stays free.","ou {a}":"or {a}","Essai gratuit":"Free trial","Sauvegarde offerte jusqu'au {d}":"Free saving until {d}","Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.":"Your online greens will be deleted on {d}. Subscribe to keep them.","Plus que {n} jour(s) de sauvegarde offerte":"{n} day(s) of free saving left","Greens bientôt supprimés":"Greens will be deleted soon","Supprimés le {d} sans abonnement":"Deleted on {d} without a subscription","2,90 € / mois":"€2.90 / month","2,90 €/mois":"€2.90/month","24,90 € / an":"€24.90 / year","Sans engagement, résiliable à tout moment.":"No commitment, cancel anytime.",
@@ -815,6 +816,7 @@ en:{
 },
 
 es:{
+'Bêta':'Beta','{w} m de large':'{w} m de ancho','Effacer':'Borrar',
 'NORD':'NORTE','LIBRE':'LIBRE','CAP':'RUMBO',
 "Tu aimes SwingUp ?":"¿Te gusta SwingUp?","Un avis sur Google Play aide beaucoup d'autres golfeurs à trouver l'app.":"Una reseña en Google Play ayuda mucho a otros golfistas a encontrar la app.","Non merci":"No, gracias","Plus tard":"Más tarde","Donner mon avis":"Dejar una reseña",
 "Version bêta : tout est offert pour le moment. Ensuite, 1 mois de sauvegarde offert, puis {m} ou {a}, sans engagement.":"Versión beta: todo es gratis por ahora. Después, 1 mes de guardado gratis y luego {m} o {a}, sin compromiso.","Sauvegarde de tes greens offerte pendant 1 mois. Ensuite, {m} ou {a}, sans engagement. La mesure reste gratuite.":"Guardar tus greens es gratis durante 1 mes. Después, {m} o {a}, sin compromiso. Medir sigue siendo gratis.","ou {a}":"o {a}","Essai gratuit":"Prueba gratuita","Sauvegarde offerte jusqu'au {d}":"Guardado gratis hasta el {d}","Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.":"Tus greens en línea se eliminarán el {d}. Suscríbete para conservarlos.","Plus que {n} jour(s) de sauvegarde offerte":"Quedan {n} día(s) de guardado gratis","Greens bientôt supprimés":"Greens pronto eliminados","Supprimés le {d} sans abonnement":"Eliminados el {d} sin suscripción","2,90 € / mois":"2,90 € / mes","2,90 €/mois":"2,90 €/mes","24,90 € / an":"24,90 € / año","Sans engagement, résiliable à tout moment.":"Sin compromiso, cancela cuando quieras.",
@@ -944,6 +946,7 @@ es:{
 },
 
 de:{
+'Bêta':'Beta','{w} m de large':'{w} m breit','Effacer':'Löschen',
 'NORD':'NORD','LIBRE':'FREI','CAP':'KOMPASS',
 "Tu aimes SwingUp ?":"Gefällt dir SwingUp?","Un avis sur Google Play aide beaucoup d'autres golfeurs à trouver l'app.":"Eine Bewertung bei Google Play hilft anderen Golfern sehr, die App zu finden.","Non merci":"Nein danke","Plus tard":"Später","Donner mon avis":"Bewerten",
 "Version bêta : tout est offert pour le moment. Ensuite, 1 mois de sauvegarde offert, puis {m} ou {a}, sans engagement.":"Beta-Version: Alles ist vorerst kostenlos. Danach 1 Monat kostenloses Speichern, dann {m} oder {a}, ohne Bindung.","Sauvegarde de tes greens offerte pendant 1 mois. Ensuite, {m} ou {a}, sans engagement. La mesure reste gratuite.":"Das Speichern deiner Grüns ist 1 Monat kostenlos. Danach {m} oder {a}, ohne Bindung. Messen bleibt kostenlos.","ou {a}":"oder {a}","Essai gratuit":"Kostenloser Test","Sauvegarde offerte jusqu'au {d}":"Kostenloses Speichern bis zum {d}","Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.":"Deine Online-Grüns werden am {d} gelöscht. Abonniere, um sie zu behalten.","Plus que {n} jour(s) de sauvegarde offerte":"Noch {n} Tag(e) kostenloses Speichern","Greens bientôt supprimés":"Grüns werden bald gelöscht","Supprimés le {d} sans abonnement":"Gelöscht am {d} ohne Abo","2,90 € / mois":"2,90 € / Monat","2,90 €/mois":"2,90 €/Monat","24,90 € / an":"24,90 € / Jahr","Sans engagement, résiliable à tout moment.":"Ohne Bindung, jederzeit kündbar.",
@@ -2761,7 +2764,7 @@ function closeBar(keepReplace){
   $("bar").classList.remove("on");
   $("tolWrap").classList.remove("on"); $("radWrap").classList.remove("on");
   $("measWrap").classList.remove("on");
-  $("bKeep").style.display = ""; $("bAgain").textContent = "Refaire";
+  $("bKeep").style.display = ""; $("bAgain").textContent = L_("Refaire");
   ["bDetect","bDraw","bPoint","bPos","bMeas"].forEach(i => $(i).classList.remove("armed"));
 }
 
@@ -2916,7 +2919,7 @@ function render(m){
     $("clubIcon").innerHTML = ""; return;
   }
   $("gName").textContent = S.sel.name;
-  $("gSub").textContent = Math.round(m.width) + " m large"
+  $("gSub").textContent = L_("{w} m de large",{w:Math.round(m.width)})
     + (S.sel.src === "approx" ? " · " + L_("estimé") : S.sel.mk === "point" ? " · " + L_("pointé") : S.sel.src === "draw" ? " · " + L_("tracé") : "");
   set("dFront", nb(m.front.d)); set("dBack", nb(m.back.d));
   set("dLeft", nb(m.left.d));   set("dRight", nb(m.right.d));
@@ -3004,7 +3007,7 @@ $("bMeas").addEventListener("click", () => {
   if (!on) return;
   S.mode = "measure"; $("bMeas").classList.add("armed");
   $("measWrap").classList.add("on");
-  $("bKeep").style.display = "none"; $("bAgain").textContent = "Effacer";
+  $("bKeep").style.display = "none"; $("bAgain").textContent = L_("Effacer");
   msg(S.meas ? L_("Touchez ailleurs pour déplacer le repère.") : L_("Touchez un point : la distance se met à jour en marchant."));
   drawMeas();
 });
