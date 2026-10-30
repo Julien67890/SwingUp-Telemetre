@@ -677,9 +677,9 @@ const PREMIUM = {
    sauvegarde offerte, comptés depuis la bascule ou depuis sa création si
    elle est postérieure. Il n'existe AUCUN accès à vie. */
 const BETA = {
-  actif:true,
+  actif:false,
   fin:Date.parse('2026-12-31T23:59:59+01:00'),
-  bascule:null
+  bascule:Date.parse('2026-10-30T00:00:00+01:00')
 };
 /* Essai gratuit, puis délai de grâce : sans abonnement à la fin de l'essai
    (ou de l'abonnement), les greens en ligne restent conservés ESSAI.grace
@@ -1467,7 +1467,7 @@ async function pullProfil(){
     if(snap.exists){
       const d=snap.data()||{};
       if(d.name)profileName=d.name;
-      accountCreated=typeof d.created==='number'?d.created:0;
+      accountCreated=typeof d.created==='number'?d.created:(Date.parse(currentUser.metadata&&currentUser.metadata.creationTime)||Date.now());
       if(d.bag&&Array.isArray(d.bag)&&d.bag.length&&typeof window.applyCloudBag==='function')window.applyCloudBag(d.bag);
       if(d.lang&&LANGUES.indexOf(d.lang)>=0){LANG=d.lang;Store.set('lang',LANG);}
     }else{
