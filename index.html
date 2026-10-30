@@ -2187,11 +2187,15 @@ function bindCompass(){
   /* Certains Chrome Android (et la TWA) n'envoient la boussole qu'après un
      premier geste sur la page : on rebranche au premier appui, quel qu'il soit,
      au lieu d'attendre un appui sur le bouton d'orientation. */
+  /* L'activation utilisateur n'est accordée qu'à la FIN du geste tactile
+     (pointerup / touchend / click), pas au pointerdown : on rebranche à ces
+     moments-là, à chaque geste, jusqu'à recevoir un premier cap. */
+  const GESTES = ["pointerup","touchend","click","keydown"];
   const auGeste = () => {
-    ["pointerdown","touchstart","keydown"].forEach(t => removeEventListener(t, auGeste, true));
-    if (S.heading === null) brancher();
+    if (S.heading !== null){ GESTES.forEach(t => removeEventListener(t, auGeste, true)); return; }
+    setTimeout(brancher, 0);
   };
-  ["pointerdown","touchstart","keydown"].forEach(t => addEventListener(t, auGeste, { capture:true, passive:true }));
+  GESTES.forEach(t => addEventListener(t, auGeste, { capture:true, passive:true }));
 }
 
 /* ---------- plein écran ---------- */
