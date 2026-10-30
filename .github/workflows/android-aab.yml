@@ -1,0 +1,53 @@
+# Compile l'app Android (projet Bubblewrap dans android/) et produit un AAB
+# signé avec la clé d'importation Google Play, prêt à importer dans la console.
+#
+# Lancement : onglet « Actions » du dépôt → « AAB Google Play » → « Run workflow ».
+# Secrets requis (Settings → Secrets and variables → Actions) :
+#   ANDROID_KEYSTORE_BASE64   contenu du fichier signing.keystore encodé en base64
+#   ANDROID_KEYSTORE_PASSWORD mot de passe du keystore (identique pour la clé)
+name: AAB Google Play
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Compiler le bundle
+        run: ./gradlew --no-daemon bundleRelease
+
+      - name: Signer avec la clé d'importation
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KS_B64" ] || [ -z "$KS_PASS" ]; then
+            echo "::error::Secrets ANDROID_KEYSTORE_BASE64 / ANDROID_KEYSTORE_PASSWORD manquants"; exit 1
+          fi
+          echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/signing.keystore"
+          cp app/build/outputs/bundle/release/app-release.aab "$RUNNER_TEMP/swingup.aab"
+          jarsigner -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore "$RUNNER_TEMP/signing.keystore" -storepass:env KS_PASS -keypass:env KS_PASS \
+            "$RUNNER_TEMP/swingup.aab" my-key-alias
+          jarsigner -verify "$RUNNER_TEMP/swingup.aab"
+          # Doit afficher AB:18:E3:AD:… (clé d'importation déclarée dans la Play Console).
+          keytool -list -v -keystore "$RUNNER_TEMP/signing.keystore" -storepass:env KS_PASS -alias my-key-alias | grep "SHA256:"
+          mkdir -p ../dist && mv "$RUNNER_TEMP/swingup.aab" ../dist/swingup-telemetre-${{ github.run_number }}.aab
+          rm -f "$RUNNER_TEMP/signing.keystore"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aab-google-play
+          path: dist/*.aab
+          retention-days: 14

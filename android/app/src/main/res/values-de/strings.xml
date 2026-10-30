@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nom de l'application pour les téléphones réglés en "de".
+     Doit rester identique au titre de la fiche Google Play de cette langue. -->
+<resources>
+    <string name="appName">SwingUp - Entfernungsmesser</string>
+    <string name="launcherName">SwingUp - Entfernungsmesser</string>
+</resources>

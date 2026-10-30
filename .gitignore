@@ -1,0 +1,5 @@
+android/signing.keystore
+android/app/build/
+android/.gradle/
+android/build/
+*.keystore
