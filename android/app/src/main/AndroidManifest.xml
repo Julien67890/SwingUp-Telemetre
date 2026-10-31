@@ -202,6 +202,9 @@
 
         
             
+        <activity android:name=
+            "com.google.androidbrowserhelper.locationdelegation.PermissionRequestActivity"/>
+
         <activity
             android:name="com.google.androidbrowserhelper.playbilling.provider.PaymentActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"

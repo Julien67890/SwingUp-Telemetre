@@ -20,13 +20,16 @@
     "path": "./signing.keystore",
     "alias": "my-key-alias"
   },
-  "appVersionCode": 4,
+  "appVersionCode": 5,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://julien67890.github.io/SwingUp-Telemetre/manifest.json",
   "fallbackType": "customtabs",
   "features": {
     "playBilling": {
+      "enabled": true
+    },
+    "locationDelegation": {
       "enabled": true
     }
   },
@@ -43,6 +46,6 @@
   "additionalTrustedOrigins": [],
   "retainedBundles": [],
   "displayOverride": [],
-  "appVersionName": "1.0.3",
-  "appVersion": "1.0.3"
+  "appVersionName": "1.0.4",
+  "appVersion": "1.0.4"
 }
