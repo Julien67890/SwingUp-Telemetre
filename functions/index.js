@@ -55,8 +55,11 @@ exports.verifierAchatPlay = onRequest(
       const ligne = (sub.lineItems || []).find(l => l.productId === productId) || (sub.lineItems || [])[0];
       if (!ligne || !PRODUITS[ligne.productId]) return res.status(400).json({ error: 'produit inconnu' });
 
-      const actif = ETATS_ACTIFS.includes(sub.subscriptionState);
       const fin = ligne.expiryTime ? Date.parse(ligne.expiryTime) : null;
+      /* Un abonnement résilié reste payé jusqu'à son échéance : l'accès
+         continue jusque-là (SUBSCRIPTION_STATE_CANCELED = renouvellement coupé). */
+      const actif = ETATS_ACTIFS.includes(sub.subscriptionState)
+        || (sub.subscriptionState === 'SUBSCRIPTION_STATE_CANCELED' && fin && fin > Date.now());
 
       if (actif && sub.acknowledgementState === 'ACKNOWLEDGEMENT_STATE_PENDING') {
         await api.purchases.subscriptions.acknowledge({
@@ -77,7 +80,7 @@ exports.verifierAchatPlay = onRequest(
       return res.json({ ok: actif, status: actif ? 'active' : 'free', currentPeriodEnd: fin });
     } catch (e) {
       console.error('verifierAchatPlay', e && e.message);
-      const code = e && e.code === 'auth/argument-error' ? 401 : 500;
+      const code = e && typeof e.code === 'string' && e.code.indexOf('auth/') === 0 ? 401 : 500;
       return res.status(code).json({ error: 'vérification impossible' });
     }
   }

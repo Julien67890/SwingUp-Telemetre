@@ -350,7 +350,7 @@ header .mark{width:46px;height:46px}
   background:rgba(19,54,31,.94);color:var(--cream);font-size:.85rem;font-weight:500;padding:11px 20px;border-radius:999px;
   z-index:1100;opacity:0;pointer-events:none;transition:all .3s;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-#consent{position:fixed;left:0;right:0;bottom:0;z-index:1050;background:var(--cream);padding:16px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -18px 40px -18px rgba(8,30,18,.6)}
+#consent{position:fixed;left:0;right:0;bottom:0;z-index:990;background:var(--cream);padding:16px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -18px 40px -18px rgba(8,30,18,.6)}
 #consent .in{max-width:560px;margin:0 auto}
 #consent p{font-size:.82rem;line-height:1.5;color:#5a5848}
 #consent .row{display:flex;gap:9px;margin-top:12px}
@@ -661,7 +661,7 @@ const ARCGIS = { key:'AAPTa8DRuQJQGOUvh41sj32S8gg..ZKqyZIL73HwwgH3jQkbOjl1i1P0gt
    ▼▼▼  ABONNEMENT PREMIUM — compte Stripe PROPRE au télémètre  ▼▼▼
    ======================================================================= */
 const PREMIUM = {
-  name:'Télémètre Premium',
+  name:'SwingUp Premium',
   price:'2,90 € / mois',
   priceShort:'2,90 €/mois',
   priceYear:'24,90 € / an',
@@ -735,7 +735,7 @@ en:{
 'Abonnement actif':'Subscription active','J\'ai déjà un abonnement':'I already have a subscription',
 'Gérer mon abonnement':'Manage my subscription','Premium activé':'Premium activated',
 'Greens synchronisés':'Greens synced','Hors ligne : synchro différée':'Offline: sync deferred',
-'Le paiement arrive bientôt.':'Payment is coming soon.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Update the SwingUp app from Google Play to subscribe.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'Subscriptions are available in the SwingUp Android app on Google Play.','Abonnement':'Subscription','Bientôt disponible':'Coming soon',
+'Le paiement arrive bientôt.':'Payment is coming soon.',"Achat reçu : activation en cours, rouvre l'app dans quelques minutes.":'Purchase received: activating, reopen the app in a few minutes.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Update the SwingUp app from Google Play to subscribe.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'Subscriptions are available in the SwingUp Android app on Google Play.','Abonnement':'Subscription','Bientôt disponible':'Coming soon',
 'Paiement indisponible':'Payment unavailable','Tes greens ne sont pas conservés.':'Your greens are not kept.',
 'Tes greens sont sauvegardés sur ton compte.':'Your greens are backed up to your account.',
 'Sauvegarde et synchronisation':'Backup and sync',
@@ -863,7 +863,7 @@ es:{
 'Abonnement actif':'Suscripción activa','J\'ai déjà un abonnement':'Ya tengo una suscripción',
 'Gérer mon abonnement':'Gestionar mi suscripción','Premium activé':'Premium activado',
 'Greens synchronisés':'Greens sincronizados','Hors ligne : synchro différée':'Sin conexión: sincronización pendiente',
-'Le paiement arrive bientôt.':'El pago estará disponible próximamente.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Actualiza la app SwingUp desde Google Play para suscribirte.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'La suscripción se contrata en la app Android SwingUp, disponible en Google Play.','Abonnement':'Suscripción','Bientôt disponible':'Próximamente',
+'Le paiement arrive bientôt.':'El pago estará disponible próximamente.',"Achat reçu : activation en cours, rouvre l'app dans quelques minutes.":'Compra recibida: activando, vuelve a abrir la app en unos minutos.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Actualiza la app SwingUp desde Google Play para suscribirte.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'La suscripción se contrata en la app Android SwingUp, disponible en Google Play.','Abonnement':'Suscripción','Bientôt disponible':'Próximamente',
 'Paiement indisponible':'Pago no disponible','Tes greens ne sont pas conservés.':'Tus greens no se conservan.',
 'Tes greens sont sauvegardés sur ton compte.':'Tus greens se guardan en tu cuenta.',
 'Sauvegarde et synchronisation':'Copia de seguridad y sincronización',
@@ -994,7 +994,7 @@ de:{
 'Abonnement actif':'Abo aktiv','J\'ai déjà un abonnement':'Ich habe bereits ein Abo',
 'Gérer mon abonnement':'Mein Abo verwalten','Premium activé':'Premium aktiviert',
 'Greens synchronisés':'Greens synchronisiert','Hors ligne : synchro différée':'Offline: Synchronisierung verschoben',
-'Le paiement arrive bientôt.':'Die Zahlung ist bald verfügbar.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Aktualisiere die SwingUp-App über Google Play, um ein Abo abzuschließen.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'Das Abo schließt du in der SwingUp-Android-App bei Google Play ab.','Abonnement':'Abo','Bientôt disponible':'Bald verfügbar',
+'Le paiement arrive bientôt.':'Die Zahlung ist bald verfügbar.',"Achat reçu : activation en cours, rouvre l'app dans quelques minutes.":'Kauf erhalten: wird aktiviert, öffne die App in ein paar Minuten erneut.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Aktualisiere die SwingUp-App über Google Play, um ein Abo abzuschließen.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'Das Abo schließt du in der SwingUp-Android-App bei Google Play ab.','Abonnement':'Abo','Bientôt disponible':'Bald verfügbar',
 'Paiement indisponible':'Zahlung nicht verfügbar',
 'Tes greens ne sont pas conservés.':'Deine Greens werden nicht gespeichert.',
 'Tes greens sont sauvegardés sur ton compte.':'Deine Greens werden in deinem Konto gespeichert.',
@@ -1155,7 +1155,7 @@ if(!configMissing){
   }catch(e){ console.error('Firebase non initialisé :',e); }
 }
 
-let currentUser=null,profileName='',accountCreated=0,premium=null,invite=false;
+let currentUser=null,profileName='',accountCreated=0,premium=null,invite=false,premiumFrais=false;
 
 /* ---------- abonnement ----------
    L'état vit dans users/{uid}/billing/status, écrit UNIQUEMENT par la
@@ -1169,8 +1169,8 @@ async function pullPremium(){
     if(s.exists){const d=s.data()||{};
       premium={status:d.status||'free',until:d.currentPeriodEnd||null,plan:d.plan||null,source:d.source||null};
     }else premium={status:'free'};
-    Store.set(premKey(),JSON.stringify(premium));
-  }catch(e){ readPremiumCache(); }
+    Store.set(premKey(),JSON.stringify(premium)); premiumFrais=true;
+  }catch(e){ premiumFrais=false; readPremiumCache(); }
 }
 const JOUR=864e5;
 const dateLoc=ts=>new Date(ts).toLocaleDateString(({fr:'fr-FR',en:'en-GB',es:'es-ES',de:'de-DE'})[LANG]||undefined,{day:'numeric',month:'long',year:'numeric'});
@@ -1203,7 +1203,8 @@ function dateSuppression(){
 const enGrace=()=>{const d=dateSuppression();return !!d&&Date.now()<d;};
 async function purgerGreensExpires(){
   const d=dateSuppression();
-  if(!d||Date.now()<d||!fbReady)return;
+  /* Jamais sur un état d'abonnement incertain (lecture serveur échouée). */
+  if(!d||Date.now()<d||!fbReady||!premiumFrais)return;
   try{
     const snap=await fs.collection('users').doc(currentUser.uid).collection('courses').get();
     await Promise.all(snap.docs.map(x=>x.ref.delete()));
@@ -1243,7 +1244,9 @@ async function envoyerAchatPlay(token,produit){
     const r=await fetch(PREMIUM.play.verifyUrl,{method:'POST',
       headers:{'Content-Type':'application/json',Authorization:'Bearer '+idt},
       body:JSON.stringify({packageName:PKG_ANDROID,productId:produit,purchaseToken:token})});
-    return r.ok;
+    if(!r.ok)return false;
+    const j=await r.json().catch(()=>({}));
+    return j.ok===true;
   }catch(e){ return false; }
 }
 async function acheterPlay(plan){
@@ -1253,10 +1256,13 @@ async function acheterPlay(plan){
       {total:{label:'Total',amount:{currency:'EUR',value:'0'}}});
     const resp=await req.show();
     const ok=await envoyerAchatPlay(resp.details.purchaseToken,sku);
-    await resp.complete(ok?'success':'fail');
+    /* Google a encaissé l'achat : on le confirme côté Play quoi qu'il arrive.
+       Si notre serveur n'a pas encore pu le valider, il le sera à la
+       prochaine ouverture (restaurerAchatsPlay), bien avant les 3 jours. */
+    await resp.complete('success');
     if(ok){ await pullPremium(); majCompteUI(); closeModal(); toast(T('Premium activé'));
       if(typeof majBandeauFree==='function')majBandeauFree(); if(typeof pullGreens==='function')pullGreens(); }
-    else toast(T('Paiement indisponible'));
+    else { closeModal(); toast(T('Achat reçu : activation en cours, rouvre l\'app dans quelques minutes.')); }
   }catch(e){ if(!e||e.name!=='AbortError')toast(T('Paiement indisponible')); }
 }
 /* À chaque connexion : renvoie au serveur les abonnements Play actifs du
@@ -1336,7 +1342,6 @@ function ecranPremium(origine){
     +'<p class="txt">'+esc(origine||T("L'abonnement ne porte que sur la sauvegarde en ligne."))+'</p>'
     +'<div class="plan">'
     +feat(T('Sauvegarde et synchronisation'),T('Sans abonnement, les greens que tu traces disparaissent à la fermeture. Avec Premium, ils sont conservés et te suivent sur tous tes appareils.'))
-    +feat(T('Parcours illimités'),T('Cartographie sans limite de nombre de greens.'))
     +feat(T('Vue satellite illimitée'),T('300 tuiles gratuites par mois hors France, à volonté avec Premium.'))
     +feat(T('Mesure et cartographie restent gratuites'),T("L'abonnement ne porte que sur la conservation de tes tracés."))
     +'<div class="price" id="prixMois">'+esc(T(PREMIUM.price))+'</div><p class="pnote"><span id="prixAn">'+esc(T('ou {a}',{a:T(PREMIUM.priceYear)}))+'</span> · '+esc(T(PREMIUM.note))+'</p></div>'
@@ -1505,7 +1510,7 @@ function ecranCompte(){
       +'<button class="btn btn-primary" id="mUp" style="margin-top:10px">'+esc(T('Découvrir Premium'))+'</button>';
   }else if(ok){
     abo='<div class="subline on"><b>'+esc(PREMIUM.name)+'</b><span>'+esc(premium&&premium.status==='trialing'?T("Période d'essai"):T('Abonnement actif'))+esc(jusqu)+'</span></div>'
-      +(PREMIUM.portalUrl?'<button class="btn btn-ghost" id="mPortal" style="margin-top:10px">'+esc(T('Gérer mon abonnement'))+'</button>':'');
+      +((PREMIUM.portalUrl||(premium&&premium.source==='play'))?'<button class="btn btn-ghost" id="mPortal" style="margin-top:10px">'+esc(T('Gérer mon abonnement'))+'</button>':'');
   }else{
     abo='<div class="subline"><b>'+esc(T('Offre gratuite'))+'</b><span>'+esc(T('Greens non sauvegardés'))+'</span></div>'
       +(enGrace()?'<p class="warn">'+esc(T('Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.',{d:dateLoc(dateSuppression())}))+'</p>':'')
@@ -2340,6 +2345,8 @@ async function loadCourse(){
     $("courseName").textContent = L_("Chargement des parcours…");
   }
   $("bLoad").classList.add("busy");
+  /* Greens du compte pour CE parcours (autre appareil, réinstallation). */
+  pullGreens();
   /* 2. Mise à jour OpenStreetMap en arrière-plan. */
   const q = `[out:json][timeout:25];
     (way["golf"="green"](around:2500,${S.pos.lat},${S.pos.lon});
@@ -2896,7 +2903,9 @@ function pushGreens(){
   if (!peutSauvegarderCloud()){ majBandeauFree(); return; }
   clearTimeout(pushT);
   pushT = setTimeout(async () => {
-    if (pushEnCours) return;
+    /* Envoi déjà en cours : on retente juste après, sinon la dernière
+       modification serait perdue jusqu'à la suivante. */
+    if (pushEnCours){ pushGreens(); return; }
     pushEnCours = true;
     try{
       const ici = parcoursId();
@@ -2928,6 +2937,9 @@ function pushGreens(){
 }
 async function pullGreens(){
   if (!peutSauvegarderCloud()) return;
+  /* Sans position, on ne sait pas quel parcours lire : loadCourse()
+     rappellera pullGreens dès le premier point GPS. */
+  if (parcoursId() === "libre") return;
   try{
     /* On ne lit QUE le document du parcours courant, jamais toute la
        collection : sinon chaque ouverture d'app réinjecte en local les
