@@ -1428,10 +1428,23 @@ async function lancerAuth(){
    Google sont déjà vérifiés par Google. */
 const aVerifier=u=>!!u&&!u.emailVerified&&(u.providerData||[]).some(p=>p&&p.providerId==='password');
 async function envoyerVerification(u){
-  try{ auth.languageCode=LANG; await u.sendEmailVerification({url:location.origin+location.pathname}); return true; }
-  catch(e){ console.warn('Envoi de vérification échoué :',e); return false; }
+  try{
+    auth.languageCode=LANG;
+    try{ await u.sendEmailVerification({url:location.origin+location.pathname}); }
+    catch(e1){
+      /* Lien de retour refusé (domaine non autorisé) : on envoie sans lien de retour. */
+      if(e1&&/continue-uri|unauthorized/i.test(e1.code||''))await u.sendEmailVerification(); else throw e1;
+    }
+    Store.set('verifEnvoi_'+u.uid,String(Date.now()));
+    return true;
+  }catch(e){ console.warn('Envoi de vérification échoué :',e); return false; }
 }
 function ecranVerification(u){
+  /* Comptes créés avant la vérification obligatoire : aucun e-mail n'est
+     jamais parti. On l'envoie à l'affichage (au plus une fois toutes les
+     10 minutes, pour ne pas heurter la limite d'envoi de Firebase). */
+  const dernier=Number(Store.get('verifEnvoi_'+u.uid))||0;
+  if(Date.now()-dernier>10*60*1000)envoyerVerification(u);
   hideBoot();
   $id('app').classList.add('hidden');
   $id('auth').classList.remove('hidden');
