@@ -2,7 +2,6 @@ package app.emqgroup.swinguprangefinder;
 
 
 import com.google.androidbrowserhelper.playbilling.digitalgoods.DigitalGoodsRequestHandler;
-import com.google.androidbrowserhelper.locationdelegation.LocationDelegationExtraCommandHandler;
 
 
 public class DelegationService extends
@@ -13,7 +12,6 @@ public class DelegationService extends
 
         
             registerExtraCommandHandler(new DigitalGoodsRequestHandler(getApplicationContext()));
-            registerExtraCommandHandler(new LocationDelegationExtraCommandHandler());
         
     }
 }
