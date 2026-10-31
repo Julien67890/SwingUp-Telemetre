@@ -823,7 +823,7 @@ en:{
 'Zoomez davantage : la détection demande le niveau 19.':'Zoom in further: detection requires level 19.',
 'Page non servie en HTTPS : le navigateur bloque GPS et boussole. Touchez POS. pour vous placer à la main.':'Page not served over HTTPS: the browser blocks GPS and compass. Tap POS. to place yourself manually.',
 'Position inaccessible. Utilisez POS.':'Position unavailable. Use POS.',
-'Position indisponible.':'Position unavailable.','Pos. manuelle':'Manual position',
+'Position indisponible.':'Position unavailable.','Recherche du signal GPS… Sors à découvert, ou touche POS. pour te placer à la main.':'Searching for GPS signal… Move into the open, or tap POS. to place yourself manually.','Localisation refusée. Autorise-la dans les réglages du téléphone, ou touche POS. pour te placer à la main.':'Location denied. Allow it in your phone settings, or tap POS. to place yourself manually.','Signal GPS introuvable. Vérifie que la localisation est activée, ou touche POS.':'No GPS signal. Check that location is turned on, or tap POS.','Pos. manuelle':'Manual position',
 'Fond satellite mondial non configuré : clé ArcGIS manquante.':'Worldwide satellite basemap not configured: missing ArcGIS key.',
 'Imagerie satellite temporairement indisponible.':'Satellite imagery temporarily unavailable.',
 '(dénivelé compris)':'(elevation included)',
@@ -953,7 +953,7 @@ es:{
 'Zoomez davantage : la détection demande le niveau 19.':'Acerca más el zoom: la detección requiere el nivel 19.',
 'Page non servie en HTTPS : le navigateur bloque GPS et boussole. Touchez POS. pour vous placer à la main.':'Página no servida por HTTPS: el navegador bloquea el GPS y la brújula. Toca POS. para ubicarte manualmente.',
 'Position inaccessible. Utilisez POS.':'Posición no disponible. Usa POS.',
-'Position indisponible.':'Posición no disponible.','Pos. manuelle':'Posición manual',
+'Position indisponible.':'Posición no disponible.','Recherche du signal GPS… Sors à découvert, ou touche POS. pour te placer à la main.':'Buscando señal GPS… Sal al exterior o toca POS. para situarte a mano.','Localisation refusée. Autorise-la dans les réglages du téléphone, ou touche POS. pour te placer à la main.':'Ubicación denegada. Actívala en los ajustes del teléfono o toca POS. para situarte a mano.','Signal GPS introuvable. Vérifie que la localisation est activée, ou touche POS.':'Sin señal GPS. Comprueba que la ubicación está activada o toca POS.','Pos. manuelle':'Posición manual',
 'Fond satellite mondial non configuré : clé ArcGIS manquante.':'Mapa satelital mundial no configurado: falta la clave de ArcGIS.',
 'Imagerie satellite temporairement indisponible.':'Imágenes satelitales no disponibles temporalmente.',
 '(dénivelé compris)':'(desnivel incluido)',
@@ -1085,7 +1085,7 @@ de:{
 'Zoomez davantage : la détection demande le niveau 19.':'Weiter hineinzoomen: Die Erkennung erfordert Stufe 19.',
 'Page non servie en HTTPS : le navigateur bloque GPS et boussole. Touchez POS. pour vous placer à la main.':'Seite wird nicht über HTTPS bereitgestellt: Der Browser blockiert GPS und Kompass. Tippe auf POS., um dich manuell zu positionieren.',
 'Position inaccessible. Utilisez POS.':'Position nicht verfügbar. Verwende POS.',
-'Position indisponible.':'Position nicht verfügbar.','Pos. manuelle':'Manuelle Position',
+'Position indisponible.':'Position nicht verfügbar.','Recherche du signal GPS… Sors à découvert, ou touche POS. pour te placer à la main.':'GPS-Signal wird gesucht… Geh ins Freie oder tippe auf POS., um dich manuell zu platzieren.','Localisation refusée. Autorise-la dans les réglages du téléphone, ou touche POS. pour te placer à la main.':'Standort verweigert. Erlaube ihn in den Telefoneinstellungen oder tippe auf POS., um dich manuell zu platzieren.','Signal GPS introuvable. Vérifie que la localisation est activée, ou touche POS.':'Kein GPS-Signal. Prüfe, ob der Standort aktiviert ist, oder tippe auf POS.','Pos. manuelle':'Manuelle Position',
 'Fond satellite mondial non configuré : clé ArcGIS manquante.':'Weltweite Satellitenkarte nicht konfiguriert: ArcGIS-Schlüssel fehlt.',
 'Imagerie satellite temporairement indisponible.':'Satellitenbilder vorübergehend nicht verfügbar.',
 '(dénivelé compris)':'(Höhenunterschied inbegriffen)',
@@ -2289,10 +2289,29 @@ function startGeo(){
     openCarto(); $("bPos").classList.remove("hide"); return;
   }
   if (!navigator.geolocation){ warn(L_("Position inaccessible. Utilisez POS.")); openCarto(); $("bPos").classList.remove("hide"); return; }
+  /* Le premier point GPS peut prendre 30 s et plus (intérieur, téléphone
+     froid). Avant, un délai de 15 s affichait « Position indisponible.
+     Timeout expired » alors que le GPS allait répondre. Désormais :
+     1. un point approximatif tout de suite (réseau / dernier point connu) ;
+     2. le suivi GPS précis, SANS délai d'expiration ;
+     3. un simple conseil si rien n'arrive au bout de 25 s. */
+  let recu = false;
+  const aide = () => { openCarto(); $("bPos").classList.remove("hide"); };
+  navigator.geolocation.getCurrentPosition(
+    /* Seulement s'il est assez précis pour désigner le bon parcours. */
+    p => { if (!recu && p.coords.accuracy <= 300){ setPos(p.coords.latitude, p.coords.longitude, p.coords.accuracy, false); } },
+    () => {}, { enableHighAccuracy:false, maximumAge:10*60*1000, timeout:10000 });
+  const veille = setTimeout(() => {
+    if (!recu && !S.pos){ warn(L_("Recherche du signal GPS… Sors à découvert, ou touche POS. pour te placer à la main.")); aide(); }
+  }, 25000);
   navigator.geolocation.watchPosition(
-    p => { hideWarn(); setPos(p.coords.latitude, p.coords.longitude, p.coords.accuracy, false); },
-    e => { warn(L_("Position indisponible.") + " " + e.message); openCarto(); $("bPos").classList.remove("hide"); },
-    { enableHighAccuracy:true, maximumAge:1500, timeout:15000 });
+    p => { recu = true; clearTimeout(veille); hideWarn(); setPos(p.coords.latitude, p.coords.longitude, p.coords.accuracy, false); },
+    e => {
+      if (e.code === 1){ clearTimeout(veille); warn(L_("Localisation refusée. Autorise-la dans les réglages du téléphone, ou touche POS. pour te placer à la main.")); aide(); }
+      else if (!S.pos && e.code === 2){ warn(L_("Signal GPS introuvable. Vérifie que la localisation est activée, ou touche POS.")); aide(); }
+      /* code 3 (délai) : on laisse le suivi continuer, la veille s'occupe du message. */
+    },
+    { enableHighAccuracy:true, maximumAge:1500 });
 }
 let compassPending = false, compassBound = false;
 function tryCompass(){
