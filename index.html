@@ -1679,6 +1679,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       invite=false; Store.del('invite');
       Store.del('gRedirect');
       Store.set('sessionUid',u.uid);
+      if(typeof changementCompte==='function')changementCompte();
       profileName=(u.displayName||profileName||(u.email||'').split('@')[0]||'').slice(0,14);
       /* Entrée immédiate avec l'état mémorisé sur l'appareil (date de création,
          abonnement) : les greens enregistrés localement s'affichent tout de
@@ -1776,8 +1777,17 @@ window.applyCloudBag = function(bag){
   if (typeof renderBag === "function") renderBag();
   if (typeof refresh === "function") refresh();
 };
-function loadOver(){ try{ const o = JSON.parse(Store.get(OVER)); if (o && o.names) return o; }catch(e){} return { names:{}, hidden:[] }; }
-const saveOver = () => { try{ Store.set(OVER, JSON.stringify(S.over)); }catch(e){} };
+/* Les greens tracés (et les renommages) appartiennent à UN compte : leur
+   copie locale est rangée sous l'identifiant du compte connecté. Avant,
+   la clé était commune au téléphone, si bien qu'un autre compte connecté
+   sur le même appareil voyait — et resynchronisait chez lui — les greens
+   du précédent. L'ancienne clé commune est abandonnée (le cloud fait foi). */
+const uidLocal = () => (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : "anon";
+const cleGreens = () => KEY + "." + uidLocal();
+const cleOver = () => OVER + "." + uidLocal();
+try{ Store.del(KEY); Store.del(OVER); }catch(e){}
+function loadOver(){ try{ const o = JSON.parse(Store.get(cleOver())); if (o && o.names) return o; }catch(e){} return { names:{}, hidden:[] }; }
+const saveOver = () => { try{ Store.set(cleOver(), JSON.stringify(S.over)); }catch(e){} };
 
 /* Les boîtes suivent la zone visible : sans ça, le clavier virtuel
    recouvre le champ de saisie sur la plupart des Android. */
@@ -2824,8 +2834,8 @@ function pushDraft(ll){
    une fonction Premium. Sans abonnement, ils vivent le temps de la session
    et disparaissent à la fermeture : rien n'est écrit sur le téléphone. */
 function readCustom(){
-  if (!peutSauvegarderCloud()){ Store.del(KEY); return []; }
-  try{ return (JSON.parse(Store.get(KEY))||[]).map(g=>({...g, src:"draw", mk:g.mk||"draw"})); }catch(e){ return []; }
+  if (!peutSauvegarderCloud()){ Store.del(cleGreens()); return []; }
+  try{ return (JSON.parse(Store.get(cleGreens()))||[]).map(g=>({...g, src:"draw", mk:g.mk||"draw"})); }catch(e){ return []; }
 }
 function serialiserGreens(){
   return S.greens.filter(g=>g.src==="draw")
@@ -2839,7 +2849,7 @@ function serialiserGreens(){
 function ptsOut(coords){ return (coords||[]).map(p => ({ lat:p[0], lng:p[1] })); }
 function ptsIn(coords){ return (coords||[]).map(p => Array.isArray(p) ? p : [p.lat, p.lng]); }
 function writeCustom(){
-  if (!peutSauvegarderCloud()){ Store.del(KEY); majBandeauFree(); return; }
+  if (!peutSauvegarderCloud()){ Store.del(cleGreens()); majBandeauFree(); return; }
   /* S.greens ne contient plus que le parcours courant (voir loadCourse) :
      on ne peut donc plus écraser tout le stockage local avec son seul
      contenu, sous peine d'effacer les greens des autres parcours à
@@ -2848,7 +2858,7 @@ function writeCustom(){
   try{
     const ici = parcoursId();
     const autres = readCustom().filter(g => greenCourseId(g) !== ici);
-    Store.set(KEY, JSON.stringify(autres.concat(serialiserGreens())));
+    Store.set(cleGreens(), JSON.stringify(autres.concat(serialiserGreens())));
   }catch(e){}
   pushGreens();
 }
@@ -2977,7 +2987,7 @@ async function pullGreens(){
         try{
           const ici = parcoursId();
           const autres = readCustom().filter(g => greenCourseId(g) !== ici);
-          Store.set(KEY, JSON.stringify(autres.concat(serialiserGreens())));
+          Store.set(cleGreens(), JSON.stringify(autres.concat(serialiserGreens())));
         }catch(e){}
         drawGreens(); refresh();
         toast(L_("Greens synchronisés"));
@@ -3383,6 +3393,19 @@ function boot(){
 }
 window.boot = boot;
 window.rechargerGreens = () => { if (map) { drawGreens(); refresh(); } };
+/* Changement de compte sans rechargement : on repart des greens du NOUVEAU
+   compte uniquement (copie locale), le cloud complète ensuite. */
+let uidAffiche = null;
+window.changementCompte = () => {
+  const u = uidLocal();
+  if (u === uidAffiche) return;
+  uidAffiche = u;
+  S.over = loadOver();
+  S.greens = S.greens.filter(g => g.src !== "draw")
+    .concat(readCustom().filter(g => greenCourseId(g) === parcoursId()));
+  S.sel = null;
+  if (map){ drawGreens(); refresh(); }
+};
 window.rafraichirCarte = () => { if (map) { drawGreens(); refresh(); } };
 })();
 
