@@ -85,3 +85,27 @@ exports.verifierAchatPlay = onRequest(
     }
   }
 );
+
+/* supprimerCompte : appelée par l'app quand l'utilisateur supprime son compte.
+   Efface TOUT ce qui le concerne, y compris ce que le client ne peut pas
+   effacer lui-même (état d'abonnement, liens d'achat Play), puis le compte
+   d'authentification. L'abonnement Google Play, lui, se résilie dans Play. */
+exports.supprimerCompte = onRequest(
+  { region: 'europe-west1', cors: ['https://julien67890.github.io'] },
+  async (req, res) => {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'POST uniquement' });
+    try {
+      const idToken = (req.get('Authorization') || '').replace(/^Bearer\s+/i, '');
+      const { uid } = await admin.auth().verifyIdToken(idToken, true);
+      await db.recursiveDelete(db.collection('users').doc(uid));
+      const liens = await db.collection('playTokens').where('uid', '==', uid).get();
+      await Promise.all(liens.docs.map(d => d.ref.delete()));
+      await admin.auth().deleteUser(uid);
+      return res.json({ ok: true });
+    } catch (e) {
+      console.error('supprimerCompte', e && e.message);
+      const code = e && typeof e.code === 'string' && e.code.indexOf('auth/') === 0 ? 401 : 500;
+      return res.status(code).json({ error: 'suppression impossible' });
+    }
+  }
+);

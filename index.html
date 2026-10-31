@@ -676,7 +676,9 @@ const PREMIUM = {
      verifyUrl = Cloud Function verifierAchatPlay (functions/index.js). Tant
      qu'elle vaut null, aucun achat Play n'est proposé : un achat non validé
      par le serveur serait remboursé automatiquement par Google sous 3 jours. */
-  play:{ produits:{ mois:'premium_mois', an:'premium_an' }, verifyUrl:'https://europe-west1-swingup-telemetre.cloudfunctions.net/verifierAchatPlay' }
+  play:{ produits:{ mois:'premium_mois', an:'premium_an' }, verifyUrl:'https://europe-west1-swingup-telemetre.cloudfunctions.net/verifierAchatPlay' },
+  /* Suppression complète du compte côté serveur (données + abonnement enregistré). */
+  deleteUrl:'https://europe-west1-swingup-telemetre.cloudfunctions.net/supprimerCompte'
 };
 
 /* Phase bêta : actif:true → l'app est entièrement ouverte, rien n'est vendu.
@@ -735,7 +737,7 @@ en:{
 'Abonnement actif':'Subscription active','J\'ai déjà un abonnement':'I already have a subscription',
 'Gérer mon abonnement':'Manage my subscription','Premium activé':'Premium activated',
 'Greens synchronisés':'Greens synced','Hors ligne : synchro différée':'Offline: sync deferred',
-'Le paiement arrive bientôt.':'Payment is coming soon.',"Achat reçu : activation en cours, rouvre l'app dans quelques minutes.":'Purchase received: activating, reopen the app in a few minutes.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Update the SwingUp app from Google Play to subscribe.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'Subscriptions are available in the SwingUp Android app on Google Play.','Abonnement':'Subscription','Bientôt disponible':'Coming soon',
+'Le paiement arrive bientôt.':'Payment is coming soon.',"Ton abonnement Google Play n'est pas résilié automatiquement. Résilie-le d'abord dans Google Play, sinon il continuera d'être facturé.":'Your Google Play subscription is not cancelled automatically. Cancel it in Google Play first, or you will keep being charged.','Résilier dans Google Play':'Cancel in Google Play',"Achat reçu : activation en cours, rouvre l'app dans quelques minutes.":'Purchase received: activating, reopen the app in a few minutes.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Update the SwingUp app from Google Play to subscribe.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'Subscriptions are available in the SwingUp Android app on Google Play.','Abonnement':'Subscription','Bientôt disponible':'Coming soon',
 'Paiement indisponible':'Payment unavailable','Tes greens ne sont pas conservés.':'Your greens are not kept.',
 'Tes greens sont sauvegardés sur ton compte.':'Your greens are backed up to your account.',
 'Sauvegarde et synchronisation':'Backup and sync',
@@ -863,7 +865,7 @@ es:{
 'Abonnement actif':'Suscripción activa','J\'ai déjà un abonnement':'Ya tengo una suscripción',
 'Gérer mon abonnement':'Gestionar mi suscripción','Premium activé':'Premium activado',
 'Greens synchronisés':'Greens sincronizados','Hors ligne : synchro différée':'Sin conexión: sincronización pendiente',
-'Le paiement arrive bientôt.':'El pago estará disponible próximamente.',"Achat reçu : activation en cours, rouvre l'app dans quelques minutes.":'Compra recibida: activando, vuelve a abrir la app en unos minutos.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Actualiza la app SwingUp desde Google Play para suscribirte.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'La suscripción se contrata en la app Android SwingUp, disponible en Google Play.','Abonnement':'Suscripción','Bientôt disponible':'Próximamente',
+'Le paiement arrive bientôt.':'El pago estará disponible próximamente.',"Ton abonnement Google Play n'est pas résilié automatiquement. Résilie-le d'abord dans Google Play, sinon il continuera d'être facturé.":'Tu suscripción de Google Play no se cancela automáticamente. Cancélala primero en Google Play o se te seguirá cobrando.','Résilier dans Google Play':'Cancelar en Google Play',"Achat reçu : activation en cours, rouvre l'app dans quelques minutes.":'Compra recibida: activando, vuelve a abrir la app en unos minutos.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Actualiza la app SwingUp desde Google Play para suscribirte.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'La suscripción se contrata en la app Android SwingUp, disponible en Google Play.','Abonnement':'Suscripción','Bientôt disponible':'Próximamente',
 'Paiement indisponible':'Pago no disponible','Tes greens ne sont pas conservés.':'Tus greens no se conservan.',
 'Tes greens sont sauvegardés sur ton compte.':'Tus greens se guardan en tu cuenta.',
 'Sauvegarde et synchronisation':'Copia de seguridad y sincronización',
@@ -994,7 +996,7 @@ de:{
 'Abonnement actif':'Abo aktiv','J\'ai déjà un abonnement':'Ich habe bereits ein Abo',
 'Gérer mon abonnement':'Mein Abo verwalten','Premium activé':'Premium aktiviert',
 'Greens synchronisés':'Greens synchronisiert','Hors ligne : synchro différée':'Offline: Synchronisierung verschoben',
-'Le paiement arrive bientôt.':'Die Zahlung ist bald verfügbar.',"Achat reçu : activation en cours, rouvre l'app dans quelques minutes.":'Kauf erhalten: wird aktiviert, öffne die App in ein paar Minuten erneut.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Aktualisiere die SwingUp-App über Google Play, um ein Abo abzuschließen.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'Das Abo schließt du in der SwingUp-Android-App bei Google Play ab.','Abonnement':'Abo','Bientôt disponible':'Bald verfügbar',
+'Le paiement arrive bientôt.':'Die Zahlung ist bald verfügbar.',"Ton abonnement Google Play n'est pas résilié automatiquement. Résilie-le d'abord dans Google Play, sinon il continuera d'être facturé.":'Dein Google-Play-Abo wird nicht automatisch gekündigt. Kündige es zuerst in Google Play, sonst wird es weiter abgerechnet.','Résilier dans Google Play':'In Google Play kündigen',"Achat reçu : activation en cours, rouvre l'app dans quelques minutes.":'Kauf erhalten: wird aktiviert, öffne die App in ein paar Minuten erneut.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Aktualisiere die SwingUp-App über Google Play, um ein Abo abzuschließen.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'Das Abo schließt du in der SwingUp-Android-App bei Google Play ab.','Abonnement':'Abo','Bientôt disponible':'Bald verfügbar',
 'Paiement indisponible':'Zahlung nicht verfügbar',
 'Tes greens ne sont pas conservés.':'Deine Greens werden nicht gespeichert.',
 'Tes greens sont sauvegardés sur ton compte.':'Deine Greens werden in deinem Konto gespeichert.',
@@ -1555,18 +1557,32 @@ function ecranCompte(){
 function ecranSuppression(){
   openModal('<h3>'+esc(T('Supprimer mon compte'))+'</h3>'
     +'<p class="txt">'+esc(T('Ton compte, tes greens et ton sac seront effacés définitivement. Cette action est irréversible.'))+'</p>'
-    +'<p class="warn">'+esc(T('Si tu as un abonnement en cours, résilie-le avant de supprimer ton compte.'))+'</p>'
+    +(abonneActif()&&premium&&premium.source==='play'
+      ?'<p class="warn">'+esc(T("Ton abonnement Google Play n'est pas résilié automatiquement. Résilie-le d'abord dans Google Play, sinon il continuera d'être facturé."))+'</p>'
+        +'<div class="row"><button class="btn btn-ghost" id="mPlay">'+esc(T('Résilier dans Google Play'))+'</button></div>'
+      :'<p class="warn">'+esc(T('Si tu as un abonnement en cours, résilie-le avant de supprimer ton compte.'))+'</p>')
     +'<div class="row"><button class="btn btn-ghost" id="mNo">'+esc(T('Annuler'))+'</button>'
     +'<button class="btn btn-primary" id="mYes" style="background:var(--bad);box-shadow:none">'+esc(T('Supprimer'))+'</button></div>');
   $id('mNo').onclick=closeModal;
+  if($id('mPlay'))$id('mPlay').onclick=openPortal;
   $id('mYes').onclick=async()=>{
+    const nettoyerLocal=uid=>{ Store.del(premKey()); Store.del('created_'+uid); Store.del('sessionUid'); };
+    /* 1. Voie normale : le serveur efface tout, y compris l'état d'abonnement
+       et les liens d'achat que le client n'a pas le droit de toucher. */
+    try{
+      const uid=currentUser.uid;
+      const idt=await currentUser.getIdToken(true);
+      const r=await fetch(PREMIUM.deleteUrl,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+idt},body:'{}'});
+      if(r.ok){ nettoyerLocal(uid); try{ await auth.signOut(); }catch(_){} location.reload(); return; }
+    }catch(e){}
+    /* 2. Repli si le serveur est injoignable : ce que le client peut effacer. */
     try{
       const uid=currentUser.uid;
       const snap=await fs.collection('users').doc(uid).collection('courses').get();
       await Promise.all(snap.docs.map(d=>d.ref.delete()));
       await fs.collection('users').doc(uid).delete();
       await currentUser.delete();
-      Store.del(premKey());
+      nettoyerLocal(uid);
       location.reload();
     }catch(e){
       if(e&&e.code==='auth/requires-recent-login'){
