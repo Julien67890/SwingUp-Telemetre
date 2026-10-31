@@ -219,10 +219,18 @@ header .mark{width:46px;height:46px}
 #strip{flex:0 0 auto;background:linear-gradient(180deg,var(--cream),#efebdd);
   padding:10px 12px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -18px 40px -18px rgba(8,30,18,.6)}
 #sHead{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-#freeBar{display:flex;align-items:center;gap:11px;width:100%;text-align:left;cursor:pointer;
+#strip{position:relative;z-index:850}
+/* Rappel de compte : carte flottante au-dessus du bandeau, qui ne prend
+   aucune place à l'écran ; disparaît seule ou avec la croix. */
+#freeBar{position:absolute;left:12px;right:12px;bottom:calc(100% + 10px);
+  display:flex;align-items:center;gap:11px;text-align:left;cursor:pointer;
   background:linear-gradient(145deg,#fffdf3,#fff);border:1.5px solid var(--gold);border-radius:6px;
-  padding:10px 12px;margin-bottom:9px;font-family:'Outfit',sans-serif}
+  padding:10px 8px 10px 12px;font-family:'Outfit',sans-serif;box-shadow:0 14px 30px -12px rgba(8,30,18,.65);
+  animation:rise .25s ease}
 #freeBar.hidden{display:none}
+#freeBar .fx{flex:0 0 auto;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;
+  color:#8b8770;font-size:1.35rem;line-height:1}
+#freeBar .fx:active{background:rgba(0,0,0,.06)}
 #freeBar:active{transform:scale(.995)}
 #freeBar .fic{width:30px;height:30px;flex:0 0 auto;border-radius:6px;display:grid;place-items:center;
   background:rgba(201,162,39,.2);color:#8a6f00}
@@ -471,11 +479,12 @@ header .mark{width:46px;height:46px}
   </div>
 
   <div id="strip">
-    <button id="freeBar" class="hidden">
+    <div id="freeBar" class="hidden" role="button" tabindex="0">
       <span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
       <span class="ftx"><b data-t>Greens non conservés</b><span id="freeSub" data-t>Passe en Premium pour garder tes tracés</span></span>
       <span class="farr">›</span>
-    </button>
+      <span class="fx" id="freeX" role="button" aria-label="Fermer">×</span>
+    </div>
     <div id="sHead">
       <span id="gName" data-t>En attente de position</span>
       <span id="blind" data-t>Coup aveugle</span>
@@ -726,7 +735,7 @@ en:{
 'Abonnement actif':'Subscription active','J\'ai déjà un abonnement':'I already have a subscription',
 'Gérer mon abonnement':'Manage my subscription','Premium activé':'Premium activated',
 'Greens synchronisés':'Greens synced','Hors ligne : synchro différée':'Offline: sync deferred',
-'Le paiement arrive bientôt.':'Payment is coming soon.','Bientôt disponible':'Coming soon',
+'Le paiement arrive bientôt.':'Payment is coming soon.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Update the SwingUp app from Google Play to subscribe.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'Subscriptions are available in the SwingUp Android app on Google Play.','Abonnement':'Subscription','Bientôt disponible':'Coming soon',
 'Paiement indisponible':'Payment unavailable','Tes greens ne sont pas conservés.':'Your greens are not kept.',
 'Tes greens sont sauvegardés sur ton compte.':'Your greens are backed up to your account.',
 'Sauvegarde et synchronisation':'Backup and sync',
@@ -854,7 +863,7 @@ es:{
 'Abonnement actif':'Suscripción activa','J\'ai déjà un abonnement':'Ya tengo una suscripción',
 'Gérer mon abonnement':'Gestionar mi suscripción','Premium activé':'Premium activado',
 'Greens synchronisés':'Greens sincronizados','Hors ligne : synchro différée':'Sin conexión: sincronización pendiente',
-'Le paiement arrive bientôt.':'El pago estará disponible próximamente.','Bientôt disponible':'Próximamente',
+'Le paiement arrive bientôt.':'El pago estará disponible próximamente.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Actualiza la app SwingUp desde Google Play para suscribirte.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'La suscripción se contrata en la app Android SwingUp, disponible en Google Play.','Abonnement':'Suscripción','Bientôt disponible':'Próximamente',
 'Paiement indisponible':'Pago no disponible','Tes greens ne sont pas conservés.':'Tus greens no se conservan.',
 'Tes greens sont sauvegardés sur ton compte.':'Tus greens se guardan en tu cuenta.',
 'Sauvegarde et synchronisation':'Copia de seguridad y sincronización',
@@ -985,7 +994,7 @@ de:{
 'Abonnement actif':'Abo aktiv','J\'ai déjà un abonnement':'Ich habe bereits ein Abo',
 'Gérer mon abonnement':'Mein Abo verwalten','Premium activé':'Premium aktiviert',
 'Greens synchronisés':'Greens synchronisiert','Hors ligne : synchro différée':'Offline: Synchronisierung verschoben',
-'Le paiement arrive bientôt.':'Die Zahlung ist bald verfügbar.','Bientôt disponible':'Bald verfügbar',
+'Le paiement arrive bientôt.':'Die Zahlung ist bald verfügbar.',"Mets à jour l'app SwingUp depuis Google Play pour t'abonner.":'Aktualisiere die SwingUp-App über Google Play, um ein Abo abzuschließen.',"L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.":'Das Abo schließt du in der SwingUp-Android-App bei Google Play ab.','Abonnement':'Abo','Bientôt disponible':'Bald verfügbar',
 'Paiement indisponible':'Zahlung nicht verfügbar',
 'Tes greens ne sont pas conservés.':'Deine Greens werden nicht gespeichert.',
 'Tes greens sont sauvegardés sur ton compte.':'Deine Greens werden in deinem Konto gespeichert.',
@@ -1177,10 +1186,6 @@ function finEssai(){
 }
 const enEssai=()=>{const f=finEssai();return !!f&&Date.now()<f;};
 const joursEssaiRestants=()=>Math.max(0,Math.ceil((finEssai()-Date.now())/JOUR));
-/* Comptes de test (Test des licences Play) : voient l'offre réelle même
-   pendant la bêta, pour tester l'achat sans être débités. */
-const TESTEURS_ACHAT=['developpement24.web@gmail.com','developpement.web@gmail.com','guioniejulien@gmail.com'];
-const testeurAchat=()=>!!(currentUser&&currentUser.email&&TESTEURS_ACHAT.indexOf(currentUser.email.toLowerCase())>=0);
 function isPremium(){
   if(PREMIUM.test!==null)return !!PREMIUM.test;
   if(BETA.actif)return true;
@@ -1284,7 +1289,10 @@ async function startCheckout(plan){
   if(typeof plan!=='string')plan='mois';
   if(currentUser&&PREMIUM.play.verifyUrl&&await serviceGooglePlay()){ acheterPlay(plan); return; }
   if(dansAppAndroid()||!PREMIUM.checkoutUrl||!currentUser){
-    openModal('<h3>'+esc(T('Bientôt disponible'))+'</h3><p class="txt">'+esc(T('Le paiement arrive bientôt.'))+'</p>'
+    const raison=dansAppAndroid()
+      ?T("Mets à jour l'app SwingUp depuis Google Play pour t'abonner.")
+      :T("L'abonnement se prend dans l'app Android SwingUp, téléchargeable sur Google Play.");
+    openModal('<h3>'+esc(T('Abonnement'))+'</h3><p class="txt">'+esc(raison)+'</p>'
       +'<div class="row"><button class="btn btn-ghost" id="mClose">'+esc(T('Fermer'))+'</button></div>');
     $id('mClose').onclick=closeModal; return;
   }
@@ -1321,7 +1329,9 @@ async function afterCheckout(){
 }
 
 function ecranPremium(origine){
-  const pro=testeurAchat()?abonneActif():isPremium();
+  /* Pendant l'essai gratuit, on propose l'abonnement : seul un abonné
+     payant voit « Gérer mon abonnement ». */
+  const pro=abonneActif();
   openModal('<h3>'+esc(PREMIUM.name)+'</h3>'
     +'<p class="txt">'+esc(origine||T("L'abonnement ne porte que sur la sauvegarde en ligne."))+'</p>'
     +'<div class="plan">'
@@ -1608,7 +1618,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   $id('btnReset').onclick=resetPass;
   $id('btnSkip').onclick=()=>{invite=true;Store.set('invite','1');entrerDansApp();};
   $id('btnAcct').onclick=ecranCompte;
-  $id('freeBar').onclick=()=>ecranPremium(T('Les greens que tu traces ne sont pas conservés.'));
+  $id('freeBar').onclick=e=>{
+    $id('freeBar').classList.add('hidden');
+    if(e.target&&e.target.id==='freeX')return;
+    ecranPremium(T('Les greens que tu traces ne sont pas conservés.'));
+  };
   $id('overlay').addEventListener('click',e=>{if(e.target.id==='overlay')closeModal();});
   montrerErreurBloquante();
 
@@ -2804,6 +2818,18 @@ function writeCustom(){
 
 /* Rappel permanent tant que les tracés ne sont pas conservés : il reste
    affiché sous la carte au lieu de disparaître avec les autres messages. */
+/* Le rappel s'affiche une fois par ouverture de l'app, 8 s, puis se range.
+   La croix le ferme tout de suite ; il ne revient qu'à la prochaine
+   ouverture (ou si son message change, par ex. passage en délai de grâce). */
+let bandeauVu = null, bandeauT = null;
+function montrerBandeau(bar){
+  const cle = bar.querySelector(".ftx b").textContent;
+  if (bandeauVu === cle) return;     /* déjà montré : on laisse le minuteur ou la croix décider */
+  bandeauVu = cle;
+  bar.classList.remove("hidden");
+  clearTimeout(bandeauT);
+  bandeauT = setTimeout(() => bar.classList.add("hidden"), 8000);
+}
 function majBandeauFree(){
   const bar = $("freeBar");
   if (!bar) return;
@@ -2812,22 +2838,23 @@ function majBandeauFree(){
     /* Rappel quelques jours avant la fin du mois offert. */
     const j = (typeof enEssai==="function" && enEssai() && !abonneActif()) ? joursEssaiRestants() : 99;
     if (j > ESSAI.rappel){ bar.classList.add("hidden"); return; }
-    bar.classList.remove("hidden");
     titre.textContent = L_("Essai gratuit");
     $("freeSub").textContent = L_("Plus que {n} jour(s) de sauvegarde offerte",{n:j});
+    montrerBandeau(bar);
     return;
   }
   const n = S.greens.filter(g => g.src === "draw").length;
-  bar.classList.remove("hidden");
   if (typeof enGrace==="function" && enGrace()){
     titre.textContent = L_("Greens bientôt supprimés");
     $("freeSub").textContent = L_("Supprimés le {d} sans abonnement",{d:dateLoc(dateSuppression())});
+    montrerBandeau(bar);
     return;
   }
   titre.textContent = L_("Greens non conservés");
   $("freeSub").textContent = n
     ? L_("{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.",{n:n})
     : L_("Passe en Premium pour garder tes tracés");
+  montrerBandeau(bar);
 }
 window.majBandeauFree = majBandeauFree;
 
