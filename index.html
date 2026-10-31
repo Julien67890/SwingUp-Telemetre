@@ -1759,12 +1759,26 @@ let map, base, meMarker, accRing, spokes, gLayer, tagLayer, tmpLayer, measLayer,
 let editPoly = null, editHandles = [];
 let rot = 0, rotMode = "north", rotAnim = null, askResolve = null;
 
+/* Le sac appartient lui aussi à un compte : copie locale rangée sous
+   l'identifiant du compte connecté. L'ancien sac commun au téléphone est
+   rattaché une seule fois au compte qui était connecté lors de la mise à
+   jour, pour ne pas faire repartir son propriétaire du sac par défaut. */
+function cleBag(){ return BAG + "." + ((typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : (Store.get("sessionUid") || "anon")); }
+function migrerSacCommun(){
+  try{
+    const ancien = Store.get(BAG); if (!ancien) return;
+    const uid = Store.get("sessionUid");
+    if (uid && !Store.get(BAG + "." + uid)) Store.set(BAG + "." + uid, ancien);
+    Store.del(BAG);
+  }catch(e){}
+}
 function loadBag(){
-  try{ const b = JSON.parse(Store.get(BAG)); if (Array.isArray(b) && b.length) return b; }catch(e){}
+  migrerSacCommun();
+  try{ const b = JSON.parse(Store.get(cleBag())); if (Array.isArray(b) && b.length) return b; }catch(e){}
   return preset("men");
 }
 const saveBag = () => {
-  try{ Store.set(BAG, JSON.stringify(S.bag)); }catch(e){}
+  try{ Store.set(cleBag(), JSON.stringify(S.bag)); }catch(e){}
   if (peutSauvegarderCloud()){
     fs.collection("users").doc(currentUser.uid).set({ bag:S.bag }, { merge:true }).catch(()=>{});
   }
@@ -1773,7 +1787,7 @@ const saveBag = () => {
    à S) pour appliquer le sac reçu du cloud à la connexion. */
 window.applyCloudBag = function(bag){
   S.bag = bag;
-  try{ Store.set(BAG, JSON.stringify(S.bag)); }catch(e){}
+  try{ Store.set(cleBag(), JSON.stringify(S.bag)); }catch(e){}
   if (typeof renderBag === "function") renderBag();
   if (typeof refresh === "function") refresh();
 };
@@ -3401,6 +3415,8 @@ window.changementCompte = () => {
   if (u === uidAffiche) return;
   uidAffiche = u;
   S.over = loadOver();
+  S.bag = loadBag();
+  if (typeof renderBag === "function") renderBag();
   S.greens = S.greens.filter(g => g.src !== "draw")
     .concat(readCustom().filter(g => greenCourseId(g) === parcoursId()));
   S.sel = null;
