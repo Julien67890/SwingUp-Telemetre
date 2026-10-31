@@ -2295,14 +2295,19 @@ function startGeo(){
      1. un point approximatif tout de suite (réseau / dernier point connu) ;
      2. le suivi GPS précis, SANS délai d'expiration ;
      3. un simple conseil si rien n'arrive au bout de 25 s. */
-  let recu = false;
+  let recu = false, approx = null;
   const aide = () => { openCarto(); $("bPos").classList.remove("hide"); };
   navigator.geolocation.getCurrentPosition(
     /* Seulement s'il est assez précis pour désigner le bon parcours. */
-    p => { if (!recu && p.coords.accuracy <= 300){ setPos(p.coords.latitude, p.coords.longitude, p.coords.accuracy, false); } },
-    () => {}, { enableHighAccuracy:false, maximumAge:10*60*1000, timeout:10000 });
+    p => { approx = p; if (!recu && p.coords.accuracy <= 300){ setPos(p.coords.latitude, p.coords.longitude, p.coords.accuracy, false); } },
+    e => { console.warn("Position approximative indisponible :", e && e.code, e && e.message); },
+    { enableHighAccuracy:false, maximumAge:30*60*1000, timeout:20000 });
   const veille = setTimeout(() => {
-    if (!recu && !S.pos){ warn(L_("Recherche du signal GPS… Sors à découvert, ou touche POS. pour te placer à la main.")); aide(); }
+    if (recu || S.pos) return;
+    /* Faute de GPS, une position imprécise vaut mieux que rien : le badge
+       de précision indique l'écart, et le GPS prendra le relais. */
+    if (approx){ setPos(approx.coords.latitude, approx.coords.longitude, approx.coords.accuracy, false); return; }
+    warn(L_("Recherche du signal GPS… Sors à découvert, ou touche POS. pour te placer à la main.")); aide();
   }, 25000);
   navigator.geolocation.watchPosition(
     p => { recu = true; clearTimeout(veille); hideWarn(); setPos(p.coords.latitude, p.coords.longitude, p.coords.accuracy, false); },
