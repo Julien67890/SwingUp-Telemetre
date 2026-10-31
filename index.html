@@ -1183,7 +1183,6 @@ const TESTEURS_ACHAT=['developpement24.web@gmail.com','developpement.web@gmail.c
 const testeurAchat=()=>!!(currentUser&&currentUser.email&&TESTEURS_ACHAT.indexOf(currentUser.email.toLowerCase())>=0);
 function isPremium(){
   if(PREMIUM.test!==null)return !!PREMIUM.test;
-  if(testeurAchat())return abonneActif();
   if(BETA.actif)return true;
   return abonneActif()||enEssai();
 }
@@ -1322,7 +1321,7 @@ async function afterCheckout(){
 }
 
 function ecranPremium(origine){
-  const pro=isPremium();
+  const pro=testeurAchat()?abonneActif():isPremium();
   openModal('<h3>'+esc(PREMIUM.name)+'</h3>'
     +'<p class="txt">'+esc(origine||T("L'abonnement ne porte que sur la sauvegarde en ligne."))+'</p>'
     +'<div class="plan">'
@@ -1468,10 +1467,12 @@ async function pullProfil(){
       const d=snap.data()||{};
       if(d.name)profileName=d.name;
       accountCreated=typeof d.created==='number'?d.created:(Date.parse(currentUser.metadata&&currentUser.metadata.creationTime)||Date.now());
+      Store.set('created_'+currentUser.uid,String(accountCreated));
       if(d.bag&&Array.isArray(d.bag)&&d.bag.length&&typeof window.applyCloudBag==='function')window.applyCloudBag(d.bag);
       if(d.lang&&LANGUES.indexOf(d.lang)>=0){LANG=d.lang;Store.set('lang',LANG);}
     }else{
       accountCreated=Date.now();
+      Store.set('created_'+currentUser.uid,String(accountCreated));
       await fs.collection('users').doc(currentUser.uid)
         .set({name:profileName,created:accountCreated},{merge:true});
     }
@@ -1629,23 +1630,36 @@ document.addEventListener('DOMContentLoaded',()=>{
      connexion : onAuthStateChanged va basculer dans l'app tout seul. */
   const enRetour=Store.get('gRedirect')==='1';
   if(Store.get('invite')==='1'){ invite=true; entrerDansApp(); }
-  else if(!enRetour){ $id('auth').classList.remove('hidden'); hideBoot(); }
+  else if(!enRetour&&!Store.get('sessionUid')){ $id('auth').classList.remove('hidden'); hideBoot(); }
+  else if(!enRetour){
+    /* Déjà connecté sur cet appareil : on garde l'écran de chargement le
+       temps que Firebase restaure la session, au lieu de montrer l'écran de
+       connexion pour rien. Filet de sécurité si la session a expiré. */
+    setTimeout(()=>{ if(!currentUser&&!invite){ $id('auth').classList.remove('hidden'); hideBoot(); } },8000);
+  }
 
   auth.onAuthStateChanged(async u=>{
     currentUser=u||null;
     if(u){
       invite=false; Store.del('invite');
       Store.del('gRedirect');
+      Store.set('sessionUid',u.uid);
       profileName=(u.displayName||profileName||(u.email||'').split('@')[0]||'').slice(0,14);
+      /* Entrée immédiate avec l'état mémorisé sur l'appareil (date de création,
+         abonnement) : les greens enregistrés localement s'affichent tout de
+         suite, la vérification en ligne suit en arrière-plan. */
+      const cree=Number(Store.get('created_'+u.uid))||0;
+      if(cree){ accountCreated=cree; readPremiumCache(); entrerDansApp(); }
       await pullProfil(); await pullPremium();
       /* La purge attend la restauration Play : un abonné qui vient de se
          réabonner sur un autre appareil ne doit jamais perdre ses greens. */
       restaurerAchatsPlay().then(purgerGreensExpires);
-      entrerDansApp(); afterCheckout();
+      if(!cree) entrerDansApp(); else { majCompteUI(); if(typeof rechargerGreens==='function')rechargerGreens(); }
+      afterCheckout();
       if(typeof majBandeauFree==='function')majBandeauFree();
       if(typeof pullGreens==='function')await pullGreens();
     }else if(!invite){
-      Store.del('gRedirect');
+      Store.del('gRedirect'); Store.del('sessionUid');
       $id('app').classList.add('hidden');
       $id('auth').classList.remove('hidden');
       $id('btnGoogle').classList.remove('loading');
@@ -2138,15 +2152,31 @@ let compassPending = false, compassBound = false;
 function tryCompass(){
   if (typeof DeviceOrientationEvent === "undefined") return;
   if (DeviceOrientationEvent.requestPermission){
-    /* iOS n'accorde l'accès qu'à l'intérieur d'un geste utilisateur :
-       la demande part donc au premier appui sur le bouton d'orientation. */
+    /* requestPermission existe sur iOS, mais aussi sur les Chrome Android
+       récents. On tente tout de suite (Android accorde sans geste) ; si le
+       navigateur exige un geste (iOS), la demande repart au PREMIER appui
+       n'importe où à l'écran, pas seulement sur le bouton d'orientation. */
     compassPending = true;
     $("bRot").classList.add("needs");
+    Promise.resolve().then(() => DeviceOrientationEvent.requestPermission())
+      .then(r => { if (r === "granted" && compassPending){ compassPending = false; $("bRot").classList.remove("needs"); bindCompass(); } })
+      .catch(() => {});
+    const GESTES = ["pointerup","touchend","click"];
+    const auGeste = () => {
+      GESTES.forEach(t => removeEventListener(t, auGeste, true));
+      if (compassPending) askCompass();
+    };
+    GESTES.forEach(t => addEventListener(t, auGeste, { capture:true, passive:true }));
     return;
   }
   bindCompass();
 }
-async function askCompass(){
+let demandeBoussole = null;
+function askCompass(){
+  if (!demandeBoussole) demandeBoussole = askCompass_().finally(() => { demandeBoussole = null; });
+  return demandeBoussole;
+}
+async function askCompass_(){
   try{
     if ((await DeviceOrientationEvent.requestPermission()) === "granted"){
       compassPending = false;
@@ -2816,7 +2846,13 @@ async function pullGreens(){
       let ajout = 0;
       for (const g of dist) if (!vus.has(g.id)){ S.greens.push({ ...g, src:"draw", mk:g.mk||"draw" }); ajout++; }
       if (ajout){
-        try{ Store.set(KEY, JSON.stringify(serialiserGreens())); }catch(e){}
+        /* Ne remplace que les greens du parcours courant dans le cache local :
+           ceux des autres parcours y restent, pour s'afficher sans attendre. */
+        try{
+          const ici = parcoursId();
+          const autres = readCustom().filter(g => greenCourseId(g) !== ici);
+          Store.set(KEY, JSON.stringify(autres.concat(serialiserGreens())));
+        }catch(e){}
         drawGreens(); refresh();
         toast(L_("Greens synchronisés"));
       }
