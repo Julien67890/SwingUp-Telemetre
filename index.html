@@ -1892,14 +1892,28 @@ function setBase(fr, force){
   if (kind === "osm") opts.subdomains = "abc";
   base = L.tileLayer(baseUrl(kind), opts).addTo(map);
   base.bringToBack();
-  let tuileAvertie = false;
+  /* Un zoom annule les tuiles en cours : Leaflet le signale comme des
+     erreurs, alors que rien n'est cassé. On n'avertit donc que si les
+     erreurs persistent 6 s sans qu'aucune tuile n'arrive, hors zoom. */
+  let tuileAvertie = false, erreurs = 0, tErr = null;
+  if (!map.__ecouteZoom){ map.__ecouteZoom = true; map.on("zoomstart zoomend movestart", () => { map.__dernierZoom = Date.now(); }); }
+  const calme = () => Date.now() - (map.__dernierZoom || 0) > 1500;
   base.on("tileerror", () => {
-    if (tuileAvertie) return;
-    tuileAvertie = true;
-    warn(L_("Imagerie satellite temporairement indisponible."));
+    if (tuileAvertie || !calme()) return;
+    erreurs++;
+    if (tErr) return;
+    tErr = setTimeout(() => {
+      tErr = null;
+      if (erreurs >= 3 && calme() && !tuileAvertie && map.hasLayer(base)){
+        tuileAvertie = true;
+        warn(L_("Imagerie satellite temporairement indisponible."));
+      }
+      erreurs = 0;
+    }, 6000);
   });
   base.on("tileload", e => {
-    tuileAvertie = false;
+    erreurs = 0; if (tErr){ clearTimeout(tErr); tErr = null; }
+    if (tuileAvertie){ tuileAvertie = false; if (typeof hideWarn === "function") hideWarn(); }
     if (kind === "sat") quotaSatCompter(e.coords);
   });
   $("attrib").innerHTML = kind === "fr"
