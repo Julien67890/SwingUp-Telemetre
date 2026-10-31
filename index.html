@@ -2258,21 +2258,75 @@ const openCarto = () => { $("carto").classList.add("on"); $("bCarto").classList.
 const hideWarn = () => $("banner").classList.remove("on");
 
 /* ---------- parcours ---------- */
+/* Cache OSM par carré de parcours : les greens s'affichent immédiatement
+   à l'ouverture (copie locale), puis Overpass — souvent lent, parfois 20 s
+   et plus — les met à jour en arrière-plan. */
+const OSM_CACHE = "greens.osm.v1", OSM_MAX = 25;
+function lireOsm(id){
+  try{ const t = JSON.parse(Store.get(OSM_CACHE)||"{}"); return t[id] || null; }catch(e){ return null; }
+}
+function ecrireOsm(id, v){
+  try{
+    const t = JSON.parse(Store.get(OSM_CACHE)||"{}");
+    t[id] = { ...v, t:Date.now() };
+    const ids = Object.keys(t).sort((a,b) => t[b].t - t[a].t);
+    ids.slice(OSM_MAX).forEach(k => delete t[k]);
+    Store.set(OSM_CACHE, JSON.stringify(t));
+  }catch(e){}
+}
+function composerGreens(osm){
+  const dessines = S.greens && S.greens.length
+    ? S.greens.filter(g => g.src === "draw")
+    : readCustom().filter(g => greenCourseId(g) === parcoursId());
+  S.greens = osm.filter(g => S.over.hidden.indexOf(g.id) < 0).map(g => ({ ...g })).concat(dessines);
+  for (const g of S.greens) if (S.over.names[g.id]) g.name = S.over.names[g.id];
+}
+/* Avant même le premier point GPS : on dessine les greens du dernier
+   parcours connu (même carré), depuis le téléphone uniquement. */
+function preafficherDernier(){
+  try{
+    const l = JSON.parse(Store.get(LAST)); if (!l) return;
+    const id = parcoursId(l.lat, l.lon), cache = lireOsm(id);
+    const osm = cache ? cache.greens : [];
+    S.greens = osm.filter(g => S.over.hidden.indexOf(g.id) < 0).map(g => ({ ...g }))
+      .concat(readCustom().filter(g => greenCourseId(g) === id));
+    for (const g of S.greens) if (S.over.names[g.id]) g.name = S.over.names[g.id];
+    if (S.greens.length){
+      $("courseName").textContent = L_("Parcours chargés") + (cache && cache.name ? " · " + cache.name : "");
+      drawGreens();
+    }
+  }catch(e){}
+}
 async function loadCourse(){
   if (!S.pos) return;
+  const ici = parcoursId();
+  /* 1. Affichage immédiat : copie locale OSM + greens tracés (stockés sur le
+     téléphone). Aucun réseau n'est attendu. */
+  S.greens = [];
+  const cache = lireOsm(ici);
+  composerGreens(cache ? cache.greens : []);
+  if (S.greens.length){
+    $("courseName").textContent = L_("Parcours chargés") + (cache && cache.name ? " · " + cache.name : "");
+    drawGreens(); refresh();
+  } else {
+    $("courseName").textContent = L_("Chargement des parcours…");
+  }
   $("bLoad").classList.add("busy");
-  $("courseName").textContent = L_("Chargement des parcours…");
-  const q = `[out:json][timeout:30];
+  /* 2. Mise à jour OpenStreetMap en arrière-plan. */
+  const q = `[out:json][timeout:25];
     (way["golf"="green"](around:2500,${S.pos.lat},${S.pos.lon});
      relation["golf"="green"](around:2500,${S.pos.lat},${S.pos.lon});
      way["golf"="hole"](around:2500,${S.pos.lat},${S.pos.lon});
      way["leisure"="golf_course"](around:2500,${S.pos.lat},${S.pos.lon});
      relation["leisure"="golf_course"](around:2500,${S.pos.lat},${S.pos.lon}););
     out geom tags;`;
-  let greens = [], holes = [], name = null;
+  let greens = [], holes = [], name = null, ok = false;
   try{
-    const r = await fetch("https://overpass-api.de/api/interpreter", { method:"POST",
+    const ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const stop = ctl ? setTimeout(() => ctl.abort(), 30000) : null;
+    const r = await fetch("https://overpass-api.de/api/interpreter", { method:"POST", signal: ctl ? ctl.signal : undefined,
       body:"data=" + encodeURIComponent(q), headers:{ "Content-Type":"application/x-www-form-urlencoded" } });
+    if (stop) clearTimeout(stop);
     const j = await r.json();
     for (const el of (j.elements||[])){
       const t = el.tags || {};
@@ -2295,20 +2349,23 @@ async function loadCourse(){
       for (const h of holes){ const d = Math.hypot(...loc(h.end[0],h.end[1],c[0],c[1])); if (d<bd){ bd=d; best=h; } }
       if (best && bd < 80 && best.ref) g.name = L_("Trou {n}",{n:best.ref});
     }
+    ok = true;
   }catch(e){}
   $("bLoad").classList.remove("busy");
-  /* readCustom() renvoie TOUS les greens tracés à la main, tous parcours
-     confondus (stockage local global) : sans filtre, chaque chargement de
-     parcours ajoutait aussi au rendu les greens de tous les autres
-     parcours jamais visités — calques Leaflet inutiles, invisibles à
-     l'écran mais bien présents, d'où le ralentissement systématique. */
-  S.greens = greens.filter(g => S.over.hidden.indexOf(g.id) < 0)
-    .concat(readCustom().filter(g => greenCourseId(g) === parcoursId()));
-  for (const g of S.greens) if (S.over.names[g.id]) g.name = S.over.names[g.id];
+  if (parcoursId() !== ici) return;            /* l'utilisateur a changé de parcours entre-temps */
+  if (!ok){
+    /* Réseau lent ou absent : on garde ce qui est déjà affiché. */
+    if (!S.greens.length){ $("courseName").textContent = L_("Aucun parcours trouvé"); openCarto(); }
+    return;
+  }
+  ecrireOsm(ici, { greens: greens.map(g => ({ id:g.id, name:g.name, coords:g.coords, src:g.src })), name });
+  const selId = S.sel && S.sel.id;
+  composerGreens(greens);
+  if (selId){ const n = S.greens.find(g => g.id === selId); if (n) S.sel = n; }
   $("courseName").textContent = S.greens.length
     ? (L_("Parcours chargés") + (name ? " · " + name : ""))
     : L_("Aucun parcours trouvé");
-  if (!greens.length){ warn(L_("Parcours absent d'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.")); openCarto(); }
+  if (!greens.length && !(cache && cache.greens.length)){ warn(L_("Parcours absent d'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.")); openCarto(); }
   drawGreens(); refresh();
 }
 function drawGreens(){
@@ -3249,6 +3306,7 @@ function proposerAvis(){
 function boot(){
   buildChips(); fitModals();
   initMap();
+  preafficherDernier();
   initFs();
   tryCompass();
   startGeo();
