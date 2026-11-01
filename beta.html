@@ -213,6 +213,29 @@ header .mark{width:46px;height:46px}
   background:rgba(14,46,56,.92);border:1px solid rgba(166,223,233,.55);color:#fff;font-size:12px;font-weight:700;
   white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4);font-variant-numeric:tabular-nums}
 .stag.gd span{transform:translate(-50%,-50%) rotate(var(--cr)) translateY(-28px);border-color:rgba(143,192,161,.7);background:rgba(19,54,31,.92)}
+/* ---------- tutoriel de démarrage ---------- */
+#tuto{position:fixed;inset:0;z-index:1200;display:none}
+#tuto.on{display:block}
+#tutoHole{position:fixed;border-radius:10px;border:2px solid var(--gold);box-shadow:0 0 0 9999px rgba(6,20,12,.74);
+  transition:left .28s ease,top .28s ease,width .28s ease,height .28s ease;pointer-events:none}
+#tutoHole.none{left:50%!important;top:45%!important;width:0!important;height:0!important;border-width:0}
+#tutoCard{position:fixed;left:16px;right:16px;max-width:420px;margin:0 auto;background:var(--cream);border-radius:8px;
+  box-shadow:0 18px 40px -12px rgba(0,0,0,.6);padding:18px 18px 14px;font-family:'Outfit',sans-serif}
+#tutoCard.bottom{bottom:calc(16px + env(safe-area-inset-bottom));top:auto}
+#tutoCard.top{top:calc(16px + env(safe-area-inset-top));bottom:auto}
+#tutoCard.mid{top:50%;transform:translateY(-50%)}
+#tutoCard .k{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--green-mid)}
+#tutoCard h3{font-family:var(--serif);font-weight:900;font-size:1.25rem;line-height:1.15;color:var(--green-deep);margin-top:4px}
+#tutoCard p{font-size:.88rem;line-height:1.5;color:#5a5848;margin-top:8px}
+#tutoCard p b{color:var(--green-deep);font-weight:700}
+#tutoDots{display:flex;gap:5px;margin-top:14px}
+#tutoDots i{width:6px;height:6px;border-radius:3px;background:#d9d3bf;transition:width .2s}
+#tutoDots i.on{background:var(--green-mid);width:16px}
+#tutoNav{display:flex;align-items:center;gap:8px;margin-top:12px}
+#tutoSkip{background:none;border:0;color:#8b8770;font:600 .82rem 'Outfit',sans-serif;padding:8px 2px;cursor:pointer;margin-right:auto}
+#tutoNav .btn{padding:11px 16px;font-size:.9rem}
+#tutoPrev.hide{display:none}
+body.tuto-on #consent,body.tuto-on #freeBar{display:none!important}
 #zTot{position:absolute;left:10px;top:10px;z-index:800;display:none;align-items:baseline;gap:5px;
   padding:5px 10px;border-radius:6px;background:rgba(14,46,56,.92);border:1.5px solid rgba(166,223,233,.55);color:#fff;
   font-family:'Outfit',sans-serif;font-weight:700;font-size:.88rem;font-variant-numeric:tabular-nums;pointer-events:none}
@@ -645,6 +668,21 @@ header .mark{width:46px;height:46px}
   </div>
 </div>
 
+<div id="tuto" role="dialog" aria-modal="true">
+  <div id="tutoHole" class="none"></div>
+  <div id="tutoCard" class="mid">
+    <div class="k" id="tutoK"></div>
+    <h3 id="tutoT"></h3>
+    <p id="tutoP"></p>
+    <div id="tutoDots"></div>
+    <div id="tutoNav">
+      <button id="tutoSkip" data-t>Passer</button>
+      <button class="btn btn-ghost" id="tutoPrev" data-t>Retour</button>
+      <button class="btn btn-primary" id="tutoNext"></button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay hidden" id="overlay"></div>
 <div class="toast" id="toast"></div>
 <div id="consent" class="hidden">
@@ -843,7 +881,7 @@ en:{
 '{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.':'{n} outline(s) will be lost on close. Premium keeps them.',
 'Les greens que tu traces ne sont pas conservés.':'The greens you map are not being kept.',
 'Passe en Premium pour garder tes tracés':'Go Premium to keep your outlines',
-'Créer un compte pour sauvegarder':'Create an account to save','MOI':'ME','MESURE':'MEASURE','CARTO':'MAP','GREEN':'GREEN',"Sélectionnez d'abord un green":'Select a green first','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tap a green on the map, then + AREA to place a layup zone.','Compris':'Got it','{m} zones maximum':'{m} zones maximum','Zone {n}/{m} ajoutée.':'Zone {n}/{m} added.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Drag the circles to place them. Then tap a zone or the green to pick your target.','Cible : zone {n}':'Target: zone {n}','Cible : green':'Target: green','Modifier le diamètre':'Change diameter','Ø actuel : {d} m':'Current Ø: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Zone diameter in metres. Used to compute front, back and sides.','Ø {d} m':'Ø {d} m','de la zone {n}':'of zone {n}','Green {d} m':'Green {d} m','Position GPS nécessaire pour placer la première zone.':'GPS position needed to place the first zone.','Zone {n}':'Zone {n}','Déplacer':'Move','Glisser le cercle à la main':'Drag the circle by hand','Retire cette zone du green':'Removes this zone from the green',"jusqu'à la zone {n}":'to zone {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m from you · {b} m to the green',
+'Créer un compte pour sauvegarder':'Create an account to save','MOI':'ME','MESURE':'MEASURE','CARTO':'MAP','GREEN':'GREEN',"Sélectionnez d'abord un green":'Select a green first','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tap a green on the map, then + AREA to place a layup zone.','Compris':'Got it','{m} zones maximum':'{m} zones maximum','Zone {n}/{m} ajoutée.':'Zone {n}/{m} added.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Drag the circles to place them. Then tap a zone or the green to pick your target.','Cible : zone {n}':'Target: zone {n}','Cible : green':'Target: green','Modifier le diamètre':'Change diameter','Ø actuel : {d} m':'Current Ø: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Zone diameter in metres. Used to compute front, back and sides.','Ø {d} m':'Ø {d} m','de la zone {n}':'of zone {n}','Green {d} m':'Green {d} m',"Passer":"Skip","Retour":"Back","Suivant":"Next","C'est parti":"Let's go","Étape {n} sur {m}":"Step {n} of {m}","Revoir le tutoriel":"Replay the tutorial","Bienvenue sur SwingUp Télémètre":"Welcome to SwingUp Rangefinder","Distances au green, dénivelé et club conseillé, calculés depuis votre <b>position GPS</b> sur l'imagerie satellite. Voici l'essentiel en quelques étapes.":"Distances to the green, elevation change and suggested club, computed from your <b>GPS position</b> on satellite imagery. Here are the essentials in a few steps.","Touchez un green":"Tap a green","Les greens du parcours s'affichent sur la carte. <b>Touchez-en un</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher.":"The course greens show on the map. <b>Tap one</b> to select it, tap an empty spot to release it.","Les distances":"Distances","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez.":"<b>Front, back, left, right</b> and <b>elevation</b> to the selected green, updated as you walk.","Le club conseillé":"Suggested club","Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. Réglez vos distances dans <b>SAC</b> pour un conseil juste. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"Aim at the front, centre or back with <b>FRT · CTR · BCK</b>. Set your distances in <b>BAG</b> for accurate advice. <b>COMP.</b> removes elevation, which is not allowed in competition.","+ AREA : vos zones de jeu":"+ AREA: your layup zones","Green sélectionné, touchez <b>+ AREA</b> pour placer une zone intermédiaire (jusqu'à 6) et glissez-la là où vous voulez jouer. <b>Touchez une zone ou le green</b> pour choisir la cible. <b>Appui long</b> sur une zone : la déplacer, changer son diamètre ou la supprimer.":"With a green selected, tap <b>+ AREA</b> to place a layup zone (up to 6) and drag it where you want to play. <b>Tap a zone or the green</b> to choose your target. <b>Long-press</b> a zone to move it, change its diameter or delete it.","+ GREEN : ajouter un green":"+ GREEN: add a green","Green absent ou mal tracé ? <b>DÉTECT</b> le repère par sa couleur, <b>TRACER</b> le dessine point par point, <b>POINTER</b> le pose en cercle. <b>Appui long</b> sur un green pour le renommer, le retracer ou le supprimer.":"Green missing or badly drawn? <b>DETECT</b> finds it by colour, <b>DRAW</b> outlines it point by point, <b>POINT</b> drops it as a circle. <b>Long-press</b> a green to rename, redraw or delete it.","Orientation":"Orientation","<b>NORD</b> change le sens de la carte : nord en haut, rotation libre à deux doigts, ou boussole. <b>MOI</b> recentre la carte sur vous.":"<b>NORTH</b> changes the map orientation: north up, free two-finger rotation, or compass. <b>ME</b> centres the map on you.","Votre compte":"Your account","Un compte permet de <b>sauvegarder vos greens et vos zones</b>. Ce tutoriel reste accessible depuis ce menu.":"An account lets you <b>save your greens and zones</b>. This tutorial stays available from this menu.",'Position GPS nécessaire pour placer la première zone.':'GPS position needed to place the first zone.','Zone {n}':'Zone {n}','Déplacer':'Move','Glisser le cercle à la main':'Drag the circle by hand','Retire cette zone du green':'Removes this zone from the green',"jusqu'à la zone {n}":'to zone {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m from you · {b} m to the green',
 'DÉTECT':'DETECT','TRACER':'DRAW','POINTER':'POINT','GREENS':'GREENS','POS.':'POS.','Tolérance':'Tolerance',
 'Rayon':'Radius','Refaire':'Redo','Garder':'Keep','Fermer':'Close','Annuler':'Cancel','Enregistrer':'Save',
 'En attente de position':'Waiting for position','Coup aveugle':'Blind shot','Club conseillé':'Suggested club',
@@ -971,7 +1009,7 @@ es:{
 '{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.':'{n} trazado(s) se perderán al cerrar. Premium los conserva.',
 'Les greens que tu traces ne sont pas conservés.':'Los greens que trazas no se conservan.',
 'Passe en Premium pour garder tes tracés':'Pasa a Premium para conservar tus trazados',
-'Créer un compte pour sauvegarder':'Crea una cuenta para guardar','MOI':'YO','MESURE':'MEDIR','CARTO':'MAPA','GREEN':'GREEN',"Sélectionnez d'abord un green":'Selecciona primero un green','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Toca un green en el mapa y luego + AREA para colocar una zona intermedia.','Compris':'Entendido','{m} zones maximum':'{m} zonas como máximo','Zone {n}/{m} ajoutée.':'Zona {n}/{m} añadida.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Arrastra los círculos para colocarlos. Luego toca una zona o el green para elegir el objetivo.','Cible : zone {n}':'Objetivo: zona {n}','Cible : green':'Objetivo: green','Modifier le diamètre':'Cambiar el diámetro','Ø actuel : {d} m':'Ø actual: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Diámetro de la zona en metros. Sirve para calcular delante, detrás y los lados.','Ø {d} m':'Ø {d} m','de la zone {n}':'de la zona {n}','Green {d} m':'Green {d} m','Position GPS nécessaire pour placer la première zone.':'Se necesita la posición GPS para colocar la primera zona.','Zone {n}':'Zona {n}','Déplacer':'Mover','Glisser le cercle à la main':'Arrastrar el círculo con el dedo','Retire cette zone du green':'Quita esta zona del green',"jusqu'à la zone {n}":'hasta la zona {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m desde ti · {b} m hasta el green',
+'Créer un compte pour sauvegarder':'Crea una cuenta para guardar','MOI':'YO','MESURE':'MEDIR','CARTO':'MAPA','GREEN':'GREEN',"Sélectionnez d'abord un green":'Selecciona primero un green','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Toca un green en el mapa y luego + AREA para colocar una zona intermedia.','Compris':'Entendido','{m} zones maximum':'{m} zonas como máximo','Zone {n}/{m} ajoutée.':'Zona {n}/{m} añadida.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Arrastra los círculos para colocarlos. Luego toca una zona o el green para elegir el objetivo.','Cible : zone {n}':'Objetivo: zona {n}','Cible : green':'Objetivo: green','Modifier le diamètre':'Cambiar el diámetro','Ø actuel : {d} m':'Ø actual: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Diámetro de la zona en metros. Sirve para calcular delante, detrás y los lados.','Ø {d} m':'Ø {d} m','de la zone {n}':'de la zona {n}','Green {d} m':'Green {d} m',"Passer":"Saltar","Retour":"Atrás","Suivant":"Siguiente","C'est parti":"¡Vamos!","Étape {n} sur {m}":"Paso {n} de {m}","Revoir le tutoriel":"Ver el tutorial de nuevo","Bienvenue sur SwingUp Télémètre":"Bienvenido a SwingUp Telémetro","Distances au green, dénivelé et club conseillé, calculés depuis votre <b>position GPS</b> sur l'imagerie satellite. Voici l'essentiel en quelques étapes.":"Distancias al green, desnivel y palo recomendado, calculados desde tu <b>posición GPS</b> sobre imágenes de satélite. Aquí tienes lo esencial en unos pasos.","Touchez un green":"Toca un green","Les greens du parcours s'affichent sur la carte. <b>Touchez-en un</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher.":"Los greens del campo aparecen en el mapa. <b>Toca uno</b> para seleccionarlo y toca una zona vacía para soltarlo.","Les distances":"Las distancias","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez.":"<b>Delante, detrás, izquierda, derecha</b> y <b>desnivel</b> hasta el green seleccionado, actualizados mientras caminas.","Le club conseillé":"El palo recomendado","Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. Réglez vos distances dans <b>SAC</b> pour un conseil juste. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"Apunta delante, al centro o detrás con <b>DEL · CEN · DET</b>. Ajusta tus distancias en <b>BOLSA</b> para un consejo preciso. <b>COMPET.</b> quita el desnivel, prohibido en competición.","+ AREA : vos zones de jeu":"+ AREA: tus zonas de juego","Green sélectionné, touchez <b>+ AREA</b> pour placer une zone intermédiaire (jusqu'à 6) et glissez-la là où vous voulez jouer. <b>Touchez une zone ou le green</b> pour choisir la cible. <b>Appui long</b> sur une zone : la déplacer, changer son diamètre ou la supprimer.":"Con un green seleccionado, toca <b>+ AREA</b> para colocar una zona intermedia (hasta 6) y arrástrala donde quieras jugar. <b>Toca una zona o el green</b> para elegir el objetivo. <b>Pulsación larga</b> en una zona: moverla, cambiar su diámetro o eliminarla.","+ GREEN : ajouter un green":"+ GREEN: añadir un green","Green absent ou mal tracé ? <b>DÉTECT</b> le repère par sa couleur, <b>TRACER</b> le dessine point par point, <b>POINTER</b> le pose en cercle. <b>Appui long</b> sur un green pour le renommer, le retracer ou le supprimer.":"¿Falta un green o está mal trazado? <b>DETECT</b> lo localiza por su color, <b>TRAZAR</b> lo dibuja punto a punto, <b>PUNTO</b> lo coloca como un círculo. <b>Pulsación larga</b> en un green para renombrarlo, retrazarlo o eliminarlo.","Orientation":"Orientación","<b>NORD</b> change le sens de la carte : nord en haut, rotation libre à deux doigts, ou boussole. <b>MOI</b> recentre la carte sur vous.":"<b>NORTE</b> cambia la orientación del mapa: norte arriba, rotación libre con dos dedos o brújula. <b>YO</b> centra el mapa en ti.","Votre compte":"Tu cuenta","Un compte permet de <b>sauvegarder vos greens et vos zones</b>. Ce tutoriel reste accessible depuis ce menu.":"Una cuenta te permite <b>guardar tus greens y tus zonas</b>. Este tutorial sigue disponible desde este menú.",'Position GPS nécessaire pour placer la première zone.':'Se necesita la posición GPS para colocar la primera zona.','Zone {n}':'Zona {n}','Déplacer':'Mover','Glisser le cercle à la main':'Arrastrar el círculo con el dedo','Retire cette zone du green':'Quita esta zona del green',"jusqu'à la zone {n}":'hasta la zona {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m desde ti · {b} m hasta el green',
 'DÉTECT':'DETECT','TRACER':'TRAZAR','POINTER':'PUNTO','GREENS':'GREENS','POS.':'POS.','Tolérance':'Tolerancia',
 'Rayon':'Radio','Refaire':'Rehacer','Garder':'Conservar','Fermer':'Cerrar','Annuler':'Cancelar',
 'Enregistrer':'Guardar','En attente de position':'Esperando posición','Coup aveugle':'Golpe ciego',
@@ -1104,7 +1142,7 @@ de:{
 'Les greens que tu traces ne sont pas conservés.':'Die von dir erfassten Greens werden nicht gespeichert.',
 'Passe en Premium pour garder tes tracés':'Wechsle zu Premium, um deine Konturen zu behalten',
 'Créer un compte pour sauvegarder':'Erstelle ein Konto, um zu speichern','MOI':'ICH','MESURE':'MESSEN',
-'CARTO':'KARTE','GREEN':'GRÜN',"Sélectionnez d'abord un green":'Wähle zuerst ein Grün','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tippe auf ein Grün und dann auf + AREA, um eine Zwischenzone zu setzen.','Compris':'Verstanden','{m} zones maximum':'Maximal {m} Zonen','Zone {n}/{m} ajoutée.':'Zone {n}/{m} hinzugefügt.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Ziehe die Kreise, um sie zu setzen. Tippe dann auf eine Zone oder das Grün, um dein Ziel zu wählen.','Cible : zone {n}':'Ziel: Zone {n}','Cible : green':'Ziel: Grün','Modifier le diamètre':'Durchmesser ändern','Ø actuel : {d} m':'Aktueller Ø: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Durchmesser der Zone in Metern. Dient zur Berechnung von vorne, hinten und den Seiten.','Ø {d} m':'Ø {d} m','de la zone {n}':'der Zone {n}','Green {d} m':'Grün {d} m','Position GPS nécessaire pour placer la première zone.':'GPS-Position nötig, um die erste Zone zu setzen.','Zone {n}':'Zone {n}','Déplacer':'Verschieben','Glisser le cercle à la main':'Kreis mit dem Finger ziehen','Retire cette zone du green':'Entfernt diese Zone vom Grün',"jusqu'à la zone {n}":'bis Zone {n}','Total':'Gesamt',"{a} m depuis vous · {b} m jusqu'au green":'{a} m von dir · {b} m bis zum Grün','DÉTECT':'ERKENN','TRACER':'ZEICHN','POINTER':'PUNKT','GREENS':'GREENS','POS.':'POS.',
+'CARTO':'KARTE','GREEN':'GRÜN',"Sélectionnez d'abord un green":'Wähle zuerst ein Grün','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tippe auf ein Grün und dann auf + AREA, um eine Zwischenzone zu setzen.','Compris':'Verstanden','{m} zones maximum':'Maximal {m} Zonen','Zone {n}/{m} ajoutée.':'Zone {n}/{m} hinzugefügt.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Ziehe die Kreise, um sie zu setzen. Tippe dann auf eine Zone oder das Grün, um dein Ziel zu wählen.','Cible : zone {n}':'Ziel: Zone {n}','Cible : green':'Ziel: Grün','Modifier le diamètre':'Durchmesser ändern','Ø actuel : {d} m':'Aktueller Ø: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Durchmesser der Zone in Metern. Dient zur Berechnung von vorne, hinten und den Seiten.','Ø {d} m':'Ø {d} m','de la zone {n}':'der Zone {n}','Green {d} m':'Grün {d} m',"Passer":"Überspringen","Retour":"Zurück","Suivant":"Weiter","C'est parti":"Los geht's","Étape {n} sur {m}":"Schritt {n} von {m}","Revoir le tutoriel":"Tutorial erneut ansehen","Bienvenue sur SwingUp Télémètre":"Willkommen bei SwingUp Entfernungsmesser","Distances au green, dénivelé et club conseillé, calculés depuis votre <b>position GPS</b> sur l'imagerie satellite. Voici l'essentiel en quelques étapes.":"Entfernungen zum Grün, Höhenunterschied und empfohlener Schläger, berechnet aus deiner <b>GPS-Position</b> auf Satellitenbildern. Hier das Wichtigste in wenigen Schritten.","Touchez un green":"Tippe auf ein Grün","Les greens du parcours s'affichent sur la carte. <b>Touchez-en un</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher.":"Die Grüns des Platzes erscheinen auf der Karte. <b>Tippe auf eines</b>, um es auszuwählen, und auf eine leere Stelle, um es freizugeben.","Les distances":"Die Entfernungen","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez.":"<b>Vorne, hinten, links, rechts</b> und <b>Höhenunterschied</b> zum gewählten Grün, aktualisiert während du gehst.","Le club conseillé":"Empfohlener Schläger","Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. Réglez vos distances dans <b>SAC</b> pour un conseil juste. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"Ziele mit <b>VOR · MIT · HIN</b> auf vorne, Mitte oder hinten. Stelle deine Weiten in <b>BAG</b> ein, damit die Empfehlung stimmt. <b>TURNIER</b> blendet den Höhenunterschied aus, der im Turnier verboten ist.","+ AREA : vos zones de jeu":"+ AREA: deine Zwischenzonen","Green sélectionné, touchez <b>+ AREA</b> pour placer une zone intermédiaire (jusqu'à 6) et glissez-la là où vous voulez jouer. <b>Touchez une zone ou le green</b> pour choisir la cible. <b>Appui long</b> sur une zone : la déplacer, changer son diamètre ou la supprimer.":"Bei ausgewähltem Grün tippe auf <b>+ AREA</b>, um eine Zwischenzone zu setzen (bis zu 6), und ziehe sie dorthin, wo du spielen willst. <b>Tippe auf eine Zone oder das Grün</b>, um dein Ziel zu wählen. <b>Lange drücken</b> auf eine Zone: verschieben, Durchmesser ändern oder löschen.","+ GREEN : ajouter un green":"+ GREEN: ein Grün hinzufügen","Green absent ou mal tracé ? <b>DÉTECT</b> le repère par sa couleur, <b>TRACER</b> le dessine point par point, <b>POINTER</b> le pose en cercle. <b>Appui long</b> sur un green pour le renommer, le retracer ou le supprimer.":"Grün fehlt oder ist falsch? <b>ERKENN</b> findet es über die Farbe, <b>ZEICHN</b> zeichnet es Punkt für Punkt, <b>PUNKT</b> setzt es als Kreis. <b>Lange drücken</b> auf ein Grün, um es umzubenennen, neu zu zeichnen oder zu löschen.","Orientation":"Ausrichtung","<b>NORD</b> change le sens de la carte : nord en haut, rotation libre à deux doigts, ou boussole. <b>MOI</b> recentre la carte sur vous.":"<b>NORD</b> ändert die Kartenausrichtung: Norden oben, freie Drehung mit zwei Fingern oder Kompass. <b>ICH</b> zentriert die Karte auf dich.","Votre compte":"Dein Konto","Un compte permet de <b>sauvegarder vos greens et vos zones</b>. Ce tutoriel reste accessible depuis ce menu.":"Mit einem Konto kannst du <b>deine Grüns und Zonen speichern</b>. Dieses Tutorial bleibt über dieses Menü erreichbar.",'Position GPS nécessaire pour placer la première zone.':'GPS-Position nötig, um die erste Zone zu setzen.','Zone {n}':'Zone {n}','Déplacer':'Verschieben','Glisser le cercle à la main':'Kreis mit dem Finger ziehen','Retire cette zone du green':'Entfernt diese Zone vom Grün',"jusqu'à la zone {n}":'bis Zone {n}','Total':'Gesamt',"{a} m depuis vous · {b} m jusqu'au green":'{a} m von dir · {b} m bis zum Grün','DÉTECT':'ERKENN','TRACER':'ZEICHN','POINTER':'PUNKT','GREENS':'GREENS','POS.':'POS.',
 'Tolérance':'Toleranz','Rayon':'Radius','Refaire':'Neu','Garder':'Behalten','Fermer':'Schließen',
 'Annuler':'Abbrechen','Enregistrer':'Speichern','En attente de position':'Warte auf Position',
 'Coup aveugle':'Blinder Schlag','Club conseillé':'Empfohlener Schläger','Choisissez un green':'Wähle ein Green',
@@ -1665,7 +1703,9 @@ function ecranCompte(){
         : '<button class="btn btn-ghost" id="mClose">'+esc(T('Fermer'))+'</button><button class="btn btn-primary" id="mIn">'+esc(T('Créer un compte'))+'</button>')
     +'</div>'
     +(currentUser?'<button class="authlink" id="mDel" style="color:var(--bad)">'+esc(T('Supprimer mon compte'))+'</button>':'')
+    +'<button class="authlink" id="mTuto">'+esc(T('Revoir le tutoriel'))+'</button>'
     +'<p class="modpriv"><a href="'+PAGE_POLITIQUE()+'" target="_blank" rel="noopener">'+esc(T('Politique de confidentialité'))+'</a></p>');
+  const tu=$id('mTuto'); if(tu)tu.onclick=()=>{closeModal();if(window.lancerTuto)window.lancerTuto(true);};
   const del=$id('mDel'); if(del)del.onclick=ecranSuppression;
   const up=$id('mUp'); if(up)up.onclick=()=>{closeModal();ecranPremium();};
   const po=$id('mPortal'); if(po)po.onclick=openPortal;
@@ -3887,6 +3927,80 @@ function proposerAvis(){
   document.getElementById("avTard").onclick = () => { garder({ apres:Date.now()+AVIS.report*864e5 }); closeModal(); };
   document.getElementById("avOui").onclick = () => { garder({ jamais:true }); closeModal(); window.open(AVIS.url, "_blank"); };
 }
+/* ---------- tutoriel de démarrage ----------
+   Montré une fois (clé tuto.v1), relançable depuis Mon compte ou avec
+   ?tuto=1. Chaque étape éclaire l'élément concerné ; la carte se place
+   du côté opposé pour ne pas le cacher. */
+const TUTO = [
+  { k:null, t:"Bienvenue sur SwingUp Télémètre",
+    p:"Distances au green, dénivelé et club conseillé, calculés depuis votre <b>position GPS</b> sur l'imagerie satellite. Voici l'essentiel en quelques étapes." },
+  { k:["#map"], t:"Touchez un green",
+    p:"Les greens du parcours s'affichent sur la carte. <b>Touchez-en un</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher." },
+  { k:["#cells"], t:"Les distances",
+    p:"<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez." },
+  { k:["#clubRow","#sHead"], t:"Le club conseillé",
+    p:"Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. Réglez vos distances dans <b>SAC</b> pour un conseil juste. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition." },
+  { k:["#bArea"], t:"+ AREA : vos zones de jeu",
+    p:"Green sélectionné, touchez <b>+ AREA</b> pour placer une zone intermédiaire (jusqu'à 6) et glissez-la là où vous voulez jouer. <b>Touchez une zone ou le green</b> pour choisir la cible. <b>Appui long</b> sur une zone : la déplacer, changer son diamètre ou la supprimer." },
+  { k:["#bCarto"], t:"+ GREEN : ajouter un green",
+    p:"Green absent ou mal tracé ? <b>DÉTECT</b> le repère par sa couleur, <b>TRACER</b> le dessine point par point, <b>POINTER</b> le pose en cercle. <b>Appui long</b> sur un green pour le renommer, le retracer ou le supprimer." },
+  { k:["#bRot","#bMe"], t:"Orientation",
+    p:"<b>NORD</b> change le sens de la carte : nord en haut, rotation libre à deux doigts, ou boussole. <b>MOI</b> recentre la carte sur vous." },
+  { k:["#btnAcct"], t:"Votre compte",
+    p:"Un compte permet de <b>sauvegarder vos greens et vos zones</b>. Ce tutoriel reste accessible depuis ce menu." }
+];
+let tutoI = 0;
+function tutoRect(sel){
+  let r = null;
+  for (const q of sel){
+    const el = document.querySelector(q);
+    if (!el || !el.offsetParent) continue;
+    const b = el.getBoundingClientRect();
+    if (!b.width || !b.height) continue;
+    r = r ? { l:Math.min(r.l,b.left), t:Math.min(r.t,b.top), r:Math.max(r.r,b.right), b:Math.max(r.b,b.bottom) }
+          : { l:b.left, t:b.top, r:b.right, b:b.bottom };
+  }
+  return r;
+}
+function tutoShow(){
+  const st = TUTO[tutoI], hole = $("tutoHole"), card = $("tutoCard");
+  $("tutoK").textContent = L_("Étape {n} sur {m}", { n:tutoI+1, m:TUTO.length });
+  $("tutoT").textContent = L_(st.t);
+  $("tutoP").innerHTML = L_(st.p);
+  $("tutoDots").innerHTML = TUTO.map((_, i) => "<i" + (i === tutoI ? ' class="on"' : "") + "></i>").join("");
+  $("tutoPrev").classList.toggle("hide", tutoI === 0);
+  $("tutoNext").textContent = tutoI === TUTO.length - 1 ? L_("C'est parti") : L_("Suivant");
+  $("tutoSkip").style.visibility = tutoI === TUTO.length - 1 ? "hidden" : "";
+  const r = st.k ? tutoRect(st.k) : null;
+  card.className = "";
+  if (!r){ hole.classList.add("none"); card.classList.add("mid"); return; }
+  const pad = 6, H = innerHeight;
+  hole.classList.remove("none");
+  hole.style.left = Math.max(2, r.l - pad) + "px"; hole.style.top = Math.max(2, r.t - pad) + "px";
+  hole.style.width = (Math.min(innerWidth - 2, r.r + pad) - Math.max(2, r.l - pad)) + "px";
+  hole.style.height = (Math.min(H - 2, r.b + pad) - Math.max(2, r.t - pad)) + "px";
+  card.classList.add((r.t + r.b) / 2 < H * 0.55 ? "bottom" : "top");
+}
+function tutoEnd(){
+  $("tuto").classList.remove("on");
+  document.body.classList.remove("tuto-on");
+  try{ Store.set("tuto.v1", "1"); }catch(e){}
+}
+window.lancerTuto = function(force){
+  let vu = false;
+  try{ vu = !!Store.get("tuto.v1"); }catch(e){}
+  if (new URLSearchParams(location.search).get("tuto") === "1") force = true;
+  if (vu && !force) return;
+  /* Bandeau d'audience et rappel Premium cachent le bas de l'écran,
+     que le tuto doit montrer : on les retire le temps du tuto. */
+  document.body.classList.add("tuto-on");
+  tutoI = 0; $("tuto").classList.add("on"); tutoShow();
+};
+$("tutoNext").addEventListener("click", () => { if (tutoI >= TUTO.length - 1) tutoEnd(); else { tutoI++; tutoShow(); } });
+$("tutoPrev").addEventListener("click", () => { if (tutoI > 0){ tutoI--; tutoShow(); } });
+$("tutoSkip").addEventListener("click", tutoEnd);
+addEventListener("resize", () => { if ($("tuto").classList.contains("on")) tutoShow(); });
+
 function boot(){
   buildChips(); fitModals();
   initMap();
@@ -3894,6 +4008,7 @@ function boot(){
   initFs();
   tryCompass();
   startGeo();
+  setTimeout(() => window.lancerTuto(false), 900);
   setTimeout(proposerAvis, 4000);
 }
 window.boot = boot;
