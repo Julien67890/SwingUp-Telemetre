@@ -148,6 +148,8 @@ header .mark{width:46px;height:46px}
   font-weight:700;font-size:.68rem;letter-spacing:.02em;white-space:nowrap;
   box-shadow:0 10px 22px -10px rgba(0,0,0,.5)}
 #accBadge.on{display:flex}
+/* Beta : la précision GPS descend en bas à droite, le total des zones prend sa place. */
+#accBadge{left:auto;top:auto;right:6px;bottom:4px;padding:3px 9px 3px 7px;font-size:.66rem}
 #accBadge i{width:7px;height:7px;flex:0 0 auto;border-radius:50%;background:currentColor}
 #accBadge.warn{border-color:var(--gold);color:#f0d878}
 #accBadge.bad{border-color:var(--bad);color:#ff9b95;animation:accpulse 1.4s ease-in-out infinite}
@@ -165,9 +167,10 @@ header .mark{width:46px;height:46px}
 .dot{position:absolute;left:50%;top:50%;width:17px;height:17px;margin:-8.5px 0 0 -8.5px;
   border-radius:50%;background:var(--gold);border:3px solid var(--green-deep);box-shadow:0 1px 4px rgba(0,0,0,.5)}
 .gtag{background:none!important;border:0!important}
-.gtag span{display:block;width:max-content;transform:translate(-50%,-50%) rotate(var(--cr));padding:3px 9px;border-radius:6px;
+.gtag span{display:block;width:max-content;transform:translate(-50%,-50%) rotate(var(--cr));padding:3px 8px;border-radius:6px;
   background:rgba(19,54,31,.85);border:1px solid rgba(116,198,157,.4);color:var(--cream);
-  font-size:10px;font-weight:500;line-height:1.2;white-space:nowrap}
+  font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap}
+.gtag span{box-shadow:0 1px 5px rgba(0,0,0,.4);font-variant-numeric:tabular-nums}
 .gtag.sel span{border-color:var(--gold);color:#f0d878;background:rgba(19,54,31,.95)}
 .mtag{background:none!important;border:0!important}
 .mtag span{display:block;width:max-content;transform:translate(-50%,-50%) rotate(var(--cr));padding:4px 10px;border-radius:6px;
@@ -209,7 +212,8 @@ header .mark{width:46px;height:46px}
 .stag span{display:block;width:max-content;transform:translate(-50%,-50%) rotate(var(--cr));padding:3px 8px;border-radius:6px;
   background:rgba(14,46,56,.92);border:1px solid rgba(166,223,233,.55);color:#fff;font-size:12px;font-weight:700;
   white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4);font-variant-numeric:tabular-nums}
-#zTot{position:absolute;left:10px;top:50px;z-index:800;display:none;align-items:baseline;gap:6px;
+.stag.gd span{transform:translate(-50%,-50%) rotate(var(--cr)) translateY(-28px);border-color:rgba(143,192,161,.7);background:rgba(19,54,31,.92)}
+#zTot{position:absolute;left:10px;top:10px;z-index:800;display:none;align-items:baseline;gap:6px;
   padding:6px 11px;border-radius:6px;background:rgba(14,46,56,.92);border:1.5px solid rgba(166,223,233,.55);color:#fff;
   font-family:'Outfit',sans-serif;font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums;pointer-events:none}
 #zTot.on{display:flex}
@@ -839,7 +843,7 @@ en:{
 '{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.':'{n} outline(s) will be lost on close. Premium keeps them.',
 'Les greens que tu traces ne sont pas conservés.':'The greens you map are not being kept.',
 'Passe en Premium pour garder tes tracés':'Go Premium to keep your outlines',
-'Créer un compte pour sauvegarder':'Create an account to save','MOI':'ME','MESURE':'MEASURE','CARTO':'MAP','GREEN':'GREEN',"Sélectionnez d'abord un green":'Select a green first','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tap a green on the map, then + AREA to place a layup zone.','Compris':'Got it','4 zones maximum':'4 zones maximum','Zone {n}/4 ajoutée.':'Zone {n}/4 added.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Drag the circles to place them. Then tap a zone or the green to pick your target.','Cible : zone {n}':'Target: zone {n}','Cible : green':'Target: green','Modifier le diamètre':'Change diameter','Ø actuel : {d} m':'Current Ø: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Zone diameter in metres. Used to compute front, back and sides.','Ø {d} m':'Ø {d} m','de la zone {n}':'of zone {n}','Position GPS nécessaire pour placer la première zone.':'GPS position needed to place the first zone.','Zone {n}':'Zone {n}','Déplacer':'Move','Glisser le cercle à la main':'Drag the circle by hand','Retire cette zone du green':'Removes this zone from the green',"jusqu'à la zone {n}":'to zone {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m from you · {b} m to the green',
+'Créer un compte pour sauvegarder':'Create an account to save','MOI':'ME','MESURE':'MEASURE','CARTO':'MAP','GREEN':'GREEN',"Sélectionnez d'abord un green":'Select a green first','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tap a green on the map, then + AREA to place a layup zone.','Compris':'Got it','4 zones maximum':'4 zones maximum','Zone {n}/4 ajoutée.':'Zone {n}/4 added.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Drag the circles to place them. Then tap a zone or the green to pick your target.','Cible : zone {n}':'Target: zone {n}','Cible : green':'Target: green','Modifier le diamètre':'Change diameter','Ø actuel : {d} m':'Current Ø: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Zone diameter in metres. Used to compute front, back and sides.','Ø {d} m':'Ø {d} m','de la zone {n}':'of zone {n}','Green {d} m':'Green {d} m','Position GPS nécessaire pour placer la première zone.':'GPS position needed to place the first zone.','Zone {n}':'Zone {n}','Déplacer':'Move','Glisser le cercle à la main':'Drag the circle by hand','Retire cette zone du green':'Removes this zone from the green',"jusqu'à la zone {n}":'to zone {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m from you · {b} m to the green',
 'DÉTECT':'DETECT','TRACER':'DRAW','POINTER':'POINT','GREENS':'GREENS','POS.':'POS.','Tolérance':'Tolerance',
 'Rayon':'Radius','Refaire':'Redo','Garder':'Keep','Fermer':'Close','Annuler':'Cancel','Enregistrer':'Save',
 'En attente de position':'Waiting for position','Coup aveugle':'Blind shot','Club conseillé':'Suggested club',
@@ -967,7 +971,7 @@ es:{
 '{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.':'{n} trazado(s) se perderán al cerrar. Premium los conserva.',
 'Les greens que tu traces ne sont pas conservés.':'Los greens que trazas no se conservan.',
 'Passe en Premium pour garder tes tracés':'Pasa a Premium para conservar tus trazados',
-'Créer un compte pour sauvegarder':'Crea una cuenta para guardar','MOI':'YO','MESURE':'MEDIR','CARTO':'MAPA','GREEN':'GREEN',"Sélectionnez d'abord un green":'Selecciona primero un green','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Toca un green en el mapa y luego + AREA para colocar una zona intermedia.','Compris':'Entendido','4 zones maximum':'4 zonas como máximo','Zone {n}/4 ajoutée.':'Zona {n}/4 añadida.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Arrastra los círculos para colocarlos. Luego toca una zona o el green para elegir el objetivo.','Cible : zone {n}':'Objetivo: zona {n}','Cible : green':'Objetivo: green','Modifier le diamètre':'Cambiar el diámetro','Ø actuel : {d} m':'Ø actual: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Diámetro de la zona en metros. Sirve para calcular delante, detrás y los lados.','Ø {d} m':'Ø {d} m','de la zone {n}':'de la zona {n}','Position GPS nécessaire pour placer la première zone.':'Se necesita la posición GPS para colocar la primera zona.','Zone {n}':'Zona {n}','Déplacer':'Mover','Glisser le cercle à la main':'Arrastrar el círculo con el dedo','Retire cette zone du green':'Quita esta zona del green',"jusqu'à la zone {n}":'hasta la zona {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m desde ti · {b} m hasta el green',
+'Créer un compte pour sauvegarder':'Crea una cuenta para guardar','MOI':'YO','MESURE':'MEDIR','CARTO':'MAPA','GREEN':'GREEN',"Sélectionnez d'abord un green":'Selecciona primero un green','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Toca un green en el mapa y luego + AREA para colocar una zona intermedia.','Compris':'Entendido','4 zones maximum':'4 zonas como máximo','Zone {n}/4 ajoutée.':'Zona {n}/4 añadida.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Arrastra los círculos para colocarlos. Luego toca una zona o el green para elegir el objetivo.','Cible : zone {n}':'Objetivo: zona {n}','Cible : green':'Objetivo: green','Modifier le diamètre':'Cambiar el diámetro','Ø actuel : {d} m':'Ø actual: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Diámetro de la zona en metros. Sirve para calcular delante, detrás y los lados.','Ø {d} m':'Ø {d} m','de la zone {n}':'de la zona {n}','Green {d} m':'Green {d} m','Position GPS nécessaire pour placer la première zone.':'Se necesita la posición GPS para colocar la primera zona.','Zone {n}':'Zona {n}','Déplacer':'Mover','Glisser le cercle à la main':'Arrastrar el círculo con el dedo','Retire cette zone du green':'Quita esta zona del green',"jusqu'à la zone {n}":'hasta la zona {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m desde ti · {b} m hasta el green',
 'DÉTECT':'DETECT','TRACER':'TRAZAR','POINTER':'PUNTO','GREENS':'GREENS','POS.':'POS.','Tolérance':'Tolerancia',
 'Rayon':'Radio','Refaire':'Rehacer','Garder':'Conservar','Fermer':'Cerrar','Annuler':'Cancelar',
 'Enregistrer':'Guardar','En attente de position':'Esperando posición','Coup aveugle':'Golpe ciego',
@@ -1100,7 +1104,7 @@ de:{
 'Les greens que tu traces ne sont pas conservés.':'Die von dir erfassten Greens werden nicht gespeichert.',
 'Passe en Premium pour garder tes tracés':'Wechsle zu Premium, um deine Konturen zu behalten',
 'Créer un compte pour sauvegarder':'Erstelle ein Konto, um zu speichern','MOI':'ICH','MESURE':'MESSEN',
-'CARTO':'KARTE','GREEN':'GRÜN',"Sélectionnez d'abord un green":'Wähle zuerst ein Grün','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tippe auf ein Grün und dann auf + AREA, um eine Zwischenzone zu setzen.','Compris':'Verstanden','4 zones maximum':'Maximal 4 Zonen','Zone {n}/4 ajoutée.':'Zone {n}/4 hinzugefügt.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Ziehe die Kreise, um sie zu setzen. Tippe dann auf eine Zone oder das Grün, um dein Ziel zu wählen.','Cible : zone {n}':'Ziel: Zone {n}','Cible : green':'Ziel: Grün','Modifier le diamètre':'Durchmesser ändern','Ø actuel : {d} m':'Aktueller Ø: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Durchmesser der Zone in Metern. Dient zur Berechnung von vorne, hinten und den Seiten.','Ø {d} m':'Ø {d} m','de la zone {n}':'der Zone {n}','Position GPS nécessaire pour placer la première zone.':'GPS-Position nötig, um die erste Zone zu setzen.','Zone {n}':'Zone {n}','Déplacer':'Verschieben','Glisser le cercle à la main':'Kreis mit dem Finger ziehen','Retire cette zone du green':'Entfernt diese Zone vom Grün',"jusqu'à la zone {n}":'bis Zone {n}','Total':'Gesamt',"{a} m depuis vous · {b} m jusqu'au green":'{a} m von dir · {b} m bis zum Grün','DÉTECT':'ERKENN','TRACER':'ZEICHN','POINTER':'PUNKT','GREENS':'GREENS','POS.':'POS.',
+'CARTO':'KARTE','GREEN':'GRÜN',"Sélectionnez d'abord un green":'Wähle zuerst ein Grün','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tippe auf ein Grün und dann auf + AREA, um eine Zwischenzone zu setzen.','Compris':'Verstanden','4 zones maximum':'Maximal 4 Zonen','Zone {n}/4 ajoutée.':'Zone {n}/4 hinzugefügt.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Ziehe die Kreise, um sie zu setzen. Tippe dann auf eine Zone oder das Grün, um dein Ziel zu wählen.','Cible : zone {n}':'Ziel: Zone {n}','Cible : green':'Ziel: Grün','Modifier le diamètre':'Durchmesser ändern','Ø actuel : {d} m':'Aktueller Ø: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Durchmesser der Zone in Metern. Dient zur Berechnung von vorne, hinten und den Seiten.','Ø {d} m':'Ø {d} m','de la zone {n}':'der Zone {n}','Green {d} m':'Grün {d} m','Position GPS nécessaire pour placer la première zone.':'GPS-Position nötig, um die erste Zone zu setzen.','Zone {n}':'Zone {n}','Déplacer':'Verschieben','Glisser le cercle à la main':'Kreis mit dem Finger ziehen','Retire cette zone du green':'Entfernt diese Zone vom Grün',"jusqu'à la zone {n}":'bis Zone {n}','Total':'Gesamt',"{a} m depuis vous · {b} m jusqu'au green":'{a} m von dir · {b} m bis zum Grün','DÉTECT':'ERKENN','TRACER':'ZEICHN','POINTER':'PUNKT','GREENS':'GREENS','POS.':'POS.',
 'Tolérance':'Toleranz','Rayon':'Radius','Refaire':'Neu','Garder':'Behalten','Fermer':'Schließen',
 'Annuler':'Abbrechen','Enregistrer':'Speichern','En attente de position':'Warte auf Position',
 'Coup aveugle':'Blinder Schlag','Club conseillé':'Empfohlener Schläger','Choisissez un green':'Wähle ein Green',
@@ -1849,7 +1853,7 @@ const $ = id => document.getElementById(id);
 const L_ = (s,v) => (typeof T==="function" ? T(s,v) : s);
 const R_E = 6371008.8, D2R = Math.PI/180, R2D = 180/Math.PI;
 const KEY = "greens.custom.v2", LAST = "greens.last.v1", BAG = "greens.bag.v1", OVER = "greens.over.v1", ZONES = "greens.zones.v1";
-const ZMAX = 4, ZPASS = 15, ZRESET = 30, ZDIA = 5;   /* ZDIA : diamètre par défaut d'une zone (m) */
+const ZMAX = 4, ZPASS = 15, ZRESET = 30, ZDIA = 10;   /* ZDIA : diamètre par défaut d'une zone (m) */
 const zDia = p => (p && p[2] > 0) ? p[2] : ZDIA;   /* cible choisie à la main : oubliée après un déplacement de 30 m (coup joué) */
 /* ZPASS : zone dépassée quand le joueur est 15 m plus près du green qu'elle */
 
@@ -3451,9 +3455,16 @@ function render(m){
     set("dFront", nb(Math.max(0, d - r))); set("dBack", nb(d + r));
     const side = Math.hypot(d, r);
     set("dLeft", nb(side)); set("dRight", nb(side));
-    $("dElev").innerHTML = "—"; $("cElev").className = "c"; $("blind").classList.remove("on");
-    zRender(S.target === "front" ? Math.max(0, d - r) : S.target === "back" ? d + r : d,
-      (S.target === "front" ? L_("au bord avant") : S.target === "back" ? L_("au bord arrière") : L_("au centre")) + " " + L_("de la zone {n}", { n:zp.tgt+1 }), 0);
+    updateZoneAlti(zt);
+    const za = (S.zAlti && S.zAlti.zk === zt[0].toFixed(5) + "," + zt[1].toFixed(5) && !compet) ? S.zAlti : null;
+    const zdz = za ? za.zone - za.player : 0;
+    if (za){
+      $("dElev").innerHTML = (zdz>=0?"+":"−") + nb(Math.abs(zdz),1) + "<i>m</i>";
+      $("cElev").className = "c " + (zdz >= 0 ? "up" : "down");
+    } else { $("dElev").innerHTML = "—"; $("cElev").className = "c"; }
+    $("blind").classList.toggle("on", !!(za && za.blind));
+    zRender((S.target === "front" ? Math.max(0, d - r) : S.target === "back" ? d + r : d) + zdz,
+      (S.target === "front" ? L_("au bord avant") : S.target === "back" ? L_("au bord arrière") : L_("au centre")) + " " + L_("de la zone {n}", { n:zp.tgt+1 }), zdz);
     return;
   }
   $("gName").textContent = S.sel.name;
@@ -3472,6 +3483,29 @@ function render(m){
   const raw = S.target === "front" ? m.front.d : S.target === "back" ? m.back.d : (m.front.d + m.back.d)/2;
   const where = S.target === "front" ? L_("au bord avant") : S.target === "back" ? L_("au bord arrière") : L_("au centre");
   zRender(raw + dz, where, dz);
+}
+/* Dénivelé et coup aveugle vers la zone visée : même méthode que pour le
+   green (profil de 21 points), recalculé quand le joueur ou la zone bouge. */
+let zAltiBusy = false, zAltiKey = "";
+async function updateZoneAlti(zt){
+  const key = [S.pos.lat.toFixed(5), S.pos.lon.toFixed(5), zt[0].toFixed(5), zt[1].toFixed(5)].join(",");
+  if (key === zAltiKey || zAltiBusy) return;
+  zAltiBusy = true; zAltiKey = key;
+  const zk = zt[0].toFixed(5) + "," + zt[1].toFixed(5);
+  try{
+    const line = [];
+    for (let i=0;i<=20;i++){ const t=i/20; line.push([ S.pos.lat+(zt[0]-S.pos.lat)*t, S.pos.lon+(zt[1]-S.pos.lon)*t ]); }
+    const z = await elevations(line);
+    const zp = z[0], zc = z[20];
+    if (zp != null && zc != null){
+      const eye = zp + 1.6, tgt = zc + 0.3;
+      let blind = false;
+      for (let i=1;i<20;i++){ if (z[i] != null && z[i] > eye + (i/20)*(tgt-eye) + 0.7){ blind = true; break; } }
+      S.zAlti = { zk, player:zp, zone:zc, blind };
+    } else S.zAlti = null;
+  }catch(e){ S.zAlti = null; }
+  zAltiBusy = false;
+  if (S.sel && S.pos) render(measure(S.sel, S.pos));
 }
 /* Bloc « club conseillé », commun au green et aux zones. */
 function zRender(target, where, dz){
@@ -3613,6 +3647,12 @@ function drawZoneLines(){
     tot += d;
     L.polyline([[a[0], a[1]], [b[0], b[1]]], { color:"#ffffff", weight:2.5, opacity:.95, interactive:false }).addTo(zLineLayer);
     L.marker([(a[0]+b[0])/2, (a[1]+b[1])/2], { icon:L.divIcon({ className:"stag", html:"<span>" + Math.round(d) + " m</span>" }),
+      interactive:false, zIndexOffset:900 }).addTo(zLineLayer);
+  }
+  /* Distance directe au green, affichée au-dessus de son nom. */
+  if (S.pos){
+    const gc = ch[ch.length-1];
+    L.marker([gc[0], gc[1]], { icon:L.divIcon({ className:"stag gd", html:"<span>" + esc(L_("Green {d} m", { d:Math.round(zDist(ch[0], gc)) })) + "</span>" }),
       interactive:false, zIndexOffset:900 }).addTo(zLineLayer);
   }
   /* Sans position, le total ne part pas du joueur : on ne l'affiche pas. */
