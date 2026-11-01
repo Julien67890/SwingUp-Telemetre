@@ -2279,6 +2279,10 @@ function initMap(){
     dragging:false, touchZoom:false, scrollWheelZoom:false, doubleClickZoom:false,
     boxZoom:false, keyboard:false, tap:false, inertia:false }).setView(start, z);
   setBase(inFR({ lat:start[0], lon:start[1] }));
+  /* Le fond (IGN en France, Esri ailleurs) suit la zone AFFICHÉE et non la
+     position GPS : sinon, un joueur en France qui consulte un parcours à
+     l'étranger recevait des tuiles IGN inexistantes (404) et une carte vide. */
+  map.on("moveend", () => { const c = map.getCenter(); setBase(inFR({ lat:c.lat, lon:c.lng })); });
   gLayer = L.layerGroup().addTo(map); tagLayer = L.layerGroup().addTo(map);
   spokes = L.layerGroup().addTo(map); tmpLayer = L.layerGroup().addTo(map);
   measLayer = L.layerGroup().addTo(map);
@@ -2321,7 +2325,6 @@ function setPos(lat, lon, acc, manual){
   const first = !S.pos;
   S.pos = { lat, lon }; S.acc = acc;
   try{ Store.set(LAST, JSON.stringify({ lat, lon })); }catch(e){}
-  setBase(inFR(S.pos));
   if (first){ meMarker.addTo(map); accRing.addTo(map); map.setView([lat,lon], 18); }
   meMarker.setLatLng([lat,lon]);
   accRing.setLatLng([lat,lon]).setRadius(acc||0);
