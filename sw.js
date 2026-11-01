@@ -131,6 +131,9 @@ self.addEventListener('fetch', event => {
 
   /* Navigation : réseau d'abord, cache en secours. */
   if (req.mode === 'navigate') {
+    /* La page de test ne passe jamais par le cache : sinon elle serait
+       enregistrée sous ./index.html et servie à l'app hors ligne. */
+    if (url.pathname.endsWith('/beta.html')) return;
     event.respondWith(
       fetch(req)
         .then(res => {
