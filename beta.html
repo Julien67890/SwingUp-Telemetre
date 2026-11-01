@@ -204,6 +204,7 @@ header .mark{width:46px;height:46px}
 .zone i::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:#fff}
 .zone.edit{cursor:grab;touch-action:none}
 .zone.edit i{border-color:#a6dfe9;background:rgba(166,223,233,.2)}
+.zone.target i{border-width:3.5px;border-color:#a6dfe9;background:rgba(166,223,233,.35)}
 .zone.passed i{opacity:.45;border-style:dashed}
 .zone.dragging i{background:rgba(255,255,255,.35)}
 .stag{background:none!important;border:0!important}
@@ -826,7 +827,7 @@ en:{
 '{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.':'{n} outline(s) will be lost on close. Premium keeps them.',
 'Les greens que tu traces ne sont pas conservés.':'The greens you map are not being kept.',
 'Passe en Premium pour garder tes tracés':'Go Premium to keep your outlines',
-'Créer un compte pour sauvegarder':'Create an account to save','MOI':'ME','MESURE':'MEASURE','CARTO':'MAP','GREEN':'GREEN',"Sélectionnez d'abord un green":'Select a green first','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tap a green on the map, then + AREA to place a layup zone.','Compris':'Got it','4 zones maximum':'4 zones maximum','Zone {n}/4 ajoutée.':'Zone {n}/4 added.','Glissez les cercles pour placer vos zones. + AREA pour en ajouter une.':'Drag the circles to place your zones. + AREA adds another.','Position GPS nécessaire pour placer la première zone.':'GPS position needed to place the first zone.','Zone {n}':'Zone {n}','Déplacer':'Move','Glisser le cercle à la main':'Drag the circle by hand','Retire cette zone du green':'Removes this zone from the green',"jusqu'à la zone {n}":'to zone {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m from you · {b} m to the green',
+'Créer un compte pour sauvegarder':'Create an account to save','MOI':'ME','MESURE':'MEASURE','CARTO':'MAP','GREEN':'GREEN',"Sélectionnez d'abord un green":'Select a green first','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tap a green on the map, then + AREA to place a layup zone.','Compris':'Got it','4 zones maximum':'4 zones maximum','Zone {n}/4 ajoutée.':'Zone {n}/4 added.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Drag the circles to place them. Then tap a zone or the green to pick your target.','Cible : zone {n}':'Target: zone {n}','Cible : green':'Target: green','Position GPS nécessaire pour placer la première zone.':'GPS position needed to place the first zone.','Zone {n}':'Zone {n}','Déplacer':'Move','Glisser le cercle à la main':'Drag the circle by hand','Retire cette zone du green':'Removes this zone from the green',"jusqu'à la zone {n}":'to zone {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m from you · {b} m to the green',
 'DÉTECT':'DETECT','TRACER':'DRAW','POINTER':'POINT','GREENS':'GREENS','POS.':'POS.','Tolérance':'Tolerance',
 'Rayon':'Radius','Refaire':'Redo','Garder':'Keep','Fermer':'Close','Annuler':'Cancel','Enregistrer':'Save',
 'En attente de position':'Waiting for position','Coup aveugle':'Blind shot','Club conseillé':'Suggested club',
@@ -954,7 +955,7 @@ es:{
 '{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.':'{n} trazado(s) se perderán al cerrar. Premium los conserva.',
 'Les greens que tu traces ne sont pas conservés.':'Los greens que trazas no se conservan.',
 'Passe en Premium pour garder tes tracés':'Pasa a Premium para conservar tus trazados',
-'Créer un compte pour sauvegarder':'Crea una cuenta para guardar','MOI':'YO','MESURE':'MEDIR','CARTO':'MAPA','GREEN':'GREEN',"Sélectionnez d'abord un green":'Selecciona primero un green','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Toca un green en el mapa y luego + AREA para colocar una zona intermedia.','Compris':'Entendido','4 zones maximum':'4 zonas como máximo','Zone {n}/4 ajoutée.':'Zona {n}/4 añadida.','Glissez les cercles pour placer vos zones. + AREA pour en ajouter une.':'Arrastra los círculos para colocar tus zonas. + AREA añade otra.','Position GPS nécessaire pour placer la première zone.':'Se necesita la posición GPS para colocar la primera zona.','Zone {n}':'Zona {n}','Déplacer':'Mover','Glisser le cercle à la main':'Arrastrar el círculo con el dedo','Retire cette zone du green':'Quita esta zona del green',"jusqu'à la zone {n}":'hasta la zona {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m desde ti · {b} m hasta el green',
+'Créer un compte pour sauvegarder':'Crea una cuenta para guardar','MOI':'YO','MESURE':'MEDIR','CARTO':'MAPA','GREEN':'GREEN',"Sélectionnez d'abord un green":'Selecciona primero un green','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Toca un green en el mapa y luego + AREA para colocar una zona intermedia.','Compris':'Entendido','4 zones maximum':'4 zonas como máximo','Zone {n}/4 ajoutée.':'Zona {n}/4 añadida.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Arrastra los círculos para colocarlos. Luego toca una zona o el green para elegir el objetivo.','Cible : zone {n}':'Objetivo: zona {n}','Cible : green':'Objetivo: green','Position GPS nécessaire pour placer la première zone.':'Se necesita la posición GPS para colocar la primera zona.','Zone {n}':'Zona {n}','Déplacer':'Mover','Glisser le cercle à la main':'Arrastrar el círculo con el dedo','Retire cette zone du green':'Quita esta zona del green',"jusqu'à la zone {n}":'hasta la zona {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m desde ti · {b} m hasta el green',
 'DÉTECT':'DETECT','TRACER':'TRAZAR','POINTER':'PUNTO','GREENS':'GREENS','POS.':'POS.','Tolérance':'Tolerancia',
 'Rayon':'Radio','Refaire':'Rehacer','Garder':'Conservar','Fermer':'Cerrar','Annuler':'Cancelar',
 'Enregistrer':'Guardar','En attente de position':'Esperando posición','Coup aveugle':'Golpe ciego',
@@ -1087,7 +1088,7 @@ de:{
 'Les greens que tu traces ne sont pas conservés.':'Die von dir erfassten Greens werden nicht gespeichert.',
 'Passe en Premium pour garder tes tracés':'Wechsle zu Premium, um deine Konturen zu behalten',
 'Créer un compte pour sauvegarder':'Erstelle ein Konto, um zu speichern','MOI':'ICH','MESURE':'MESSEN',
-'CARTO':'KARTE','GREEN':'GRÜN',"Sélectionnez d'abord un green":'Wähle zuerst ein Grün','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tippe auf ein Grün und dann auf + AREA, um eine Zwischenzone zu setzen.','Compris':'Verstanden','4 zones maximum':'Maximal 4 Zonen','Zone {n}/4 ajoutée.':'Zone {n}/4 hinzugefügt.','Glissez les cercles pour placer vos zones. + AREA pour en ajouter une.':'Ziehe die Kreise, um deine Zonen zu setzen. + AREA fügt eine weitere hinzu.','Position GPS nécessaire pour placer la première zone.':'GPS-Position nötig, um die erste Zone zu setzen.','Zone {n}':'Zone {n}','Déplacer':'Verschieben','Glisser le cercle à la main':'Kreis mit dem Finger ziehen','Retire cette zone du green':'Entfernt diese Zone vom Grün',"jusqu'à la zone {n}":'bis Zone {n}','Total':'Gesamt',"{a} m depuis vous · {b} m jusqu'au green":'{a} m von dir · {b} m bis zum Grün','DÉTECT':'ERKENN','TRACER':'ZEICHN','POINTER':'PUNKT','GREENS':'GREENS','POS.':'POS.',
+'CARTO':'KARTE','GREEN':'GRÜN',"Sélectionnez d'abord un green":'Wähle zuerst ein Grün','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tippe auf ein Grün und dann auf + AREA, um eine Zwischenzone zu setzen.','Compris':'Verstanden','4 zones maximum':'Maximal 4 Zonen','Zone {n}/4 ajoutée.':'Zone {n}/4 hinzugefügt.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Ziehe die Kreise, um sie zu setzen. Tippe dann auf eine Zone oder das Grün, um dein Ziel zu wählen.','Cible : zone {n}':'Ziel: Zone {n}','Cible : green':'Ziel: Grün','Position GPS nécessaire pour placer la première zone.':'GPS-Position nötig, um die erste Zone zu setzen.','Zone {n}':'Zone {n}','Déplacer':'Verschieben','Glisser le cercle à la main':'Kreis mit dem Finger ziehen','Retire cette zone du green':'Entfernt diese Zone vom Grün',"jusqu'à la zone {n}":'bis Zone {n}','Total':'Gesamt',"{a} m depuis vous · {b} m jusqu'au green":'{a} m von dir · {b} m bis zum Grün','DÉTECT':'ERKENN','TRACER':'ZEICHN','POINTER':'PUNKT','GREENS':'GREENS','POS.':'POS.',
 'Tolérance':'Toleranz','Rayon':'Radius','Refaire':'Neu','Garder':'Behalten','Fermer':'Schließen',
 'Annuler':'Abbrechen','Enregistrer':'Speichern','En attente de position':'Warte auf Position',
 'Coup aveugle':'Blinder Schlag','Club conseillé':'Empfohlener Schläger','Choisissez un green':'Wähle ein Green',
@@ -1836,7 +1837,8 @@ const $ = id => document.getElementById(id);
 const L_ = (s,v) => (typeof T==="function" ? T(s,v) : s);
 const R_E = 6371008.8, D2R = Math.PI/180, R2D = 180/Math.PI;
 const KEY = "greens.custom.v2", LAST = "greens.last.v1", BAG = "greens.bag.v1", OVER = "greens.over.v1", ZONES = "greens.zones.v1";
-const ZMAX = 4, ZPASS = 15;   /* zone dépassée quand le joueur est 15 m plus près du green qu'elle */
+const ZMAX = 4, ZPASS = 15, ZRESET = 30;   /* cible choisie à la main : oubliée après un déplacement de 30 m (coup joué) */
+/* ZPASS : zone dépassée quand le joueur est 15 m plus près du green qu'elle */
 
 const BASE = [
   ["Driver",200],["Bois 3",185],["Bois 5",170],["Hybride",160],
@@ -1877,7 +1879,7 @@ function clubSvg(name){
 const S = { pos:null, acc:null, heading:null, greens:[], sel:null, ctx:null, replaceId:null,
             mode:null, draft:[], detect:null, point:null, meas:null, hideId:null, alti:null, altiKey:"", altiBusy:false,
             france:null, target:"centre", bag:loadBag(), over:loadOver(),
-            editRing:null, editDirty:false, resumeOriginal:null, resumeNoReduce:false, zones:{} };
+            editRing:null, editDirty:false, resumeOriginal:null, resumeNoReduce:false, zones:{}, zTgt:null, zTgtAt:null };
 let map, base, meMarker, accRing, spokes, gLayer, tagLayer, tmpLayer, measLayer, zLayer, zLineLayer, follow = true;
 let zDrag = false, zDelArmed = false, zCtxIdx = -1;
 let editPoly = null, editHandles = [];
@@ -2254,14 +2256,24 @@ function tap(ll){
   if (S.mode === "point"){ S.point = { lat:ll.lat, lon:ll.lng }; applyPoint(); return; }
   if (S.mode === "measure"){ S.meas = { lat:ll.lat, lon:ll.lng }; drawMeas(); return; }
   if (S.mode === "area") return;
-  /* Un appui sur une zone ne doit pas relâcher le green. */
-  if (zoneHit(ll) >= 0) return;
+  /* Toucher une zone ou le green sélectionné (s'il a des zones) choisit
+     la cible du coup : distance et club se calent dessus. */
+  const zi = zoneHit(ll);
+  if (zi >= 0){
+    S.zTgt = zi; S.zTgtAt = S.pos ? [S.pos.lat, S.pos.lon] : null;
+    toast(L_("Cible : zone {n}", { n:zi+1 })); refresh(); drawZones(); return;
+  }
+  const hz = hitTest(ll);
+  if (hz && S.sel && hz.id === S.sel.id && zonesOf(hz).length){
+    S.zTgt = "green"; S.zTgtAt = S.pos ? [S.pos.lat, S.pos.lon] : null;
+    toast(L_("Cible : green")); refresh(); drawZones(); return;
+  }
   /* Un appui dans le vide relâche la sélection : les rayons et le
      conseil de club disparaissent au lieu de rester sur un green
      qu'on ne joue plus. */
   const hit = hitTest(ll);
-  if (hit){ S.sel = hit; refresh(); }
-  else if (S.sel){ S.sel = null; refresh(); }
+  if (hit){ S.sel = hit; S.zTgt = null; refresh(); }
+  else if (S.sel){ S.sel = null; S.zTgt = null; refresh(); }
 }
 function longPress(ll){
   if (S.mode) return;
@@ -3431,9 +3443,9 @@ function render(m){
 
   const raw = S.target === "front" ? m.front.d : S.target === "back" ? m.back.d : (m.front.d + m.back.d)/2;
   /* Avec une zone intermédiaire, le conseil vise la première zone. */
-  const zs = zActive(S.sel), zOn = !!(zs.length && S.pos);
+  const zp = zPlan(S.sel), zs = zp.pts, zOn = !!(zs.length && S.pos);
   const target = zOn ? zDist([S.pos.lat, S.pos.lon], zs[0]) : raw + dz, p = pickClub(target);
-  const where = zOn ? L_("jusqu'à la zone {n}", { n:zonesOf(S.sel).indexOf(zs[0]) + 1 }) : S.target === "front" ? L_("au bord avant") : S.target === "back" ? L_("au bord arrière") : L_("au centre");
+  const where = zOn ? L_("jusqu'à la zone {n}", { n:zp.tgt + 1 }) : S.target === "front" ? L_("au bord avant") : S.target === "back" ? L_("au bord arrière") : L_("au centre");
   if (!p){
     $("clubIcon").innerHTML = ""; $("clubName").textContent = L_("Sac vide");
     $("clubMeta").textContent = L_("Réglez vos distances dans SAC"); return;
@@ -3514,6 +3526,7 @@ function setZones(g, pts){
   const gc = ctr(g.coords);
   pts = pts.slice().sort((a, b) => zDist(b, gc) - zDist(a, gc));
   S.zones[g.id] = { c:greenCourseId(g), p:pts };
+  S.zTgt = null;
   storeZones(); pushGreens();
 }
 /* Zones encore devant le joueur : celles plus proches du green que lui
@@ -3525,8 +3538,23 @@ function zActive(g){
   const gc = ctr(g.coords), dp = zDist([S.pos.lat, S.pos.lon], gc);
   return z.filter(p => zDist(p, gc) < dp - ZPASS);
 }
+/* Plan du coup en cours : la cible (zone choisie au toucher, ou green),
+   puis les zones suivantes jusqu'au green. Sans choix, la cible est la
+   première zone encore devant (zActive). Le choix manuel vaut pour le coup
+   en cours : il est oublié dès que le joueur s'est déplacé de ZRESET. */
+function zPlan(g){
+  const all = zonesOf(g);
+  if (!all.length) return { pts:[], tgt:-1 };
+  if (S.zTgt != null && S.zTgtAt && S.pos && zDist([S.pos.lat, S.pos.lon], S.zTgtAt) > ZRESET){ S.zTgt = null; S.zTgtAt = null; }
+  if (S.zTgt === "green") return { pts:[], tgt:-1 };
+  if (Number.isInteger(S.zTgt) && all[S.zTgt]) return { pts:all.slice(S.zTgt), tgt:S.zTgt };
+  const act = zActive(g);
+  if (!act.length) return { pts:[], tgt:-1 };
+  const k = all.indexOf(act[0]);
+  return { pts:all.slice(k), tgt:k };
+}
 function zChain(g){
-  return (S.pos ? [[S.pos.lat, S.pos.lon]] : []).concat(zActive(g), [ctr(g.coords)]);
+  return (S.pos ? [[S.pos.lat, S.pos.lon]] : []).concat(zPlan(g).pts, [ctr(g.coords)]);
 }
 function zoneHit(ll){
   if (!S.sel || !map) return -1;
@@ -3540,7 +3568,7 @@ function zoneHit(ll){
 }
 function drawZoneLines(){
   zLineLayer.clearLayers();
-  const g = S.sel, z = zActive(g);
+  const g = S.sel, z = zPlan(g).pts;
   if (!g || !z.length){ $("zTot").classList.remove("on"); return; }
   const ch = zChain(g);
   let tot = 0;
@@ -3562,9 +3590,9 @@ function drawZones(){
   drawZoneLines();
   if (zDrag) return;              /* pendant un glissé, on garde les marqueurs en place */
   zLayer.clearLayers();
-  const g = S.sel, edit = S.mode === "area", act = zActive(g);
+  const g = S.sel, edit = S.mode === "area", pl = zPlan(g);
   zonesOf(g).forEach((p, i) => {
-    const mk = L.marker(p, { icon:L.divIcon({ className:"zone" + (edit ? " edit" : "") + (act.includes(p) ? "" : " passed"), html:"<i></i>", iconSize:[44,44], iconAnchor:[22,22] }),
+    const mk = L.marker(p, { icon:L.divIcon({ className:"zone" + (edit ? " edit" : "") + (i === pl.tgt ? " target" : pl.pts.includes(p) ? "" : " passed"), html:"<i></i>", iconSize:[44,44], iconAnchor:[22,22] }),
       keyboard:false, interactive:edit, zIndexOffset:950 }).addTo(zLayer);
     if (edit) armZoneDrag(mk, i);
   });
@@ -3610,7 +3638,7 @@ function enterArea(prefix){
     S.mode = "area"; $("bArea").classList.add("armed");
     $("bKeep").style.display = "none"; $("bAgain").style.display = "none";
   }
-  msg((prefix ? prefix + " " : "") + L_("Glissez les cercles pour placer vos zones. + AREA pour en ajouter une."));
+  msg((prefix ? prefix + " " : "") + L_("Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible."));
   drawZones();
 }
 function addZone(){
