@@ -190,23 +190,21 @@ header .mark{width:46px;height:46px}
 .tool.armed{border-color:var(--gold);color:#f0d878}
 .tool.hide{display:none}
 .tool.busy{opacity:.5}
-/* Trois familles de boutons : navigation (vert d'origine), zones (bleu-vert), greens (or). */
+/* Trois familles de boutons : navigation (graphite), zones (bleu-vert), greens (vert d'origine). */
 .tool.t-area{border-color:rgba(120,196,214,.55);background:rgba(14,46,56,.9);color:#a6dfe9}
 .tool.t-area:active{background:rgba(30,84,98,.92)}
 .tool.t-area.armed{border-color:#a6dfe9;color:#fff;background:rgba(30,84,98,.95)}
-.tool.t-green{border-color:rgba(201,162,39,.5);background:rgba(44,38,12,.88);color:#e8cf78}
-.tool.t-green:active{background:rgba(92,76,20,.92)}
-.tool.t-green.armed{border-color:#f0d878;color:#fff3c4;background:rgba(110,90,22,.92)}
+.tool.t-nav{border-color:rgba(214,220,224,.32);background:rgba(28,33,37,.88);color:#dfe4e7}
+.tool.t-nav:active{background:rgba(58,66,72,.92)}
 /* Zones intermédiaires */
 .zone{background:none!important;border:0!important}
-.zone i{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;
-  border:2.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.35),0 1px 6px rgba(0,0,0,.45)}
-.zone i::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:#fff}
+.zone i{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;
+  background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
 .zone.edit{cursor:grab;touch-action:none}
-.zone.edit i{border-color:#a6dfe9;background:rgba(166,223,233,.2)}
-.zone.target i{border-width:3.5px;border-color:#a6dfe9;background:rgba(166,223,233,.35)}
-.zone.passed i{opacity:.45;border-style:dashed}
+.zone.edit i{width:40px;height:40px;margin:-20px 0 0 -20px;border:2.5px dashed #a6dfe9;background:rgba(166,223,233,.15);box-shadow:none}
+.zone.edit i::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#fff}
 .zone.dragging i{background:rgba(255,255,255,.35)}
+#zsize input{text-align:center;font-size:1.4rem;font-weight:700}
 .stag{background:none!important;border:0!important}
 .stag span{display:block;width:max-content;transform:translate(-50%,-50%) rotate(var(--cr));padding:3px 8px;border-radius:6px;
   background:rgba(14,46,56,.92);border:1px solid rgba(166,223,233,.55);color:#fff;font-size:12px;font-weight:700;
@@ -469,31 +467,31 @@ header .mark{width:46px;height:46px}
     <div id="zTot"></div>
 
     <div id="mtools">
-      <button class="tool hide" id="bFs" title="Plein écran" aria-label="Plein écran">
+      <button class="tool t-nav hide" id="bFs" title="Plein écran" aria-label="Plein écran">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
       </button>
-      <button class="tool" id="bRot" title="Orientation">
+      <button class="tool t-nav" id="bRot" title="Orientation">
         <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M12 3 L16 20 L12 16.5 L8 20 Z" fill="currentColor"/></svg>
         <span id="rotLab" data-t>NORD</span>
       </button>
-      <button class="tool" id="bMe" title="Me recentrer"><span data-t>MOI</span></button>
+      <button class="tool t-nav" id="bMe" title="Me recentrer"><span data-t>MOI</span></button>
       <button class="tool t-area" id="bArea" title="Zone intermédiaire">
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
         <span>AREA</span>
       </button>
-      <button class="tool t-green" id="bCarto" title="Greens">
+      <button class="tool" id="bCarto" title="Greens">
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
         <span data-t>GREEN</span>
       </button>
       <div id="carto">
-        <button class="tool t-green" id="bDetect" data-t>DÉTECT</button>
-        <button class="tool t-green" id="bDraw" data-t>TRACER</button>
-        <button class="tool t-green" id="bPoint" data-t>POINTER</button>
-        <button class="tool t-green" id="bLoad" title="Recharger les greens">
+        <button class="tool" id="bDetect" data-t>DÉTECT</button>
+        <button class="tool" id="bDraw" data-t>TRACER</button>
+        <button class="tool" id="bPoint" data-t>POINTER</button>
+        <button class="tool" id="bLoad" title="Recharger les greens">
           <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>
           <span data-t>GREENS</span>
         </button>
-        <button class="tool t-green hide" id="bPos" data-t>POS.</button>
+        <button class="tool hide" id="bPos" data-t>POS.</button>
       </div>
     </div>
 
@@ -614,9 +612,23 @@ header .mark{width:46px;height:46px}
     <p class="txt" id="zctxSub"></p>
     <div class="list">
       <button id="zMove"><span class="gl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg></span><span><b data-t>Déplacer</b><small data-t>Glisser le cercle à la main</small></span></button>
+      <button id="zSize"><span class="gl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M5 19 19 5"/></svg></span><span id="zSizeLbl"></span></button>
       <button id="zDel" class="dgr"><span class="gl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg></span><span id="zDelLbl"></span></button>
     </div>
     <div class="row"><button class="btn btn-ghost" id="zctxClose" data-t>Fermer</button></div>
+  </div>
+</div>
+
+<!-- ====================== DIAMÈTRE DE ZONE ====================== -->
+<div class="overlay hidden" id="zsize">
+  <div class="modal">
+    <h3 id="zsizeTitle"></h3>
+    <p class="txt" data-t>Diamètre de la zone en mètres. Il sert à calculer l'avant, l'arrière et les côtés.</p>
+    <input id="zsizeInput" type="number" min="1" max="80" step="1" inputmode="numeric">
+    <div class="row">
+      <button class="btn btn-ghost" id="zsizeNo" data-t>Annuler</button>
+      <button class="btn btn-primary" id="zsizeYes" data-t>Enregistrer</button>
+    </div>
   </div>
 </div>
 
@@ -827,7 +839,7 @@ en:{
 '{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.':'{n} outline(s) will be lost on close. Premium keeps them.',
 'Les greens que tu traces ne sont pas conservés.':'The greens you map are not being kept.',
 'Passe en Premium pour garder tes tracés':'Go Premium to keep your outlines',
-'Créer un compte pour sauvegarder':'Create an account to save','MOI':'ME','MESURE':'MEASURE','CARTO':'MAP','GREEN':'GREEN',"Sélectionnez d'abord un green":'Select a green first','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tap a green on the map, then + AREA to place a layup zone.','Compris':'Got it','4 zones maximum':'4 zones maximum','Zone {n}/4 ajoutée.':'Zone {n}/4 added.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Drag the circles to place them. Then tap a zone or the green to pick your target.','Cible : zone {n}':'Target: zone {n}','Cible : green':'Target: green','Position GPS nécessaire pour placer la première zone.':'GPS position needed to place the first zone.','Zone {n}':'Zone {n}','Déplacer':'Move','Glisser le cercle à la main':'Drag the circle by hand','Retire cette zone du green':'Removes this zone from the green',"jusqu'à la zone {n}":'to zone {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m from you · {b} m to the green',
+'Créer un compte pour sauvegarder':'Create an account to save','MOI':'ME','MESURE':'MEASURE','CARTO':'MAP','GREEN':'GREEN',"Sélectionnez d'abord un green":'Select a green first','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tap a green on the map, then + AREA to place a layup zone.','Compris':'Got it','4 zones maximum':'4 zones maximum','Zone {n}/4 ajoutée.':'Zone {n}/4 added.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Drag the circles to place them. Then tap a zone or the green to pick your target.','Cible : zone {n}':'Target: zone {n}','Cible : green':'Target: green','Modifier le diamètre':'Change diameter','Ø actuel : {d} m':'Current Ø: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Zone diameter in metres. Used to compute front, back and sides.','Ø {d} m':'Ø {d} m','de la zone {n}':'of zone {n}','Position GPS nécessaire pour placer la première zone.':'GPS position needed to place the first zone.','Zone {n}':'Zone {n}','Déplacer':'Move','Glisser le cercle à la main':'Drag the circle by hand','Retire cette zone du green':'Removes this zone from the green',"jusqu'à la zone {n}":'to zone {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m from you · {b} m to the green',
 'DÉTECT':'DETECT','TRACER':'DRAW','POINTER':'POINT','GREENS':'GREENS','POS.':'POS.','Tolérance':'Tolerance',
 'Rayon':'Radius','Refaire':'Redo','Garder':'Keep','Fermer':'Close','Annuler':'Cancel','Enregistrer':'Save',
 'En attente de position':'Waiting for position','Coup aveugle':'Blind shot','Club conseillé':'Suggested club',
@@ -955,7 +967,7 @@ es:{
 '{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.':'{n} trazado(s) se perderán al cerrar. Premium los conserva.',
 'Les greens que tu traces ne sont pas conservés.':'Los greens que trazas no se conservan.',
 'Passe en Premium pour garder tes tracés':'Pasa a Premium para conservar tus trazados',
-'Créer un compte pour sauvegarder':'Crea una cuenta para guardar','MOI':'YO','MESURE':'MEDIR','CARTO':'MAPA','GREEN':'GREEN',"Sélectionnez d'abord un green":'Selecciona primero un green','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Toca un green en el mapa y luego + AREA para colocar una zona intermedia.','Compris':'Entendido','4 zones maximum':'4 zonas como máximo','Zone {n}/4 ajoutée.':'Zona {n}/4 añadida.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Arrastra los círculos para colocarlos. Luego toca una zona o el green para elegir el objetivo.','Cible : zone {n}':'Objetivo: zona {n}','Cible : green':'Objetivo: green','Position GPS nécessaire pour placer la première zone.':'Se necesita la posición GPS para colocar la primera zona.','Zone {n}':'Zona {n}','Déplacer':'Mover','Glisser le cercle à la main':'Arrastrar el círculo con el dedo','Retire cette zone du green':'Quita esta zona del green',"jusqu'à la zone {n}":'hasta la zona {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m desde ti · {b} m hasta el green',
+'Créer un compte pour sauvegarder':'Crea una cuenta para guardar','MOI':'YO','MESURE':'MEDIR','CARTO':'MAPA','GREEN':'GREEN',"Sélectionnez d'abord un green":'Selecciona primero un green','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Toca un green en el mapa y luego + AREA para colocar una zona intermedia.','Compris':'Entendido','4 zones maximum':'4 zonas como máximo','Zone {n}/4 ajoutée.':'Zona {n}/4 añadida.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Arrastra los círculos para colocarlos. Luego toca una zona o el green para elegir el objetivo.','Cible : zone {n}':'Objetivo: zona {n}','Cible : green':'Objetivo: green','Modifier le diamètre':'Cambiar el diámetro','Ø actuel : {d} m':'Ø actual: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Diámetro de la zona en metros. Sirve para calcular delante, detrás y los lados.','Ø {d} m':'Ø {d} m','de la zone {n}':'de la zona {n}','Position GPS nécessaire pour placer la première zone.':'Se necesita la posición GPS para colocar la primera zona.','Zone {n}':'Zona {n}','Déplacer':'Mover','Glisser le cercle à la main':'Arrastrar el círculo con el dedo','Retire cette zone du green':'Quita esta zona del green',"jusqu'à la zone {n}":'hasta la zona {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m desde ti · {b} m hasta el green',
 'DÉTECT':'DETECT','TRACER':'TRAZAR','POINTER':'PUNTO','GREENS':'GREENS','POS.':'POS.','Tolérance':'Tolerancia',
 'Rayon':'Radio','Refaire':'Rehacer','Garder':'Conservar','Fermer':'Cerrar','Annuler':'Cancelar',
 'Enregistrer':'Guardar','En attente de position':'Esperando posición','Coup aveugle':'Golpe ciego',
@@ -1088,7 +1100,7 @@ de:{
 'Les greens que tu traces ne sont pas conservés.':'Die von dir erfassten Greens werden nicht gespeichert.',
 'Passe en Premium pour garder tes tracés':'Wechsle zu Premium, um deine Konturen zu behalten',
 'Créer un compte pour sauvegarder':'Erstelle ein Konto, um zu speichern','MOI':'ICH','MESURE':'MESSEN',
-'CARTO':'KARTE','GREEN':'GRÜN',"Sélectionnez d'abord un green":'Wähle zuerst ein Grün','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tippe auf ein Grün und dann auf + AREA, um eine Zwischenzone zu setzen.','Compris':'Verstanden','4 zones maximum':'Maximal 4 Zonen','Zone {n}/4 ajoutée.':'Zone {n}/4 hinzugefügt.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Ziehe die Kreise, um sie zu setzen. Tippe dann auf eine Zone oder das Grün, um dein Ziel zu wählen.','Cible : zone {n}':'Ziel: Zone {n}','Cible : green':'Ziel: Grün','Position GPS nécessaire pour placer la première zone.':'GPS-Position nötig, um die erste Zone zu setzen.','Zone {n}':'Zone {n}','Déplacer':'Verschieben','Glisser le cercle à la main':'Kreis mit dem Finger ziehen','Retire cette zone du green':'Entfernt diese Zone vom Grün',"jusqu'à la zone {n}":'bis Zone {n}','Total':'Gesamt',"{a} m depuis vous · {b} m jusqu'au green":'{a} m von dir · {b} m bis zum Grün','DÉTECT':'ERKENN','TRACER':'ZEICHN','POINTER':'PUNKT','GREENS':'GREENS','POS.':'POS.',
+'CARTO':'KARTE','GREEN':'GRÜN',"Sélectionnez d'abord un green":'Wähle zuerst ein Grün','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tippe auf ein Grün und dann auf + AREA, um eine Zwischenzone zu setzen.','Compris':'Verstanden','4 zones maximum':'Maximal 4 Zonen','Zone {n}/4 ajoutée.':'Zone {n}/4 hinzugefügt.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Ziehe die Kreise, um sie zu setzen. Tippe dann auf eine Zone oder das Grün, um dein Ziel zu wählen.','Cible : zone {n}':'Ziel: Zone {n}','Cible : green':'Ziel: Grün','Modifier le diamètre':'Durchmesser ändern','Ø actuel : {d} m':'Aktueller Ø: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Durchmesser der Zone in Metern. Dient zur Berechnung von vorne, hinten und den Seiten.','Ø {d} m':'Ø {d} m','de la zone {n}':'der Zone {n}','Position GPS nécessaire pour placer la première zone.':'GPS-Position nötig, um die erste Zone zu setzen.','Zone {n}':'Zone {n}','Déplacer':'Verschieben','Glisser le cercle à la main':'Kreis mit dem Finger ziehen','Retire cette zone du green':'Entfernt diese Zone vom Grün',"jusqu'à la zone {n}":'bis Zone {n}','Total':'Gesamt',"{a} m depuis vous · {b} m jusqu'au green":'{a} m von dir · {b} m bis zum Grün','DÉTECT':'ERKENN','TRACER':'ZEICHN','POINTER':'PUNKT','GREENS':'GREENS','POS.':'POS.',
 'Tolérance':'Toleranz','Rayon':'Radius','Refaire':'Neu','Garder':'Behalten','Fermer':'Schließen',
 'Annuler':'Abbrechen','Enregistrer':'Speichern','En attente de position':'Warte auf Position',
 'Coup aveugle':'Blinder Schlag','Club conseillé':'Empfohlener Schläger','Choisissez un green':'Wähle ein Green',
@@ -1837,7 +1849,8 @@ const $ = id => document.getElementById(id);
 const L_ = (s,v) => (typeof T==="function" ? T(s,v) : s);
 const R_E = 6371008.8, D2R = Math.PI/180, R2D = 180/Math.PI;
 const KEY = "greens.custom.v2", LAST = "greens.last.v1", BAG = "greens.bag.v1", OVER = "greens.over.v1", ZONES = "greens.zones.v1";
-const ZMAX = 4, ZPASS = 15, ZRESET = 30;   /* cible choisie à la main : oubliée après un déplacement de 30 m (coup joué) */
+const ZMAX = 4, ZPASS = 15, ZRESET = 30, ZDIA = 5;   /* ZDIA : diamètre par défaut d'une zone (m) */
+const zDia = p => (p && p[2] > 0) ? p[2] : ZDIA;   /* cible choisie à la main : oubliée après un déplacement de 30 m (coup joué) */
 /* ZPASS : zone dépassée quand le joueur est 15 m plus près du green qu'elle */
 
 const BASE = [
@@ -2261,12 +2274,12 @@ function tap(ll){
   const zi = zoneHit(ll);
   if (zi >= 0){
     S.zTgt = zi; S.zTgtAt = S.pos ? [S.pos.lat, S.pos.lon] : null;
-    toast(L_("Cible : zone {n}", { n:zi+1 })); refresh(); drawZones(); return;
+    refresh(); drawZones(); return;
   }
   const hz = hitTest(ll);
   if (hz && S.sel && hz.id === S.sel.id && zonesOf(hz).length){
     S.zTgt = "green"; S.zTgtAt = S.pos ? [S.pos.lat, S.pos.lon] : null;
-    toast(L_("Cible : green")); refresh(); drawZones(); return;
+    refresh(); drawZones(); return;
   }
   /* Un appui dans le vide relâche la sélection : les rayons et le
      conseil de club disparaissent au lieu de rester sur un green
@@ -3168,7 +3181,7 @@ function pushGreens(){
       for (const [id, v] of Object.entries(S.zones||{})){
         if (!v || !v.c) continue;
         if (!zg.has(v.c)) zg.set(v.c, {});
-        zg.get(v.c)[id] = ptsOut(v.p);
+        zg.get(v.c)[id] = (v.p||[]).map(q => ({ lat:q[0], lng:q[1], d:zDia(q) }));
       }
       for (const [cid, zones] of zg){
         await fs.collection("users").doc(currentUser.uid)
@@ -3224,7 +3237,7 @@ async function pullGreens(){
     if (zd && typeof zd === "object"){
       let zAjout = false;
       for (const [id, pts] of Object.entries(zd)){
-        if (!S.zones[id] && Array.isArray(pts)){ S.zones[id] = { c:parcoursId(), p:ptsIn(pts) }; zAjout = true; }
+        if (!S.zones[id] && Array.isArray(pts)){ S.zones[id] = { c:parcoursId(), p:pts.map(q => Array.isArray(q) ? q : [q.lat, q.lng, q.d || ZDIA]) }; zAjout = true; }
       }
       if (zAjout){ storeZones(); refresh(); }
     }
@@ -3428,6 +3441,21 @@ function render(m){
     $("clubName").textContent = "—"; $("clubMeta").textContent = L_("Choisissez un green");
     $("clubIcon").innerHTML = ""; return;
   }
+  /* Zone visée : les cinq cases et le conseil portent sur elle (cercle de
+     diamètre connu), plus sur le green. Pas de dénivelé pour une zone. */
+  const zp = zPlan(S.sel), zs = zp.pts, zOn = !!(zs.length && S.pos);
+  if (zOn){
+    const zt = zs[0], d = zDist([S.pos.lat, S.pos.lon], zt), r = zDia(zt)/2;
+    $("gName").textContent = S.sel.name + " · " + L_("Zone {n}", { n:zp.tgt+1 });
+    $("gSub").textContent = L_("Ø {d} m", { d:zDia(zt) });
+    set("dFront", nb(Math.max(0, d - r))); set("dBack", nb(d + r));
+    const side = Math.hypot(d, r);
+    set("dLeft", nb(side)); set("dRight", nb(side));
+    $("dElev").innerHTML = "—"; $("cElev").className = "c"; $("blind").classList.remove("on");
+    zRender(S.target === "front" ? Math.max(0, d - r) : S.target === "back" ? d + r : d,
+      (S.target === "front" ? L_("au bord avant") : S.target === "back" ? L_("au bord arrière") : L_("au centre")) + " " + L_("de la zone {n}", { n:zp.tgt+1 }), 0);
+    return;
+  }
   $("gName").textContent = S.sel.name;
   $("gSub").textContent = L_("{w} m de large",{w:Math.round(m.width)})
     + (S.sel.src === "approx" ? " · " + L_("estimé") : S.sel.mk === "point" ? " · " + L_("pointé") : S.sel.src === "draw" ? " · " + L_("tracé") : "");
@@ -3442,10 +3470,12 @@ function render(m){
   $("blind").classList.toggle("on", !!(a && a.blind && !compet));
 
   const raw = S.target === "front" ? m.front.d : S.target === "back" ? m.back.d : (m.front.d + m.back.d)/2;
-  /* Avec une zone intermédiaire, le conseil vise la première zone. */
-  const zp = zPlan(S.sel), zs = zp.pts, zOn = !!(zs.length && S.pos);
-  const target = zOn ? zDist([S.pos.lat, S.pos.lon], zs[0]) : raw + dz, p = pickClub(target);
-  const where = zOn ? L_("jusqu'à la zone {n}", { n:zp.tgt + 1 }) : S.target === "front" ? L_("au bord avant") : S.target === "back" ? L_("au bord arrière") : L_("au centre");
+  const where = S.target === "front" ? L_("au bord avant") : S.target === "back" ? L_("au bord arrière") : L_("au centre");
+  zRender(raw + dz, where, dz);
+}
+/* Bloc « club conseillé », commun au green et aux zones. */
+function zRender(target, where, dz){
+  const p = pickClub(target);
   if (!p){
     $("clubIcon").innerHTML = ""; $("clubName").textContent = L_("Sac vide");
     $("clubMeta").textContent = L_("Réglez vos distances dans SAC"); return;
@@ -3455,7 +3485,7 @@ function render(m){
   if (p.short){
     $("clubMeta").textContent = L_("Hors de portée : {d} m {w}, il manque {g} m",{d:Math.round(target),w:where,g:Math.round(p.gap)});
   } else {
-    const head = Math.round(target) + " m " + where + (dz && !zOn ? " " + L_("(dénivelé compris)") : "") + " · " + L_("porte {d} m",{d:p.club.d});
+    const head = Math.round(target) + " m " + where + (dz ? " " + L_("(dénivelé compris)") : "") + " · " + L_("porte {d} m",{d:p.club.d});
     $("clubMeta").textContent = p.gap <= 4 && p.alt
       ? head + " — " + L_("limite, {c} si vous frappez long",{c:L_(p.alt.n).toLowerCase()})
       : head + " — " + (p.gap >= 1 ? L_("marge de {g} m",{g:Math.round(p.gap)}) : L_("pile la distance"));
@@ -3558,24 +3588,30 @@ function zChain(g){
 }
 function zoneHit(ll){
   if (!S.sel || !map) return -1;
-  const p0 = map.latLngToContainerPoint(ll);
-  let best = -1, bd = 30;
+  const p0 = map.latLngToContainerPoint(ll), m1 = mpp(ll.lat, map.getZoom());
+  let best = -1, bd = Infinity;
   zonesOf(S.sel).forEach((z, i) => {
-    const d = p0.distanceTo(map.latLngToContainerPoint(z));
-    if (d < bd){ bd = d; best = i; }
+    const d = p0.distanceTo(map.latLngToContainerPoint([z[0], z[1]]));
+    if (d < Math.max(30, zDia(z)/2/m1 + 6) && d < bd){ bd = d; best = i; }
   });
   return best;
 }
 function drawZoneLines(){
   zLineLayer.clearLayers();
-  const g = S.sel, z = zPlan(g).pts;
+  const g = S.sel, pl = zPlan(g), z = pl.pts;
+  zonesOf(g).forEach((p, i) => {
+    const tgt = i === pl.tgt, on = z.includes(p);
+    L.circle([p[0], p[1]], { radius:zDia(p)/2, interactive:false,
+      color: tgt ? "#a6dfe9" : "#ffffff", weight: tgt ? 3 : 2, opacity: on ? .95 : .5, dashArray: on ? null : "4 4",
+      fillColor: tgt ? "#a6dfe9" : "#ffffff", fillOpacity: tgt ? .3 : on ? .12 : .04 }).addTo(zLineLayer);
+  });
   if (!g || !z.length){ $("zTot").classList.remove("on"); return; }
   const ch = zChain(g);
   let tot = 0;
   for (let i = 0; i < ch.length - 1; i++){
     const a = ch[i], b = ch[i+1], d = zDist(a, b);
     tot += d;
-    L.polyline([a, b], { color:"#ffffff", weight:2.5, opacity:.95, interactive:false }).addTo(zLineLayer);
+    L.polyline([[a[0], a[1]], [b[0], b[1]]], { color:"#ffffff", weight:2.5, opacity:.95, interactive:false }).addTo(zLineLayer);
     L.marker([(a[0]+b[0])/2, (a[1]+b[1])/2], { icon:L.divIcon({ className:"stag", html:"<span>" + Math.round(d) + " m</span>" }),
       interactive:false, zIndexOffset:900 }).addTo(zLineLayer);
   }
@@ -3590,9 +3626,9 @@ function drawZones(){
   drawZoneLines();
   if (zDrag) return;              /* pendant un glissé, on garde les marqueurs en place */
   zLayer.clearLayers();
-  const g = S.sel, edit = S.mode === "area", pl = zPlan(g);
+  const g = S.sel, edit = S.mode === "area";
   zonesOf(g).forEach((p, i) => {
-    const mk = L.marker(p, { icon:L.divIcon({ className:"zone" + (edit ? " edit" : "") + (i === pl.tgt ? " target" : pl.pts.includes(p) ? "" : " passed"), html:"<i></i>", iconSize:[44,44], iconAnchor:[22,22] }),
+    const mk = L.marker([p[0], p[1]], { icon:L.divIcon({ className:"zone" + (edit ? " edit" : ""), html:"<i></i>", iconSize:[44,44], iconAnchor:[22,22] }),
       keyboard:false, interactive:edit, zIndexOffset:950 }).addTo(zLayer);
     if (edit) armZoneDrag(mk, i);
   });
@@ -3612,7 +3648,7 @@ function armZoneDrag(mk, i){
       const r = $("map").getBoundingClientRect();
       const ll2 = screenToLatLng(mv.clientX - r.left, mv.clientY - r.top);
       mk.setLatLng(ll2);
-      S.zones[g.id].p[i] = [ll2.lat, ll2.lng];
+      S.zones[g.id].p[i] = [ll2.lat, ll2.lng, zDia(S.zones[g.id].p[i])];
       drawZoneLines();
       if (S.pos) render(measure(g, S.pos));
     };
@@ -3651,7 +3687,7 @@ function addZone(){
   let best = 0, bd = -1;
   for (let i = 0; i < ch.length - 1; i++){ const d = zDist(ch[i], ch[i+1]); if (d > bd){ bd = d; best = i; } }
   const a = ch[best], b = ch[best+1];
-  z.push([(a[0]+b[0])/2, (a[1]+b[1])/2]);
+  z.push([(a[0]+b[0])/2, (a[1]+b[1])/2, ZDIA]);
   setZones(g, z);
   enterArea(L_("Zone {n}/4 ajoutée.", { n:z.length }));
   refresh();
@@ -3670,6 +3706,7 @@ function openZctx(i){
   $("zctxName").textContent = L_("Zone {n}", { n:i+1 }) + " · " + g.name;
   $("zctxSub").textContent = S.pos ? L_("{a} m depuis vous · {b} m jusqu'au green", { a:Math.round(avant), b:Math.round(apres) }) : "";
   $("zDelLbl").innerHTML = "<b>" + esc(L_("Supprimer")) + "</b><small>" + esc(L_("Retire cette zone du green")) + "</small>";
+  $("zSizeLbl").innerHTML = "<b>" + esc(L_("Modifier le diamètre")) + "</b><small>" + esc(L_("Ø actuel : {d} m", { d:zDia(zonesOf(g)[i]) })) + "</small>";
   $("zDel").classList.remove("armed");
   fitModals();
   $("zctx").classList.remove("hidden");
@@ -3678,6 +3715,33 @@ const closeZctx = () => { $("zctx").classList.add("hidden"); zCtxIdx = -1; };
 $("zctxClose").addEventListener("click", closeZctx);
 $("zctx").addEventListener("click", e => { if (e.target === $("zctx")) closeZctx(); });
 $("zMove").addEventListener("click", () => { closeZctx(); enterArea(); });
+let zSizeIdx = -1;
+$("zSize").addEventListener("click", () => {
+  const g = S.sel, i = zCtxIdx; closeZctx();
+  if (!g || !zonesOf(g)[i]) return;
+  zSizeIdx = i;
+  $("zsizeTitle").textContent = L_("Zone {n}", { n:i+1 }) + " · " + L_("Modifier le diamètre");
+  $("zsizeInput").value = zDia(zonesOf(g)[i]);
+  fitModals();
+  $("zsize").classList.remove("hidden");
+  setTimeout(() => { $("zsizeInput").focus(); $("zsizeInput").select(); fitModals(); }, 120);
+});
+const closeZsize = () => { $("zsize").classList.add("hidden"); zSizeIdx = -1; };
+$("zsizeNo").addEventListener("click", closeZsize);
+$("zsize").addEventListener("click", e => { if (e.target === $("zsize")) closeZsize(); });
+$("zsizeInput").addEventListener("keydown", e => { if (e.key === "Enter") $("zsizeYes").click(); });
+$("zsizeYes").addEventListener("click", () => {
+  const g = S.sel, i = zSizeIdx;
+  const d = Math.max(1, Math.min(80, Math.round(+$("zsizeInput").value || ZDIA)));
+  closeZsize();
+  if (!g || !zonesOf(g)[i]) return;
+  const z = zonesOf(g).map(p => p.slice());
+  z[i] = [z[i][0], z[i][1], d];
+  const tgt = S.zTgt, at = S.zTgtAt;
+  setZones(g, z);
+  S.zTgt = tgt; S.zTgtAt = at;    /* changer la taille ne change pas la cible */
+  drawZones(); refresh();
+});
 $("zDel").addEventListener("click", () => {
   if (!zDelArmed){
     zDelArmed = true; $("zDel").classList.add("armed");
