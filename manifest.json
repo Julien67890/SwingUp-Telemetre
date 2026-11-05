@@ -1,6 +1,6 @@
 {
-  "name": "SwingUp - Télémètre",
-  "short_name": "SwingUp - Télémètre",
+  "name": "SwingUp Télémètre Golf",
+  "short_name": "SwingUp Télémètre Golf",
   "description": "Golf rangefinder: distances to the front, back, left and right edges of the green, elevation change and suggested club, on satellite imagery. Works offline.",
   "id": "/SwingUpTelemetre/",
   "start_url": "./",

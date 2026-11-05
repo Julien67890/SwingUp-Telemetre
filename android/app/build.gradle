@@ -24,8 +24,8 @@ def twaManifest = [
     applicationId: 'app.emqgroup.swinguprangefinder',
     hostName: 'julien67890.github.io', // The domain being opened in the TWA.
     launchUrl: '/SwingUp-Telemetre/', // The start path for the TWA. Must be relative to the domain.
-    name: 'SwingUp - Rangefinder', // Nom par défaut (anglais) ; traductions dans res/values-fr, -de, -es.
-    launcherName: 'SwingUp - Rangefinder', // The name shown on the Android Launcher.
+    name: 'SwingUp Golf Rangefinder', // Nom par défaut (anglais) ; traductions dans res/values-fr, -de, -es.
+    launcherName: 'SwingUp Golf Rangefinder', // The name shown on the Android Launcher.
     themeColor: '#1B4332', // The color used for the status bar.
     themeColorDark: '#1B4332', // The color used for the dark status bar.
     navigationColor: '#1B4332', // The color used for the navigation bar.
@@ -57,8 +57,8 @@ android {
         applicationId "app.emqgroup.swinguprangefinder"
         minSdkVersion 24
         targetSdkVersion 36
-        versionCode 6
-        versionName "1.0.5"
+        versionCode 7
+        versionName "1.0.6"
 
         // The name for the application
         resValue "string", "appName", twaManifest.name

@@ -1,8 +1,8 @@
 {
   "packageId": "app.emqgroup.swinguprangefinder",
   "host": "julien67890.github.io",
-  "name": "SwingUp - Rangefinder",
-  "launcherName": "SwingUp - Rangefinder",
+  "name": "SwingUp Golf Rangefinder",
+  "launcherName": "SwingUp Golf Rangefinder",
   "display": "fullscreen",
   "themeColor": "#1B4332",
   "themeColorDark": "#1B4332",
@@ -20,7 +20,7 @@
     "path": "./signing.keystore",
     "alias": "my-key-alias"
   },
-  "appVersionCode": 6,
+  "appVersionCode": 7,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://julien67890.github.io/SwingUp-Telemetre/manifest.json",
@@ -43,6 +43,6 @@
   "additionalTrustedOrigins": [],
   "retainedBundles": [],
   "displayOverride": [],
-  "appVersionName": "1.0.5",
-  "appVersion": "1.0.5"
+  "appVersionName": "1.0.6",
+  "appVersion": "1.0.6"
 }
