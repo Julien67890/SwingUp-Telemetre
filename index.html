@@ -837,6 +837,7 @@ const ANALYTICS = { id:'G-FCS3VQQJSZ' };
 const LANGS = {
 
 en:{
+"Partager SwingUp":"Share SwingUp","Lien copié":"Link copied","Mesure tes distances au golf avec SwingUp Télémètre Golf, sans compte :":"Measure your golf distances with SwingUp Golf Rangefinder, no account needed:",
 "{p} / mois":"{p} / month","{p} / an":"{p} / year",
 'Bêta':'Beta','{w} m de large':'{w} m wide','Effacer':'Clear',
 'NORD':'NORTH','LIBRE':'FREE','CAP':'HEADING',
@@ -963,6 +964,7 @@ en:{
 },
 
 es:{
+"Partager SwingUp":"Compartir SwingUp","Lien copié":"Enlace copiado","Mesure tes distances au golf avec SwingUp Télémètre Golf, sans compte :":"Mide tus distancias de golf con SwingUp Telémetro Golf, sin cuenta:",
 "{p} / mois":"{p} / mes","{p} / an":"{p} / a\u00f1o",
 'Bêta':'Beta','{w} m de large':'{w} m de ancho','Effacer':'Borrar',
 'NORD':'NORTE','LIBRE':'LIBRE','CAP':'RUMBO',
@@ -1094,6 +1096,7 @@ es:{
 },
 
 de:{
+"Partager SwingUp":"SwingUp teilen","Lien copié":"Link kopiert","Mesure tes distances au golf avec SwingUp Télémètre Golf, sans compte :":"Miss deine Golfdistanzen mit SwingUp Golf-Entfernungsmesser, ohne Konto:",
 "{p} / mois":"{p} / Monat","{p} / an":"{p} / Jahr",
 'Bêta':'Beta','{w} m de large':'{w} m breit','Effacer':'Löschen',
 'NORD':'NORD','LIBRE':'FREI','CAP':'KOMPASS',
@@ -1714,9 +1717,11 @@ function ecranCompte(){
         : '<button class="btn btn-ghost" id="mClose">'+esc(T('Fermer'))+'</button><button class="btn btn-primary" id="mIn">'+esc(T('Créer un compte'))+'</button>')
     +'</div>'
     +(currentUser?'<button class="authlink" id="mDel" style="color:var(--bad)">'+esc(T('Supprimer mon compte'))+'</button>':'')
+    +'<button class="authlink" id="mShare">'+esc(T('Partager SwingUp'))+'</button>'
     +'<button class="authlink" id="mTuto">'+esc(T('Revoir le tutoriel'))+'</button>'
     +'<p class="modpriv"><a href="'+PAGE_POLITIQUE()+'" target="_blank" rel="noopener">'+esc(T('Politique de confidentialité'))+'</a></p>');
   const tu=$id('mTuto'); if(tu)tu.onclick=()=>{closeModal();if(window.lancerTuto)window.lancerTuto(true);};
+  const sh=$id('mShare'); if(sh)sh.onclick=partagerApp;
   const del=$id('mDel'); if(del)del.onclick=ecranSuppression;
   const up=$id('mUp'); if(up)up.onclick=()=>{closeModal();ecranPremium();};
   const po=$id('mPortal'); if(po)po.onclick=openPortal;
@@ -1734,6 +1739,21 @@ function ecranCompte(){
     }
     closeModal();
   };
+}
+
+/* ---------- partage de l'app ----------
+   Lien Play avec referrer UTM : la Play Console (Acquisition d'utilisateurs)
+   distingue ainsi les installations venues du bouche-à-oreille. */
+const LIEN_PARTAGE = "https://play.google.com/store/apps/details?id=app.emqgroup.swinguprangefinder&referrer=utm_source%3Dpartage%26utm_medium%3Dapp";
+async function partagerApp(){
+  const texte = T("Mesure tes distances au golf avec SwingUp Télémètre Golf, sans compte :");
+  try{ if(window.gtag) gtag('event','share',{method:navigator.share?'natif':'copie',content_type:'app'}); }catch(e){}
+  if(navigator.share){
+    try{ await navigator.share({ title:"SwingUp", text:texte, url:LIEN_PARTAGE }); }catch(e){}
+    return;
+  }
+  try{ await navigator.clipboard.writeText(texte+" "+LIEN_PARTAGE); toast(T("Lien copié")); }
+  catch(e){ window.open(LIEN_PARTAGE,"_blank"); }
 }
 
 function ecranSuppression(){
