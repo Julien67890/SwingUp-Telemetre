@@ -400,6 +400,10 @@ body.tuto-on #consent,body.tuto-on #freeBar{display:none!important}
 #presets button{flex:1;border:1.5px solid #e6e0cd;background:#fff;color:#5a5848;border-radius:6px;
   padding:12px 6px;font-family:'Outfit',sans-serif;font-weight:600;font-size:.78rem;line-height:1.3;cursor:pointer}
 #presets button:active{background:#f1f9f4;border-color:var(--green-mid)}
+#unitSeg{display:flex;gap:8px;margin-bottom:14px}
+#unitSeg button{flex:1;border:1.5px solid #e6e0cd;background:#fff;color:#5a5848;border-radius:6px;
+  padding:12px 6px;font-family:'Outfit',sans-serif;font-weight:600;font-size:.78rem;line-height:1.3;cursor:pointer}
+#unitSeg button.on{border-color:var(--gold);background:rgba(201,162,39,.16);color:#8a6f00}
 .club{display:flex;align-items:center;gap:11px;background:#fff;border:1.5px solid #e6e0cd;border-radius:6px;padding:8px 11px;margin-bottom:8px}
 .club .ic{width:36px;height:44px;flex:0 0 auto;border-radius:6px;background:var(--green-deep);display:grid;place-items:center}
 .club .ic svg{width:28px;height:36px;display:block}
@@ -407,7 +411,7 @@ body.tuto-on #consent,body.tuto-on #freeBar{display:none!important}
 .club input[type=number]{width:74px;border:1.5px solid #e6e0cd;border-radius:6px;background:#fff;padding:10px;
   font-family:'Outfit',sans-serif;font-weight:600;font-size:.95rem;color:var(--green-deep);text-align:right;outline:none;font-variant-numeric:tabular-nums}
 .club input:focus{border-color:var(--green-mid)}
-.club .u{font-size:.7rem;color:#8b8770;width:12px}
+.club .u{font-size:.7rem;color:#8b8770;width:20px}
 .club.off{opacity:.4}
 .tg{position:relative;width:42px;height:25px;flex:0 0 auto}
 .tg input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:2}
@@ -607,6 +611,11 @@ body.tuto-on #consent,body.tuto-on #freeBar{display:none!important}
       <button data-p="women" data-t>Amateur femme</button>
       <button data-p="senior" data-t>Senior ou débutant</button>
     </div>
+    <p class="flabel" data-t>Unité de distance</p>
+    <div id="unitSeg">
+      <button data-u="m" data-t>Mètres</button>
+      <button data-u="yd" data-t>Yards</button>
+    </div>
     <p class="flabel" data-t>Distance totale par club</p>
     <div id="bagList"></div>
     <button class="btn btn-primary" id="bagDone" style="margin-top:14px" data-t>Terminé</button>
@@ -660,7 +669,7 @@ body.tuto-on #consent,body.tuto-on #freeBar{display:none!important}
 <div class="overlay hidden" id="zsize">
   <div class="modal">
     <h3 id="zsizeTitle"></h3>
-    <p class="txt" data-t>Diamètre de la zone en mètres. Il sert à calculer l'avant, l'arrière et les côtés.</p>
+    <p class="txt" data-t>Diamètre de la zone. Il sert à calculer l'avant, l'arrière et les côtés.</p>
     <input id="zsizeInput" type="number" min="1" max="80" step="1" inputmode="numeric">
     <div class="row">
       <button class="btn btn-ghost" id="zsizeNo" data-t>Annuler</button>
@@ -876,7 +885,7 @@ en:{
 'Parcours illimités':'Unlimited courses',
 'Cartographie sans limite de nombre de greens.':'Map as many greens as you like.',
 'Vue satellite illimitée':'Unlimited satellite view',
-'300 tuiles gratuites par mois hors France, à volonté avec Premium.':'300 free tiles per month outside France, unlimited with Premium.',
+'1500 tuiles gratuites par mois hors France, à volonté avec Premium.':'1,500 free tiles per month outside France, unlimited with Premium.',
 'Limite satellite gratuite du mois atteinte. Passe en Premium pour continuer en vue aérienne.':'Free monthly satellite limit reached. Go Premium to keep the aerial view.',
 'Mesure et création restent gratuites':'Measuring and mapping stay free',
 'Mesure et cartographie restent gratuites':'Measuring and mapping stay free',
@@ -893,7 +902,7 @@ en:{
 '{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.':'{n} outline(s) will be lost on close. Premium keeps them.',
 'Les greens que tu traces ne sont pas conservés.':'The greens you map are not being kept.',
 'Passe en Premium pour garder tes tracés':'Go Premium to keep your outlines',
-'Créer un compte pour sauvegarder':'Create an account to save','MOI':'ME','MESURE':'MEASURE','CARTO':'MAP','GREEN':'GREEN',"Sélectionnez d'abord un green":'Select a green first','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tap a green on the map, then + AREA to place a layup zone.','Compris':'Got it','{m} zones maximum':'{m} zones maximum','Zone {n}/{m} ajoutée.':'Zone {n}/{m} added.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Drag the circles to place them. Then tap a zone or the green to pick your target.','Cible : zone {n}':'Target: zone {n}','Cible : green':'Target: green','Modifier le diamètre':'Change diameter','Ø actuel : {d} m':'Current Ø: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Zone diameter in metres. Used to compute front, back and sides.','Ø {d} m':'Ø {d} m','de la zone {n}':'of zone {n}','Green {d} m':'Green {d} m',"Sélectionner ou créer un green":"Select or create a green","<b>Touchez un green</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher. Green absent ? Touchez <b>+ GREEN</b> puis <b>DÉTECT</b> (touchez le centre du green), <b>TRACER</b> (posez les points du contour) ou <b>POINTER</b> (le centre puis le rayon), et <b>Garder</b>. Appui long sur un green pour le renommer, le retracer ou le supprimer.":"<b>Tap a green</b> to select it, tap an empty spot to release it. Green missing? Tap <b>+ GREEN</b>, then <b>DETECT</b> (tap the centre of the green), <b>DRAW</b> (place the outline points) or <b>POINT</b> (the centre, then the radius), and <b>Keep</b>. Long-press a green to rename, redraw or delete it.","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez. Ici, un green à 97 m, en contrebas de 6,8 m.":"<b>Front, back, left, right</b> and <b>elevation</b> to the selected green, updated as you walk. Here, a green 97 m away, 6.8 m below you.","Le club est choisi selon vos distances, <b>dénivelé compris</b>. Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"The club is picked from your distances, <b>elevation included</b>. Aim at the front, centre or back with <b>FRT · CTR · BCK</b>. <b>COMP.</b> removes elevation, which is not allowed in competition.","Le sac":"The bag","Touchez <b>SAC</b> pour indiquer la distance que vous atteignez <b>régulièrement</b> avec chaque club, pas votre meilleur coup. Décochez les clubs que vous n'avez pas. Les préréglages <b>homme, femme, senior</b> donnent un point de départ.":"Tap <b>BAG</b> to enter the distance you <b>regularly</b> reach with each club, not your best shot. Untick the clubs you don't carry. The <b>men, women, senior</b> presets give you a starting point.","DÉTECT · TRACER · POINTER":"DETECT · DRAW · POINT","1 mois de sauvegarde offert à la création du compte.":"1 month of free saving when you create an account.","Sans compte, tes greens ne sont pas gardés":"Without an account, your greens aren't kept","Les greens et les zones que tu traces disparaissent à la fermeture de l'app. Crée un compte gratuit : ils sont sauvegardés pendant 1 mois offert, sur tous tes appareils.":"The greens and zones you map disappear when you close the app. Create a free account: they're saved for a free month, on all your devices.","Continuer sans compte":"Continue without an account","Crée un compte : 1 mois de sauvegarde offert":"Create an account: 1 month of free saving","1 mois de sauvegarde offert":"1 month of free saving","Tes greens et tes zones sont sauvegardés gratuitement jusqu'au {d}, sur tous tes appareils. Ensuite, {m} ou {a}, sans engagement.":"Your greens and zones are saved for free until {d}, on all your devices. After that, {m} or {a}, no commitment.","Passer":"Skip","Retour":"Back","Suivant":"Next","C'est parti":"Let's go","Étape {n} sur {m}":"Step {n} of {m}","Revoir le tutoriel":"Replay the tutorial","Bienvenue sur SwingUp Télémètre":"Welcome to SwingUp Rangefinder","Distances au green, dénivelé et club conseillé, calculés depuis votre <b>position GPS</b> sur l'imagerie satellite. Voici l'essentiel en quelques étapes.":"Distances to the green, elevation change and suggested club, computed from your <b>GPS position</b> on satellite imagery. Here are the essentials in a few steps.","Touchez un green":"Tap a green","Les greens du parcours s'affichent sur la carte. <b>Touchez-en un</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher.":"The course greens show on the map. <b>Tap one</b> to select it, tap an empty spot to release it.","Les distances":"Distances","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez.":"<b>Front, back, left, right</b> and <b>elevation</b> to the selected green, updated as you walk.","Le club conseillé":"Suggested club","Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. Réglez vos distances dans <b>SAC</b> pour un conseil juste. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"Aim at the front, centre or back with <b>FRT · CTR · BCK</b>. Set your distances in <b>BAG</b> for accurate advice. <b>COMP.</b> removes elevation, which is not allowed in competition.","+ AREA : vos zones de jeu":"+ AREA: your layup zones","Green sélectionné, touchez <b>+ AREA</b> pour placer une zone intermédiaire (jusqu'à 6) et glissez-la là où vous voulez jouer. <b>Touchez une zone ou le green</b> pour choisir la cible. <b>Appui long</b> sur une zone : la déplacer, changer son diamètre ou la supprimer.":"With a green selected, tap <b>+ AREA</b> to place a layup zone (up to 6) and drag it where you want to play. <b>Tap a zone or the green</b> to choose your target. <b>Long-press</b> a zone to move it, change its diameter or delete it.","+ GREEN : ajouter un green":"+ GREEN: add a green","Green absent ou mal tracé ? <b>DÉTECT</b> le repère par sa couleur, <b>TRACER</b> le dessine point par point, <b>POINTER</b> le pose en cercle. <b>Appui long</b> sur un green pour le renommer, le retracer ou le supprimer.":"Green missing or badly drawn? <b>DETECT</b> finds it by colour, <b>DRAW</b> outlines it point by point, <b>POINT</b> drops it as a circle. <b>Long-press</b> a green to rename, redraw or delete it.","Orientation":"Orientation","<b>NORD</b> change le sens de la carte : nord en haut, rotation libre à deux doigts, ou boussole. <b>MOI</b> recentre la carte sur vous.":"<b>NORTH</b> changes the map orientation: north up, free two-finger rotation, or compass. <b>ME</b> centres the map on you.","Votre compte":"Your account","Un compte permet de <b>sauvegarder vos greens et vos zones</b>. Ce tutoriel reste accessible depuis ce menu.":"An account lets you <b>save your greens and zones</b>. This tutorial stays available from this menu.",'Position GPS nécessaire pour placer la première zone.':'GPS position needed to place the first zone.','Zone {n}':'Zone {n}','Déplacer':'Move','Glisser le cercle à la main':'Drag the circle by hand','Retire cette zone du green':'Removes this zone from the green',"jusqu'à la zone {n}":'to zone {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m from you · {b} m to the green',
+'Créer un compte pour sauvegarder':'Create an account to save','MOI':'ME','MESURE':'MEASURE','CARTO':'MAP','GREEN':'GREEN',"Sélectionnez d'abord un green":'Select a green first','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tap a green on the map, then + AREA to place a layup zone.','Compris':'Got it','{m} zones maximum':'{m} zones maximum','Zone {n}/{m} ajoutée.':'Zone {n}/{m} added.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Drag the circles to place them. Then tap a zone or the green to pick your target.','Cible : zone {n}':'Target: zone {n}','Cible : green':'Target: green','Modifier le diamètre':'Change diameter','Ø actuel : {d} m':'Current Ø: {d} m','Diamètre de la zone. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Zone diameter. Used to compute front, back and sides.','Ø {d} m':'Ø {d} m','de la zone {n}':'of zone {n}','Green {d} m':'Green {d} m',"Sélectionner ou créer un green":"Select or create a green","<b>Touchez un green</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher. Green absent ? Touchez <b>+ GREEN</b> puis <b>DÉTECT</b> (touchez le centre du green), <b>TRACER</b> (posez les points du contour) ou <b>POINTER</b> (le centre puis le rayon), et <b>Garder</b>. Appui long sur un green pour le renommer, le retracer ou le supprimer.":"<b>Tap a green</b> to select it, tap an empty spot to release it. Green missing? Tap <b>+ GREEN</b>, then <b>DETECT</b> (tap the centre of the green), <b>DRAW</b> (place the outline points) or <b>POINT</b> (the centre, then the radius), and <b>Keep</b>. Long-press a green to rename, redraw or delete it.","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez. Ici, un green à {g} m, en contrebas de {e} m.":"<b>Front, back, left, right</b> and <b>elevation</b> to the selected green, updated as you walk. Here, a green {g} m away, {e} m below you.","Le club est choisi selon vos distances, <b>dénivelé compris</b>. Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"The club is picked from your distances, <b>elevation included</b>. Aim at the front, centre or back with <b>FRT · CTR · BCK</b>. <b>COMP.</b> removes elevation, which is not allowed in competition.","Le sac":"The bag","Touchez <b>SAC</b> pour indiquer la distance que vous atteignez <b>régulièrement</b> avec chaque club, pas votre meilleur coup. Décochez les clubs que vous n'avez pas. Les préréglages <b>homme, femme, senior</b> donnent un point de départ.":"Tap <b>BAG</b> to enter the distance you <b>regularly</b> reach with each club, not your best shot. Untick the clubs you don't carry. The <b>men, women, senior</b> presets give you a starting point.","DÉTECT · TRACER · POINTER":"DETECT · DRAW · POINT","1 mois de sauvegarde offert à la création du compte.":"1 month of free saving when you create an account.","Sans compte, tes greens ne sont pas gardés":"Without an account, your greens aren't kept","Les greens et les zones que tu traces disparaissent à la fermeture de l'app. Crée un compte gratuit : ils sont sauvegardés pendant 1 mois offert, sur tous tes appareils.":"The greens and zones you map disappear when you close the app. Create a free account: they're saved for a free month, on all your devices.","Continuer sans compte":"Continue without an account","Crée un compte : 1 mois de sauvegarde offert":"Create an account: 1 month of free saving","1 mois de sauvegarde offert":"1 month of free saving","Tes greens et tes zones sont sauvegardés gratuitement jusqu'au {d}, sur tous tes appareils. Ensuite, {m} ou {a}, sans engagement.":"Your greens and zones are saved for free until {d}, on all your devices. After that, {m} or {a}, no commitment.","Passer":"Skip","Retour":"Back","Suivant":"Next","C'est parti":"Let's go","Étape {n} sur {m}":"Step {n} of {m}","Revoir le tutoriel":"Replay the tutorial","Bienvenue sur SwingUp Télémètre":"Welcome to SwingUp Rangefinder","Distances au green, dénivelé et club conseillé, calculés depuis votre <b>position GPS</b> sur l'imagerie satellite. Voici l'essentiel en quelques étapes.":"Distances to the green, elevation change and suggested club, computed from your <b>GPS position</b> on satellite imagery. Here are the essentials in a few steps.","Touchez un green":"Tap a green","Les greens du parcours s'affichent sur la carte. <b>Touchez-en un</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher.":"The course greens show on the map. <b>Tap one</b> to select it, tap an empty spot to release it.","Les distances":"Distances","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez.":"<b>Front, back, left, right</b> and <b>elevation</b> to the selected green, updated as you walk.","Le club conseillé":"Suggested club","Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. Réglez vos distances dans <b>SAC</b> pour un conseil juste. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"Aim at the front, centre or back with <b>FRT · CTR · BCK</b>. Set your distances in <b>BAG</b> for accurate advice. <b>COMP.</b> removes elevation, which is not allowed in competition.","+ AREA : vos zones de jeu":"+ AREA: your layup zones","Green sélectionné, touchez <b>+ AREA</b> pour placer une zone intermédiaire (jusqu'à 6) et glissez-la là où vous voulez jouer. <b>Touchez une zone ou le green</b> pour choisir la cible. <b>Appui long</b> sur une zone : la déplacer, changer son diamètre ou la supprimer.":"With a green selected, tap <b>+ AREA</b> to place a layup zone (up to 6) and drag it where you want to play. <b>Tap a zone or the green</b> to choose your target. <b>Long-press</b> a zone to move it, change its diameter or delete it.","+ GREEN : ajouter un green":"+ GREEN: add a green","Green absent ou mal tracé ? <b>DÉTECT</b> le repère par sa couleur, <b>TRACER</b> le dessine point par point, <b>POINTER</b> le pose en cercle. <b>Appui long</b> sur un green pour le renommer, le retracer ou le supprimer.":"Green missing or badly drawn? <b>DETECT</b> finds it by colour, <b>DRAW</b> outlines it point by point, <b>POINT</b> drops it as a circle. <b>Long-press</b> a green to rename, redraw or delete it.","Orientation":"Orientation","<b>NORD</b> change le sens de la carte : nord en haut, rotation libre à deux doigts, ou boussole. <b>MOI</b> recentre la carte sur vous.":"<b>NORTH</b> changes the map orientation: north up, free two-finger rotation, or compass. <b>ME</b> centres the map on you.","Votre compte":"Your account","Un compte permet de <b>sauvegarder vos greens et vos zones</b>. Ce tutoriel reste accessible depuis ce menu.":"An account lets you <b>save your greens and zones</b>. This tutorial stays available from this menu.",'Position GPS nécessaire pour placer la première zone.':'GPS position needed to place the first zone.','Zone {n}':'Zone {n}','Déplacer':'Move','Glisser le cercle à la main':'Drag the circle by hand','Retire cette zone du green':'Removes this zone from the green',"jusqu'à la zone {n}":'to zone {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m from you · {b} m to the green',
 'DÉTECT':'DETECT','TRACER':'DRAW','POINTER':'POINT','GREENS':'GREENS','POS.':'POS.','Tolérance':'Tolerance',
 'Rayon':'Radius','Refaire':'Redo','Garder':'Keep','Fermer':'Close','Annuler':'Cancel','Enregistrer':'Save',
 'En attente de position':'Waiting for position','Coup aveugle':'Blind shot','Club conseillé':'Suggested club',
@@ -953,7 +962,7 @@ en:{
 '{a} m² · {w} m de large · bord avant à {d} m':'{a} m² · {w} m wide · front edge at {d} m',
 '{n} point(s) — 3 minimum, puis Garder.':'{n} point(s) — 3 minimum, then Keep.','Mon sac':'My bag',
 'Point de départ':'Starting point','Amateur homme':'Male amateur','Amateur femme':'Female amateur',
-'Senior ou débutant':'Senior or beginner','Distance totale par club':'Total distance per club',
+'Senior ou débutant':'Senior or beginner','Distance totale par club':'Total distance per club','Unité de distance':'Distance unit','Mètres':'Meters',
 'Notez la distance que vous atteignez régulièrement, pas votre meilleur coup de l\'année. C\'est ce qui rend le conseil juste.':'Enter the distance you reach consistently, not your best shot of the year. That is what makes the advice right.',
 'Terminé':'Done','Un nom court se lit mieux sur la carte.':'A short name reads better on the map.',
 'Renommer':'Rename','Renommer {n}':'Rename {n}',
@@ -1005,7 +1014,7 @@ es:{
 'Parcours illimités':'Campos ilimitados',
 'Cartographie sans limite de nombre de greens.':'Cartografía sin límite en el número de greens.',
 'Vue satellite illimitée':'Vista satelital ilimitada',
-'300 tuiles gratuites par mois hors France, à volonté avec Premium.':'300 tuiles gratuitas al mes fuera de Francia, ilimitadas con Premium.',
+'1500 tuiles gratuites par mois hors France, à volonté avec Premium.':'1500 tuiles gratuitas al mes fuera de Francia, ilimitadas con Premium.',
 'Limite satellite gratuite du mois atteinte. Passe en Premium pour continuer en vue aérienne.':'Límite satelital gratuito del mes alcanzado. Pasa a Premium para seguir con la vista aérea.',
 'Mesure et création restent gratuites':'Medir y crear siguen siendo gratis',
 'Mesure et cartographie restent gratuites':'Medir y cartografiar siguen siendo gratis',
@@ -1022,7 +1031,7 @@ es:{
 '{n} tracé(s) perdu(s) à la fermeture. Premium les conserve.':'{n} trazado(s) se perderán al cerrar. Premium los conserva.',
 'Les greens que tu traces ne sont pas conservés.':'Los greens que trazas no se conservan.',
 'Passe en Premium pour garder tes tracés':'Pasa a Premium para conservar tus trazados',
-'Créer un compte pour sauvegarder':'Crea una cuenta para guardar','MOI':'YO','MESURE':'MEDIR','CARTO':'MAPA','GREEN':'GREEN',"Sélectionnez d'abord un green":'Selecciona primero un green','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Toca un green en el mapa y luego + AREA para colocar una zona intermedia.','Compris':'Entendido','{m} zones maximum':'{m} zonas como máximo','Zone {n}/{m} ajoutée.':'Zona {n}/{m} añadida.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Arrastra los círculos para colocarlos. Luego toca una zona o el green para elegir el objetivo.','Cible : zone {n}':'Objetivo: zona {n}','Cible : green':'Objetivo: green','Modifier le diamètre':'Cambiar el diámetro','Ø actuel : {d} m':'Ø actual: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Diámetro de la zona en metros. Sirve para calcular delante, detrás y los lados.','Ø {d} m':'Ø {d} m','de la zone {n}':'de la zona {n}','Green {d} m':'Green {d} m',"Sélectionner ou créer un green":"Seleccionar o crear un green","<b>Touchez un green</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher. Green absent ? Touchez <b>+ GREEN</b> puis <b>DÉTECT</b> (touchez le centre du green), <b>TRACER</b> (posez les points du contour) ou <b>POINTER</b> (le centre puis le rayon), et <b>Garder</b>. Appui long sur un green pour le renommer, le retracer ou le supprimer.":"<b>Toca un green</b> para seleccionarlo y toca una zona vacía para soltarlo. ¿Falta un green? Toca <b>+ GREEN</b> y luego <b>DETECT</b> (toca el centro del green), <b>TRAZAR</b> (coloca los puntos del contorno) o <b>PUNTO</b> (el centro y luego el radio), y <b>Conservar</b>. Pulsación larga en un green para renombrarlo, retrazarlo o eliminarlo.","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez. Ici, un green à 97 m, en contrebas de 6,8 m.":"<b>Delante, detrás, izquierda, derecha</b> y <b>desnivel</b> hasta el green seleccionado, actualizados mientras caminas. Aquí, un green a 97 m, 6,8 m más bajo.","Le club est choisi selon vos distances, <b>dénivelé compris</b>. Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"El palo se elige según tus distancias, <b>desnivel incluido</b>. Apunta delante, al centro o detrás con <b>DEL · CEN · DET</b>. <b>COMPET.</b> quita el desnivel, prohibido en competición.","Le sac":"La bolsa","Touchez <b>SAC</b> pour indiquer la distance que vous atteignez <b>régulièrement</b> avec chaque club, pas votre meilleur coup. Décochez les clubs que vous n'avez pas. Les préréglages <b>homme, femme, senior</b> donnent un point de départ.":"Toca <b>BOLSA</b> para indicar la distancia que alcanzas <b>habitualmente</b> con cada palo, no tu mejor golpe. Desmarca los palos que no llevas. Los ajustes <b>hombre, mujer, senior</b> te dan un punto de partida.","DÉTECT · TRACER · POINTER":"DETECT · TRAZAR · PUNTO","1 mois de sauvegarde offert à la création du compte.":"1 mes de guardado gratis al crear tu cuenta.","Sans compte, tes greens ne sont pas gardés":"Sin cuenta, tus greens no se guardan","Les greens et les zones que tu traces disparaissent à la fermeture de l'app. Crée un compte gratuit : ils sont sauvegardés pendant 1 mois offert, sur tous tes appareils.":"Los greens y las zonas que trazas desaparecen al cerrar la app. Crea una cuenta gratuita: se guardan durante 1 mes gratis, en todos tus dispositivos.","Continuer sans compte":"Continuar sin cuenta","Crée un compte : 1 mois de sauvegarde offert":"Crea una cuenta: 1 mes de guardado gratis","1 mois de sauvegarde offert":"1 mes de guardado gratis","Tes greens et tes zones sont sauvegardés gratuitement jusqu'au {d}, sur tous tes appareils. Ensuite, {m} ou {a}, sans engagement.":"Tus greens y tus zonas se guardan gratis hasta el {d}, en todos tus dispositivos. Después, {m} o {a}, sin compromiso.","Passer":"Saltar","Retour":"Atrás","Suivant":"Siguiente","C'est parti":"¡Vamos!","Étape {n} sur {m}":"Paso {n} de {m}","Revoir le tutoriel":"Ver el tutorial de nuevo","Bienvenue sur SwingUp Télémètre":"Bienvenido a SwingUp Telémetro","Distances au green, dénivelé et club conseillé, calculés depuis votre <b>position GPS</b> sur l'imagerie satellite. Voici l'essentiel en quelques étapes.":"Distancias al green, desnivel y palo recomendado, calculados desde tu <b>posición GPS</b> sobre imágenes de satélite. Aquí tienes lo esencial en unos pasos.","Touchez un green":"Toca un green","Les greens du parcours s'affichent sur la carte. <b>Touchez-en un</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher.":"Los greens del campo aparecen en el mapa. <b>Toca uno</b> para seleccionarlo y toca una zona vacía para soltarlo.","Les distances":"Las distancias","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez.":"<b>Delante, detrás, izquierda, derecha</b> y <b>desnivel</b> hasta el green seleccionado, actualizados mientras caminas.","Le club conseillé":"El palo recomendado","Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. Réglez vos distances dans <b>SAC</b> pour un conseil juste. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"Apunta delante, al centro o detrás con <b>DEL · CEN · DET</b>. Ajusta tus distancias en <b>BOLSA</b> para un consejo preciso. <b>COMPET.</b> quita el desnivel, prohibido en competición.","+ AREA : vos zones de jeu":"+ AREA: tus zonas de juego","Green sélectionné, touchez <b>+ AREA</b> pour placer une zone intermédiaire (jusqu'à 6) et glissez-la là où vous voulez jouer. <b>Touchez une zone ou le green</b> pour choisir la cible. <b>Appui long</b> sur une zone : la déplacer, changer son diamètre ou la supprimer.":"Con un green seleccionado, toca <b>+ AREA</b> para colocar una zona intermedia (hasta 6) y arrástrala donde quieras jugar. <b>Toca una zona o el green</b> para elegir el objetivo. <b>Pulsación larga</b> en una zona: moverla, cambiar su diámetro o eliminarla.","+ GREEN : ajouter un green":"+ GREEN: añadir un green","Green absent ou mal tracé ? <b>DÉTECT</b> le repère par sa couleur, <b>TRACER</b> le dessine point par point, <b>POINTER</b> le pose en cercle. <b>Appui long</b> sur un green pour le renommer, le retracer ou le supprimer.":"¿Falta un green o está mal trazado? <b>DETECT</b> lo localiza por su color, <b>TRAZAR</b> lo dibuja punto a punto, <b>PUNTO</b> lo coloca como un círculo. <b>Pulsación larga</b> en un green para renombrarlo, retrazarlo o eliminarlo.","Orientation":"Orientación","<b>NORD</b> change le sens de la carte : nord en haut, rotation libre à deux doigts, ou boussole. <b>MOI</b> recentre la carte sur vous.":"<b>NORTE</b> cambia la orientación del mapa: norte arriba, rotación libre con dos dedos o brújula. <b>YO</b> centra el mapa en ti.","Votre compte":"Tu cuenta","Un compte permet de <b>sauvegarder vos greens et vos zones</b>. Ce tutoriel reste accessible depuis ce menu.":"Una cuenta te permite <b>guardar tus greens y tus zonas</b>. Este tutorial sigue disponible desde este menú.",'Position GPS nécessaire pour placer la première zone.':'Se necesita la posición GPS para colocar la primera zona.','Zone {n}':'Zona {n}','Déplacer':'Mover','Glisser le cercle à la main':'Arrastrar el círculo con el dedo','Retire cette zone du green':'Quita esta zona del green',"jusqu'à la zone {n}":'hasta la zona {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m desde ti · {b} m hasta el green',
+'Créer un compte pour sauvegarder':'Crea una cuenta para guardar','MOI':'YO','MESURE':'MEDIR','CARTO':'MAPA','GREEN':'GREEN',"Sélectionnez d'abord un green":'Selecciona primero un green','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Toca un green en el mapa y luego + AREA para colocar una zona intermedia.','Compris':'Entendido','{m} zones maximum':'{m} zonas como máximo','Zone {n}/{m} ajoutée.':'Zona {n}/{m} añadida.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Arrastra los círculos para colocarlos. Luego toca una zona o el green para elegir el objetivo.','Cible : zone {n}':'Objetivo: zona {n}','Cible : green':'Objetivo: green','Modifier le diamètre':'Cambiar el diámetro','Ø actuel : {d} m':'Ø actual: {d} m','Diamètre de la zone. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Diámetro de la zona. Sirve para calcular delante, detrás y los lados.','Ø {d} m':'Ø {d} m','de la zone {n}':'de la zona {n}','Green {d} m':'Green {d} m',"Sélectionner ou créer un green":"Seleccionar o crear un green","<b>Touchez un green</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher. Green absent ? Touchez <b>+ GREEN</b> puis <b>DÉTECT</b> (touchez le centre du green), <b>TRACER</b> (posez les points du contour) ou <b>POINTER</b> (le centre puis le rayon), et <b>Garder</b>. Appui long sur un green pour le renommer, le retracer ou le supprimer.":"<b>Toca un green</b> para seleccionarlo y toca una zona vacía para soltarlo. ¿Falta un green? Toca <b>+ GREEN</b> y luego <b>DETECT</b> (toca el centro del green), <b>TRAZAR</b> (coloca los puntos del contorno) o <b>PUNTO</b> (el centro y luego el radio), y <b>Conservar</b>. Pulsación larga en un green para renombrarlo, retrazarlo o eliminarlo.","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez. Ici, un green à {g} m, en contrebas de {e} m.":"<b>Delante, detrás, izquierda, derecha</b> y <b>desnivel</b> hasta el green seleccionado, actualizados mientras caminas. Aquí, un green a {g} m, {e} m más bajo.","Le club est choisi selon vos distances, <b>dénivelé compris</b>. Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"El palo se elige según tus distancias, <b>desnivel incluido</b>. Apunta delante, al centro o detrás con <b>DEL · CEN · DET</b>. <b>COMPET.</b> quita el desnivel, prohibido en competición.","Le sac":"La bolsa","Touchez <b>SAC</b> pour indiquer la distance que vous atteignez <b>régulièrement</b> avec chaque club, pas votre meilleur coup. Décochez les clubs que vous n'avez pas. Les préréglages <b>homme, femme, senior</b> donnent un point de départ.":"Toca <b>BOLSA</b> para indicar la distancia que alcanzas <b>habitualmente</b> con cada palo, no tu mejor golpe. Desmarca los palos que no llevas. Los ajustes <b>hombre, mujer, senior</b> te dan un punto de partida.","DÉTECT · TRACER · POINTER":"DETECT · TRAZAR · PUNTO","1 mois de sauvegarde offert à la création du compte.":"1 mes de guardado gratis al crear tu cuenta.","Sans compte, tes greens ne sont pas gardés":"Sin cuenta, tus greens no se guardan","Les greens et les zones que tu traces disparaissent à la fermeture de l'app. Crée un compte gratuit : ils sont sauvegardés pendant 1 mois offert, sur tous tes appareils.":"Los greens y las zonas que trazas desaparecen al cerrar la app. Crea una cuenta gratuita: se guardan durante 1 mes gratis, en todos tus dispositivos.","Continuer sans compte":"Continuar sin cuenta","Crée un compte : 1 mois de sauvegarde offert":"Crea una cuenta: 1 mes de guardado gratis","1 mois de sauvegarde offert":"1 mes de guardado gratis","Tes greens et tes zones sont sauvegardés gratuitement jusqu'au {d}, sur tous tes appareils. Ensuite, {m} ou {a}, sans engagement.":"Tus greens y tus zonas se guardan gratis hasta el {d}, en todos tus dispositivos. Después, {m} o {a}, sin compromiso.","Passer":"Saltar","Retour":"Atrás","Suivant":"Siguiente","C'est parti":"¡Vamos!","Étape {n} sur {m}":"Paso {n} de {m}","Revoir le tutoriel":"Ver el tutorial de nuevo","Bienvenue sur SwingUp Télémètre":"Bienvenido a SwingUp Telémetro","Distances au green, dénivelé et club conseillé, calculés depuis votre <b>position GPS</b> sur l'imagerie satellite. Voici l'essentiel en quelques étapes.":"Distancias al green, desnivel y palo recomendado, calculados desde tu <b>posición GPS</b> sobre imágenes de satélite. Aquí tienes lo esencial en unos pasos.","Touchez un green":"Toca un green","Les greens du parcours s'affichent sur la carte. <b>Touchez-en un</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher.":"Los greens del campo aparecen en el mapa. <b>Toca uno</b> para seleccionarlo y toca una zona vacía para soltarlo.","Les distances":"Las distancias","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez.":"<b>Delante, detrás, izquierda, derecha</b> y <b>desnivel</b> hasta el green seleccionado, actualizados mientras caminas.","Le club conseillé":"El palo recomendado","Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. Réglez vos distances dans <b>SAC</b> pour un conseil juste. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"Apunta delante, al centro o detrás con <b>DEL · CEN · DET</b>. Ajusta tus distancias en <b>BOLSA</b> para un consejo preciso. <b>COMPET.</b> quita el desnivel, prohibido en competición.","+ AREA : vos zones de jeu":"+ AREA: tus zonas de juego","Green sélectionné, touchez <b>+ AREA</b> pour placer une zone intermédiaire (jusqu'à 6) et glissez-la là où vous voulez jouer. <b>Touchez une zone ou le green</b> pour choisir la cible. <b>Appui long</b> sur une zone : la déplacer, changer son diamètre ou la supprimer.":"Con un green seleccionado, toca <b>+ AREA</b> para colocar una zona intermedia (hasta 6) y arrástrala donde quieras jugar. <b>Toca una zona o el green</b> para elegir el objetivo. <b>Pulsación larga</b> en una zona: moverla, cambiar su diámetro o eliminarla.","+ GREEN : ajouter un green":"+ GREEN: añadir un green","Green absent ou mal tracé ? <b>DÉTECT</b> le repère par sa couleur, <b>TRACER</b> le dessine point par point, <b>POINTER</b> le pose en cercle. <b>Appui long</b> sur un green pour le renommer, le retracer ou le supprimer.":"¿Falta un green o está mal trazado? <b>DETECT</b> lo localiza por su color, <b>TRAZAR</b> lo dibuja punto a punto, <b>PUNTO</b> lo coloca como un círculo. <b>Pulsación larga</b> en un green para renombrarlo, retrazarlo o eliminarlo.","Orientation":"Orientación","<b>NORD</b> change le sens de la carte : nord en haut, rotation libre à deux doigts, ou boussole. <b>MOI</b> recentre la carte sur vous.":"<b>NORTE</b> cambia la orientación del mapa: norte arriba, rotación libre con dos dedos o brújula. <b>YO</b> centra el mapa en ti.","Votre compte":"Tu cuenta","Un compte permet de <b>sauvegarder vos greens et vos zones</b>. Ce tutoriel reste accessible depuis ce menu.":"Una cuenta te permite <b>guardar tus greens y tus zonas</b>. Este tutorial sigue disponible desde este menú.",'Position GPS nécessaire pour placer la première zone.':'Se necesita la posición GPS para colocar la primera zona.','Zone {n}':'Zona {n}','Déplacer':'Mover','Glisser le cercle à la main':'Arrastrar el círculo con el dedo','Retire cette zone du green':'Quita esta zona del green',"jusqu'à la zone {n}":'hasta la zona {n}','Total':'Total',"{a} m depuis vous · {b} m jusqu'au green":'{a} m desde ti · {b} m hasta el green',
 'DÉTECT':'DETECT','TRACER':'TRAZAR','POINTER':'PUNTO','GREENS':'GREENS','POS.':'POS.','Tolérance':'Tolerancia',
 'Rayon':'Radio','Refaire':'Rehacer','Garder':'Conservar','Fermer':'Cerrar','Annuler':'Cancelar',
 'Enregistrer':'Guardar','En attente de position':'Esperando posición','Coup aveugle':'Golpe ciego',
@@ -1084,7 +1093,7 @@ es:{
 '{a} m² · {w} m de large · bord avant à {d} m':'{a} m² · {w} m de ancho · borde delantero a {d} m',
 '{n} point(s) — 3 minimum, puis Garder.':'{n} punto(s) — 3 como mínimo, luego Conservar.','Mon sac':'Mi bolsa',
 'Point de départ':'Punto de partida','Amateur homme':'Amateur hombre','Amateur femme':'Amateur mujer',
-'Senior ou débutant':'Senior o principiante','Distance totale par club':'Distancia total por palo',
+'Senior ou débutant':'Senior o principiante','Distance totale par club':'Distancia total por palo','Unité de distance':'Unidad de distancia','Mètres':'Metros','Yards':'Yardas',
 'Notez la distance que vous atteignez régulièrement, pas votre meilleur coup de l\'année. C\'est ce qui rend le conseil juste.':'Anota la distancia que alcanzas habitualmente, no tu mejor golpe del año. Eso es lo que hace que el consejo sea acertado.',
 'Terminé':'Hecho','Un nom court se lit mieux sur la carte.':'Un nombre corto se lee mejor en el mapa.',
 'Renommer':'Renombrar','Renommer {n}':'Renombrar {n}',
@@ -1138,7 +1147,7 @@ de:{
 'Parcours illimités':'Unbegrenzte Plätze',
 'Cartographie sans limite de nombre de greens.':'Kartierung ohne Begrenzung der Anzahl an Greens.',
 'Vue satellite illimitée':'Unbegrenzte Satellitenansicht',
-'300 tuiles gratuites par mois hors France, à volonté avec Premium.':'300 kostenlose Kacheln pro Monat außerhalb Frankreichs, unbegrenzt mit Premium.',
+'1500 tuiles gratuites par mois hors France, à volonté avec Premium.':'1500 kostenlose Kacheln pro Monat außerhalb Frankreichs, unbegrenzt mit Premium.',
 'Limite satellite gratuite du mois atteinte. Passe en Premium pour continuer en vue aérienne.':'Kostenloses Satelliten-Monatslimit erreicht. Wechsle zu Premium, um die Luftansicht zu behalten.',
 'Mesure et création restent gratuites':'Messen und Erstellen bleiben kostenlos',
 'Mesure et cartographie restent gratuites':'Messen und Kartieren bleiben kostenlos',
@@ -1156,7 +1165,7 @@ de:{
 'Les greens que tu traces ne sont pas conservés.':'Die von dir erfassten Greens werden nicht gespeichert.',
 'Passe en Premium pour garder tes tracés':'Wechsle zu Premium, um deine Konturen zu behalten',
 'Créer un compte pour sauvegarder':'Erstelle ein Konto, um zu speichern','MOI':'ICH','MESURE':'MESSEN',
-'CARTO':'KARTE','GREEN':'GRÜN',"Sélectionnez d'abord un green":'Wähle zuerst ein Grün','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tippe auf ein Grün und dann auf + AREA, um eine Zwischenzone zu setzen.','Compris':'Verstanden','{m} zones maximum':'Maximal {m} Zonen','Zone {n}/{m} ajoutée.':'Zone {n}/{m} hinzugefügt.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Ziehe die Kreise, um sie zu setzen. Tippe dann auf eine Zone oder das Grün, um dein Ziel zu wählen.','Cible : zone {n}':'Ziel: Zone {n}','Cible : green':'Ziel: Grün','Modifier le diamètre':'Durchmesser ändern','Ø actuel : {d} m':'Aktueller Ø: {d} m','Diamètre de la zone en mètres. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Durchmesser der Zone in Metern. Dient zur Berechnung von vorne, hinten und den Seiten.','Ø {d} m':'Ø {d} m','de la zone {n}':'der Zone {n}','Green {d} m':'Grün {d} m',"Sélectionner ou créer un green":"Ein Grün wählen oder erstellen","<b>Touchez un green</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher. Green absent ? Touchez <b>+ GREEN</b> puis <b>DÉTECT</b> (touchez le centre du green), <b>TRACER</b> (posez les points du contour) ou <b>POINTER</b> (le centre puis le rayon), et <b>Garder</b>. Appui long sur un green pour le renommer, le retracer ou le supprimer.":"<b>Tippe auf ein Grün</b>, um es auszuwählen, und auf eine leere Stelle, um es freizugeben. Grün fehlt? Tippe auf <b>+ GREEN</b>, dann <b>ERKENN</b> (Mitte des Grüns antippen), <b>ZEICHN</b> (Konturpunkte setzen) oder <b>PUNKT</b> (Mitte, dann Radius) und <b>Behalten</b>. Lange drücken auf ein Grün, um es umzubenennen, neu zu zeichnen oder zu löschen.","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez. Ici, un green à 97 m, en contrebas de 6,8 m.":"<b>Vorne, hinten, links, rechts</b> und <b>Höhenunterschied</b> zum gewählten Grün, aktualisiert während du gehst. Hier ein Grün in 97 m, 6,8 m tiefer.","Le club est choisi selon vos distances, <b>dénivelé compris</b>. Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"Der Schläger wird nach deinen Weiten gewählt, <b>Höhenunterschied inklusive</b>. Ziele mit <b>VOR · MIT · HIN</b> auf vorne, Mitte oder hinten. <b>TURNIER</b> blendet den Höhenunterschied aus, der im Turnier verboten ist.","Le sac":"Das Bag","Touchez <b>SAC</b> pour indiquer la distance que vous atteignez <b>régulièrement</b> avec chaque club, pas votre meilleur coup. Décochez les clubs que vous n'avez pas. Les préréglages <b>homme, femme, senior</b> donnent un point de départ.":"Tippe auf <b>BAG</b>, um die Weite einzutragen, die du mit jedem Schläger <b>regelmäßig</b> erreichst, nicht deinen besten Schlag. Entferne die Haken bei Schlägern, die du nicht hast. Die Vorgaben <b>Herren, Damen, Senioren</b> sind ein guter Start.","DÉTECT · TRACER · POINTER":"ERKENN · ZEICHN · PUNKT","1 mois de sauvegarde offert à la création du compte.":"1 Monat kostenloses Speichern bei Kontoerstellung.","Sans compte, tes greens ne sont pas gardés":"Ohne Konto werden deine Grüns nicht gespeichert","Les greens et les zones que tu traces disparaissent à la fermeture de l'app. Crée un compte gratuit : ils sont sauvegardés pendant 1 mois offert, sur tous tes appareils.":"Die Grüns und Zonen, die du erfasst, verschwinden beim Schließen der App. Erstelle ein kostenloses Konto: Sie werden 1 Monat kostenlos gespeichert, auf all deinen Geräten.","Continuer sans compte":"Ohne Konto fortfahren","Crée un compte : 1 mois de sauvegarde offert":"Konto erstellen: 1 Monat kostenloses Speichern","1 mois de sauvegarde offert":"1 Monat kostenloses Speichern","Tes greens et tes zones sont sauvegardés gratuitement jusqu'au {d}, sur tous tes appareils. Ensuite, {m} ou {a}, sans engagement.":"Deine Grüns und Zonen werden bis zum {d} kostenlos gespeichert, auf all deinen Geräten. Danach {m} oder {a}, ohne Bindung.","Passer":"Überspringen","Retour":"Zurück","Suivant":"Weiter","C'est parti":"Los geht's","Étape {n} sur {m}":"Schritt {n} von {m}","Revoir le tutoriel":"Tutorial erneut ansehen","Bienvenue sur SwingUp Télémètre":"Willkommen bei SwingUp Entfernungsmesser","Distances au green, dénivelé et club conseillé, calculés depuis votre <b>position GPS</b> sur l'imagerie satellite. Voici l'essentiel en quelques étapes.":"Entfernungen zum Grün, Höhenunterschied und empfohlener Schläger, berechnet aus deiner <b>GPS-Position</b> auf Satellitenbildern. Hier das Wichtigste in wenigen Schritten.","Touchez un green":"Tippe auf ein Grün","Les greens du parcours s'affichent sur la carte. <b>Touchez-en un</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher.":"Die Grüns des Platzes erscheinen auf der Karte. <b>Tippe auf eines</b>, um es auszuwählen, und auf eine leere Stelle, um es freizugeben.","Les distances":"Die Entfernungen","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez.":"<b>Vorne, hinten, links, rechts</b> und <b>Höhenunterschied</b> zum gewählten Grün, aktualisiert während du gehst.","Le club conseillé":"Empfohlener Schläger","Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. Réglez vos distances dans <b>SAC</b> pour un conseil juste. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"Ziele mit <b>VOR · MIT · HIN</b> auf vorne, Mitte oder hinten. Stelle deine Weiten in <b>BAG</b> ein, damit die Empfehlung stimmt. <b>TURNIER</b> blendet den Höhenunterschied aus, der im Turnier verboten ist.","+ AREA : vos zones de jeu":"+ AREA: deine Zwischenzonen","Green sélectionné, touchez <b>+ AREA</b> pour placer une zone intermédiaire (jusqu'à 6) et glissez-la là où vous voulez jouer. <b>Touchez une zone ou le green</b> pour choisir la cible. <b>Appui long</b> sur une zone : la déplacer, changer son diamètre ou la supprimer.":"Bei ausgewähltem Grün tippe auf <b>+ AREA</b>, um eine Zwischenzone zu setzen (bis zu 6), und ziehe sie dorthin, wo du spielen willst. <b>Tippe auf eine Zone oder das Grün</b>, um dein Ziel zu wählen. <b>Lange drücken</b> auf eine Zone: verschieben, Durchmesser ändern oder löschen.","+ GREEN : ajouter un green":"+ GREEN: ein Grün hinzufügen","Green absent ou mal tracé ? <b>DÉTECT</b> le repère par sa couleur, <b>TRACER</b> le dessine point par point, <b>POINTER</b> le pose en cercle. <b>Appui long</b> sur un green pour le renommer, le retracer ou le supprimer.":"Grün fehlt oder ist falsch? <b>ERKENN</b> findet es über die Farbe, <b>ZEICHN</b> zeichnet es Punkt für Punkt, <b>PUNKT</b> setzt es als Kreis. <b>Lange drücken</b> auf ein Grün, um es umzubenennen, neu zu zeichnen oder zu löschen.","Orientation":"Ausrichtung","<b>NORD</b> change le sens de la carte : nord en haut, rotation libre à deux doigts, ou boussole. <b>MOI</b> recentre la carte sur vous.":"<b>NORD</b> ändert die Kartenausrichtung: Norden oben, freie Drehung mit zwei Fingern oder Kompass. <b>ICH</b> zentriert die Karte auf dich.","Votre compte":"Dein Konto","Un compte permet de <b>sauvegarder vos greens et vos zones</b>. Ce tutoriel reste accessible depuis ce menu.":"Mit einem Konto kannst du <b>deine Grüns und Zonen speichern</b>. Dieses Tutorial bleibt über dieses Menü erreichbar.",'Position GPS nécessaire pour placer la première zone.':'GPS-Position nötig, um die erste Zone zu setzen.','Zone {n}':'Zone {n}','Déplacer':'Verschieben','Glisser le cercle à la main':'Kreis mit dem Finger ziehen','Retire cette zone du green':'Entfernt diese Zone vom Grün',"jusqu'à la zone {n}":'bis Zone {n}','Total':'Gesamt',"{a} m depuis vous · {b} m jusqu'au green":'{a} m von dir · {b} m bis zum Grün','DÉTECT':'ERKENN','TRACER':'ZEICHN','POINTER':'PUNKT','GREENS':'GREENS','POS.':'POS.',
+'CARTO':'KARTE','GREEN':'GRÜN',"Sélectionnez d'abord un green":'Wähle zuerst ein Grün','Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.':'Tippe auf ein Grün und dann auf + AREA, um eine Zwischenzone zu setzen.','Compris':'Verstanden','{m} zones maximum':'Maximal {m} Zonen','Zone {n}/{m} ajoutée.':'Zone {n}/{m} hinzugefügt.','Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.':'Ziehe die Kreise, um sie zu setzen. Tippe dann auf eine Zone oder das Grün, um dein Ziel zu wählen.','Cible : zone {n}':'Ziel: Zone {n}','Cible : green':'Ziel: Grün','Modifier le diamètre':'Durchmesser ändern','Ø actuel : {d} m':'Aktueller Ø: {d} m','Diamètre de la zone. Il sert à calculer l\'avant, l\'arrière et les côtés.':'Durchmesser der Zone. Dient zur Berechnung von vorne, hinten und den Seiten.','Ø {d} m':'Ø {d} m','de la zone {n}':'der Zone {n}','Green {d} m':'Grün {d} m',"Sélectionner ou créer un green":"Ein Grün wählen oder erstellen","<b>Touchez un green</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher. Green absent ? Touchez <b>+ GREEN</b> puis <b>DÉTECT</b> (touchez le centre du green), <b>TRACER</b> (posez les points du contour) ou <b>POINTER</b> (le centre puis le rayon), et <b>Garder</b>. Appui long sur un green pour le renommer, le retracer ou le supprimer.":"<b>Tippe auf ein Grün</b>, um es auszuwählen, und auf eine leere Stelle, um es freizugeben. Grün fehlt? Tippe auf <b>+ GREEN</b>, dann <b>ERKENN</b> (Mitte des Grüns antippen), <b>ZEICHN</b> (Konturpunkte setzen) oder <b>PUNKT</b> (Mitte, dann Radius) und <b>Behalten</b>. Lange drücken auf ein Grün, um es umzubenennen, neu zu zeichnen oder zu löschen.","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez. Ici, un green à {g} m, en contrebas de {e} m.":"<b>Vorne, hinten, links, rechts</b> und <b>Höhenunterschied</b> zum gewählten Grün, aktualisiert während du gehst. Hier ein Grün in {g} m, {e} m tiefer.","Le club est choisi selon vos distances, <b>dénivelé compris</b>. Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"Der Schläger wird nach deinen Weiten gewählt, <b>Höhenunterschied inklusive</b>. Ziele mit <b>VOR · MIT · HIN</b> auf vorne, Mitte oder hinten. <b>TURNIER</b> blendet den Höhenunterschied aus, der im Turnier verboten ist.","Le sac":"Das Bag","Touchez <b>SAC</b> pour indiquer la distance que vous atteignez <b>régulièrement</b> avec chaque club, pas votre meilleur coup. Décochez les clubs que vous n'avez pas. Les préréglages <b>homme, femme, senior</b> donnent un point de départ.":"Tippe auf <b>BAG</b>, um die Weite einzutragen, die du mit jedem Schläger <b>regelmäßig</b> erreichst, nicht deinen besten Schlag. Entferne die Haken bei Schlägern, die du nicht hast. Die Vorgaben <b>Herren, Damen, Senioren</b> sind ein guter Start.","DÉTECT · TRACER · POINTER":"ERKENN · ZEICHN · PUNKT","1 mois de sauvegarde offert à la création du compte.":"1 Monat kostenloses Speichern bei Kontoerstellung.","Sans compte, tes greens ne sont pas gardés":"Ohne Konto werden deine Grüns nicht gespeichert","Les greens et les zones que tu traces disparaissent à la fermeture de l'app. Crée un compte gratuit : ils sont sauvegardés pendant 1 mois offert, sur tous tes appareils.":"Die Grüns und Zonen, die du erfasst, verschwinden beim Schließen der App. Erstelle ein kostenloses Konto: Sie werden 1 Monat kostenlos gespeichert, auf all deinen Geräten.","Continuer sans compte":"Ohne Konto fortfahren","Crée un compte : 1 mois de sauvegarde offert":"Konto erstellen: 1 Monat kostenloses Speichern","1 mois de sauvegarde offert":"1 Monat kostenloses Speichern","Tes greens et tes zones sont sauvegardés gratuitement jusqu'au {d}, sur tous tes appareils. Ensuite, {m} ou {a}, sans engagement.":"Deine Grüns und Zonen werden bis zum {d} kostenlos gespeichert, auf all deinen Geräten. Danach {m} oder {a}, ohne Bindung.","Passer":"Überspringen","Retour":"Zurück","Suivant":"Weiter","C'est parti":"Los geht's","Étape {n} sur {m}":"Schritt {n} von {m}","Revoir le tutoriel":"Tutorial erneut ansehen","Bienvenue sur SwingUp Télémètre":"Willkommen bei SwingUp Entfernungsmesser","Distances au green, dénivelé et club conseillé, calculés depuis votre <b>position GPS</b> sur l'imagerie satellite. Voici l'essentiel en quelques étapes.":"Entfernungen zum Grün, Höhenunterschied und empfohlener Schläger, berechnet aus deiner <b>GPS-Position</b> auf Satellitenbildern. Hier das Wichtigste in wenigen Schritten.","Touchez un green":"Tippe auf ein Grün","Les greens du parcours s'affichent sur la carte. <b>Touchez-en un</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher.":"Die Grüns des Platzes erscheinen auf der Karte. <b>Tippe auf eines</b>, um es auszuwählen, und auf eine leere Stelle, um es freizugeben.","Les distances":"Die Entfernungen","<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez.":"<b>Vorne, hinten, links, rechts</b> und <b>Höhenunterschied</b> zum gewählten Grün, aktualisiert während du gehst.","Le club conseillé":"Empfohlener Schläger","Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. Réglez vos distances dans <b>SAC</b> pour un conseil juste. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"Ziele mit <b>VOR · MIT · HIN</b> auf vorne, Mitte oder hinten. Stelle deine Weiten in <b>BAG</b> ein, damit die Empfehlung stimmt. <b>TURNIER</b> blendet den Höhenunterschied aus, der im Turnier verboten ist.","+ AREA : vos zones de jeu":"+ AREA: deine Zwischenzonen","Green sélectionné, touchez <b>+ AREA</b> pour placer une zone intermédiaire (jusqu'à 6) et glissez-la là où vous voulez jouer. <b>Touchez une zone ou le green</b> pour choisir la cible. <b>Appui long</b> sur une zone : la déplacer, changer son diamètre ou la supprimer.":"Bei ausgewähltem Grün tippe auf <b>+ AREA</b>, um eine Zwischenzone zu setzen (bis zu 6), und ziehe sie dorthin, wo du spielen willst. <b>Tippe auf eine Zone oder das Grün</b>, um dein Ziel zu wählen. <b>Lange drücken</b> auf eine Zone: verschieben, Durchmesser ändern oder löschen.","+ GREEN : ajouter un green":"+ GREEN: ein Grün hinzufügen","Green absent ou mal tracé ? <b>DÉTECT</b> le repère par sa couleur, <b>TRACER</b> le dessine point par point, <b>POINTER</b> le pose en cercle. <b>Appui long</b> sur un green pour le renommer, le retracer ou le supprimer.":"Grün fehlt oder ist falsch? <b>ERKENN</b> findet es über die Farbe, <b>ZEICHN</b> zeichnet es Punkt für Punkt, <b>PUNKT</b> setzt es als Kreis. <b>Lange drücken</b> auf ein Grün, um es umzubenennen, neu zu zeichnen oder zu löschen.","Orientation":"Ausrichtung","<b>NORD</b> change le sens de la carte : nord en haut, rotation libre à deux doigts, ou boussole. <b>MOI</b> recentre la carte sur vous.":"<b>NORD</b> ändert die Kartenausrichtung: Norden oben, freie Drehung mit zwei Fingern oder Kompass. <b>ICH</b> zentriert die Karte auf dich.","Votre compte":"Dein Konto","Un compte permet de <b>sauvegarder vos greens et vos zones</b>. Ce tutoriel reste accessible depuis ce menu.":"Mit einem Konto kannst du <b>deine Grüns und Zonen speichern</b>. Dieses Tutorial bleibt über dieses Menü erreichbar.",'Position GPS nécessaire pour placer la première zone.':'GPS-Position nötig, um die erste Zone zu setzen.','Zone {n}':'Zone {n}','Déplacer':'Verschieben','Glisser le cercle à la main':'Kreis mit dem Finger ziehen','Retire cette zone du green':'Entfernt diese Zone vom Grün',"jusqu'à la zone {n}":'bis Zone {n}','Total':'Gesamt',"{a} m depuis vous · {b} m jusqu'au green":'{a} m von dir · {b} m bis zum Grün','DÉTECT':'ERKENN','TRACER':'ZEICHN','POINTER':'PUNKT','GREENS':'GREENS','POS.':'POS.',
 'Tolérance':'Toleranz','Rayon':'Radius','Refaire':'Neu','Garder':'Behalten','Fermer':'Schließen',
 'Annuler':'Abbrechen','Enregistrer':'Speichern','En attente de position':'Warte auf Position',
 'Coup aveugle':'Blinder Schlag','Club conseillé':'Empfohlener Schläger','Choisissez un green':'Wähle ein Green',
@@ -1217,7 +1226,7 @@ de:{
 '{a} m² · {w} m de large · bord avant à {d} m':'{a} m² · {w} m breit · Vorderkante bei {d} m',
 '{n} point(s) — 3 minimum, puis Garder.':'{n} Punkt(e) — mindestens 3, dann Behalten.','Mon sac':'Mein Bag',
 'Point de départ':'Ausgangspunkt','Amateur homme':'Amateur Herren','Amateur femme':'Amateur Damen',
-'Senior ou débutant':'Senior oder Anfänger','Distance totale par club':'Gesamtdistanz pro Schläger',
+'Senior ou débutant':'Senior oder Anfänger','Distance totale par club':'Gesamtdistanz pro Schläger','Unité de distance':'Entfernungseinheit','Mètres':'Meter',
 'Notez la distance que vous atteignez régulièrement, pas votre meilleur coup de l\'année. C\'est ce qui rend le conseil juste.':'Notiere die Distanz, die du regelmäßig erreichst, nicht deinen besten Schlag des Jahres. Das macht die Empfehlung treffsicher.',
 'Terminé':'Fertig','Un nom court se lit mieux sur la carte.':'Ein kurzer Name lässt sich auf der Karte besser lesen.',
 'Renommer':'Umbenennen','Renommer {n}':'{n} umbenennen',
@@ -1477,7 +1486,7 @@ function ecranPremium(origine){
     +'<p class="txt">'+esc(origine||T("L'abonnement ne porte que sur la sauvegarde en ligne."))+'</p>'
     +'<div class="plan">'
     +feat(T('Sauvegarde et synchronisation'),T('Sans abonnement, les greens que tu traces disparaissent à la fermeture. Avec Premium, ils sont conservés et te suivent sur tous tes appareils.'))
-    +feat(T('Vue satellite illimitée'),T('300 tuiles gratuites par mois hors France, à volonté avec Premium.'))
+    +feat(T('Vue satellite illimitée'),T('1500 tuiles gratuites par mois hors France, à volonté avec Premium.'))
     +feat(T('Mesure et cartographie restent gratuites'),T("L'abonnement ne porte que sur la conservation de tes tracés."))
     +'<div class="price" id="prixMois">'+esc(T(PREMIUM.price))+'</div><p class="pnote"><span id="prixAn">'+esc(T('ou {a}',{a:T(PREMIUM.priceYear)}))+'</span> · '+esc(T(PREMIUM.note))+'</p></div>'
     +(BETA.actif?'<div class="subline on"><b>'+esc(T('Version bêta'))+'</b><span>'+esc(T('Tout est ouvert jusqu\'au {d}.',{d:dateLoc(BETA.fin)}))+'</span></div>':'')
@@ -1952,7 +1961,26 @@ document.addEventListener('DOMContentLoaded',()=>{
 (() => {
 "use strict";
 const $ = id => document.getElementById(id);
-const L_ = (s,v) => (typeof T==="function" ? T(s,v) : s);
+/* ---------- unités : mètres ou yards ----------
+   Tout est calculé et mémorisé en MÈTRES (sac, zones, greens) : seul
+   l'affichage convertit. Par défaut : yards pour un téléphone en anglais
+   des États-Unis, du Royaume-Uni ou du Canada, mètres ailleurs. Le choix
+   se change dans SAC. */
+const YD_PAR_M = 1.0936133;
+function uniteParDefaut(){
+  const l = ((navigator.languages && navigator.languages[0]) || navigator.language || "").toLowerCase().split("-");
+  return (l[0] === "en" && ["us","gb","ca"].indexOf(l[1]) >= 0) ? "yd" : "m";
+}
+let UNITE = (Store.get("unite") === "yd" || Store.get("unite") === "m") ? Store.get("unite") : uniteParDefaut();
+const uV = m => UNITE === "yd" ? m * YD_PAR_M : m;              /* mètres -> unité affichée */
+const uInv = v => UNITE === "yd" ? v / YD_PAR_M : v;            /* unité affichée -> mètres */
+const uR = m => Math.round(uV(m));
+const uA = a => UNITE === "yd" ? a * YD_PAR_M * YD_PAR_M : a;   /* m² -> yd² */
+const uF = (m, n = 0) => uV(m).toFixed(n).replace(".", ",");
+/* Les textes traduits contiennent « m » et « m² » : on ne convertit que
+   l'étiquette, les nombres sont convertis à l'appel. */
+const uTxt = t => UNITE === "yd" ? t.replace(/(\d) m²/g, "$1 yd²").replace(/(\d) m(?![A-Za-zÀ-ÿ²])/g, "$1 yd") : t;
+const L_ = (s,v) => uTxt(typeof T==="function" ? T(s,v) : s);
 const R_E = 6371008.8, D2R = Math.PI/180, R2D = 180/Math.PI;
 const KEY = "greens.custom.v2", LAST = "greens.last.v1", BAG = "greens.bag.v1", OVER = "greens.over.v1", ZONES = "greens.zones.v1";
 const ZMAX = 6, ZPASS = 15, ZRESET = 30, ZDIA = 10;   /* ZDIA : diamètre par défaut d'une zone (m) */
@@ -2168,7 +2196,7 @@ const inFR = p => {
    pas de photo aérienne) jusqu'au mois suivant. Premium n'a aucune
    limite : « à volonté ». */
 const OSM_FALLBACK = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-const SAT_QUOTA_MAX = 300;
+const SAT_QUOTA_MAX = 1500;
 const moisCourant = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); };
 const quotaSatCle = () => "sat.quota." + moisCourant();
 function quotaSatVues(){
@@ -2451,7 +2479,7 @@ function majAccBadge(acc, manual){
   const r = Math.round(acc);
   const cls = r <= 8 ? "on" : r <= 20 ? "on warn" : "on bad";
   b.className = cls;
-  $("accTxt").textContent = "GPS ±" + r + " m";
+  $("accTxt").textContent = "GPS ±" + uR(r) + " " + UNITE;
 }
 function setPos(lat, lon, acc, manual){
   const first = !S.pos;
@@ -2998,7 +3026,7 @@ function drawEditPoly(){
 }
 function editMsg(prefix){
   const area = ringArea(S.editRing), dia = Math.round(Math.sqrt(area/Math.PI)*2), a = Math.round(area);
-  msg((prefix ? prefix + " " : "") + L_("{a} m², {d} m. Glissez les points dorés pour ajuster, puis Garder.",{a:a,d:dia}));
+  msg((prefix ? prefix + " " : "") + L_("{a} m², {d} m. Glissez les points dorés pour ajuster, puis Garder.",{a:Math.round(uA(a)),d:uR(dia)}));
 }
 /* Poignées glissables sur chaque sommet du contour réduit : la correction
    manuelle qui manquait à DÉTECT (et maintenant POINTER et la reprise) —
@@ -3077,12 +3105,12 @@ function applyDetect(){
    à π·r² dès qu'une poignée a été déplacée à la main. */
 function pointMsg(prefix){
   const area = ringArea(S.editRing);
-  msg((prefix ? prefix + " " : "") + L_("Rayon {r} m · {a} m². Glissez les points dorés ou changez le rayon, puis Garder.",{r:S.point.r,a:Math.round(area)}));
+  msg((prefix ? prefix + " " : "") + L_("Rayon {r} m · {a} m². Glissez les points dorés ou changez le rayon, puis Garder.",{r:uR(S.point.r),a:Math.round(uA(area))}));
 }
 function applyPoint(){
   if (!S.point) return;
   const r = +$("rad").value;
-  $("radLab").textContent = r + " m";
+  $("radLab").textContent = uR(r) + " " + UNITE;
   S.point.r = r;
   /* Cercle plein (beaucoup de points) gardé à part pour l'enregistrement
      tant qu'aucune poignée n'a été bougée à la main ; l'affichage/édition
@@ -3120,11 +3148,11 @@ function drawMeas(){
   L.circleMarker(at, { radius:6, color:"#3A2C00", weight:2, fillColor:"#C9A227", fillOpacity:1, interactive:false }).addTo(measLayer);
   if (d != null){
     const mid = [(S.pos.lat + S.meas.lat)/2, (S.pos.lon + S.meas.lon)/2];
-    L.marker(mid, { icon:L.divIcon({ className:"mtag", html:"<span>" + Math.round(d) + " m</span>" }), interactive:false }).addTo(measLayer);
-    $("measVal").innerHTML = Math.round(d) + "<small>m</small>";
+    L.marker(mid, { icon:L.divIcon({ className:"mtag", html:"<span>" + uR(d) + " " + UNITE + "</span>" }), interactive:false }).addTo(measLayer);
+    $("measVal").innerHTML = uR(d) + "<small>" + UNITE + "</small>";
     const p = pickClub(d);
     $("measClub").textContent = !p ? ""
-      : p.short ? L_("hors de portée") : L_(p.club.n) + " · " + L_("porte {d} m",{d:p.club.d});
+      : p.short ? L_("hors de portée") : L_(p.club.n) + " · " + L_("porte {d} m",{d:uR(p.club.d)});
   } else {
     $("measVal").textContent = "—";
     $("measClub").textContent = L_("position inconnue");
@@ -3442,7 +3470,7 @@ function openCtx(g){
   
   $("ctxName").textContent = g.name;
   const m = S.pos ? measure(g, S.pos) : null;
-  $("ctxSub").textContent = m ? L_("{a} m² · {w} m de large · bord avant à {d} m",{a:Math.round(m.area),w:Math.round(m.width),d:Math.round(m.front.d)}) : "";
+  $("ctxSub").textContent = m ? L_("{a} m² · {w} m de large · bord avant à {d} m",{a:Math.round(uA(m.area)),w:uR(m.width),d:uR(m.front.d)}) : "";
   $("ctxRedrawLbl").innerHTML = isPoint
     ? "<b>"+esc(L_("Régler le rayon"))+"</b><small>"+esc(L_("Rouvrir le point et son curseur"))+"</small>"
     : "<b>"+esc(L_("Retracer le contour"))+"</b><small>"+esc(L_("Reposer les points à la main"))+"</small>";
@@ -3542,8 +3570,8 @@ function refresh(){
 }
 function render(m){
   if (document.body.classList.contains("tuto-on")) return;
-  const nb = (v,n=0) => Number.isFinite(v) ? v.toFixed(n).replace(".",",") : "—";
-  const set = (id,v) => $(id).innerHTML = v === "—" ? "—" : v + "<i>m</i>";
+  const nb = (v,n=0) => Number.isFinite(v) ? uF(v,n) : "—";
+  const set = (id,v) => $(id).innerHTML = v === "—" ? "—" : v + "<i>" + UNITE + "</i>";
   const compet = $("compet").classList.contains("on");
   if (!m || !S.sel){
     $("gName").textContent = S.greens.length ? L_("Touchez un green") : (S.pos ? L_("Aucun green trouvé") : L_("En attente de position"));
@@ -3559,7 +3587,7 @@ function render(m){
   if (zOn){
     const zt = zs[0], d = zDist([S.pos.lat, S.pos.lon], zt), r = zDia(zt)/2;
     $("gName").textContent = S.sel.name + " · " + L_("Zone {n}", { n:zp.tgt+1 });
-    $("gSub").textContent = L_("Ø {d} m", { d:zDia(zt) });
+    $("gSub").textContent = L_("Ø {d} m", { d:uR(zDia(zt)) });
     set("dFront", nb(Math.max(0, d - r))); set("dBack", nb(d + r));
     const side = Math.hypot(d, r);
     set("dLeft", nb(side)); set("dRight", nb(side));
@@ -3567,7 +3595,7 @@ function render(m){
     const za = (S.zAlti && S.zAlti.zk === zt[0].toFixed(5) + "," + zt[1].toFixed(5) && !compet) ? S.zAlti : null;
     const zdz = za ? za.zone - za.player : 0;
     if (za){
-      $("dElev").innerHTML = (zdz>=0?"+":"−") + nb(Math.abs(zdz),1) + "<i>m</i>";
+      $("dElev").innerHTML = (zdz>=0?"+":"−") + nb(Math.abs(zdz),1) + "<i>" + UNITE + "</i>";
       $("cElev").className = "c " + (zdz >= 0 ? "up" : "down");
     } else { $("dElev").innerHTML = "—"; $("cElev").className = "c"; }
     $("blind").classList.toggle("on", !!(za && za.blind));
@@ -3576,14 +3604,14 @@ function render(m){
     return;
   }
   $("gName").textContent = S.sel.name;
-  $("gSub").textContent = L_("{w} m de large",{w:Math.round(m.width)})
+  $("gSub").textContent = L_("{w} m de large",{w:uR(m.width)})
     + (S.sel.src === "approx" ? " · " + L_("estimé") : S.sel.mk === "point" ? " · " + L_("pointé") : S.sel.src === "draw" ? " · " + L_("tracé") : "");
   set("dFront", nb(m.front.d)); set("dBack", nb(m.back.d));
   set("dLeft", nb(m.left.d));   set("dRight", nb(m.right.d));
 
   const a = S.alti, dz = (a && !compet) ? (a.centre - a.player) : 0;
   if (a && !compet){
-    $("dElev").innerHTML = (dz>=0?"+":"−") + nb(Math.abs(dz),1) + "<i>m</i>";
+    $("dElev").innerHTML = (dz>=0?"+":"−") + nb(Math.abs(dz),1) + "<i>" + UNITE + "</i>";
     $("cElev").className = "c " + (dz >= 0 ? "up" : "down");
   } else { $("dElev").innerHTML = "—"; $("cElev").className = "c"; }
   $("blind").classList.toggle("on", !!(a && a.blind && !compet));
@@ -3625,12 +3653,12 @@ function zRender(target, where, dz){
   $("clubIcon").innerHTML = clubSvg(p.club.n);
   $("clubName").textContent = L_(p.club.n);
   if (p.short){
-    $("clubMeta").textContent = L_("Hors de portée : {d} m {w}, il manque {g} m",{d:Math.round(target),w:where,g:Math.round(p.gap)});
+    $("clubMeta").textContent = L_("Hors de portée : {d} m {w}, il manque {g} m",{d:uR(target),w:where,g:uR(p.gap)});
   } else {
-    const head = Math.round(target) + " m " + where + (dz ? " " + L_("(dénivelé compris)") : "") + " · " + L_("porte {d} m",{d:p.club.d});
+    const head = uR(target) + " " + UNITE + " " + where + (dz ? " " + L_("(dénivelé compris)") : "") + " · " + L_("porte {d} m",{d:uR(p.club.d)});
     $("clubMeta").textContent = p.gap <= 4 && p.alt
       ? head + " — " + L_("limite, {c} si vous frappez long",{c:L_(p.alt.n).toLowerCase()})
-      : head + " — " + (p.gap >= 1 ? L_("marge de {g} m",{g:Math.round(p.gap)}) : L_("pile la distance"));
+      : head + " — " + (p.gap >= 1 ? L_("marge de {g} m",{g:uR(p.gap)}) : L_("pile la distance"));
   }
 }
 
@@ -3641,15 +3669,17 @@ function renderBag(){
     const row = document.createElement("div");
     row.className = "club" + (c.on ? "" : " off");
     row.innerHTML = '<span class="ic"></span><span class="nm"></span>'
-      + '<input type="number" min="0" max="400" step="1" inputmode="numeric">'
-      + '<span class="u">m</span><span class="tg"><input type="checkbox"><i></i></span>';
+      + '<input type="number" min="0" max="' + uR(400) + '" step="1" inputmode="numeric">'
+      + '<span class="u">' + UNITE + '</span><span class="tg"><input type="checkbox"><i></i></span>';
     row.querySelector(".ic").innerHTML = clubSvg(c.n);
     row.querySelector(".nm").textContent = L_(c.n);
     const num = row.querySelector('input[type=number]');
-    num.value = c.d;
+    num.value = uR(c.d);
     num.addEventListener("change", () => {
-      S.bag[i].d = Math.max(0, Math.min(400, Math.round(+num.value || 0)));
-      num.value = S.bag[i].d; saveBag(); refresh();
+      /* saisi dans l'unité affichée, mémorisé en mètres */
+      const m = uInv(Math.max(0, Math.round(+num.value || 0)));
+      S.bag[i].d = Math.max(0, Math.min(400, UNITE === "yd" ? Math.round(m * 100) / 100 : Math.round(m)));
+      num.value = uR(S.bag[i].d); saveBag(); refresh();
     });
     const tg = row.querySelector('input[type=checkbox]');
     tg.checked = c.on;
@@ -3662,6 +3692,20 @@ function renderBag(){
 $("bBag").addEventListener("click", () => { renderBag(); $("bag").classList.add("on"); });
 $("bagClose").addEventListener("click", () => $("bag").classList.remove("on"));
 $("bagDone").addEventListener("click", () => $("bag").classList.remove("on"));
+/* Unité : mémorisée sur l'appareil, appliquée partout sans recharger. */
+function majUnite(){
+  document.querySelectorAll("#unitSeg button").forEach(b => b.classList.toggle("on", b.dataset.u === UNITE));
+}
+document.querySelectorAll("#unitSeg button").forEach(b => b.addEventListener("click", () => {
+  if (b.dataset.u === UNITE) return;
+  UNITE = b.dataset.u;
+  try{ Store.set("unite", UNITE); }catch(e){}
+  majUnite(); renderBag(); refresh();
+  if (typeof drawZones === "function") drawZones();
+  if (typeof drawMeas === "function") drawMeas();
+  if (S.point && $("radLab")) $("radLab").textContent = uR(S.point.r) + " " + UNITE;
+}));
+majUnite();
 document.querySelectorAll("#presets button").forEach(b => b.addEventListener("click", () => {
   S.bag = preset(b.dataset.p); saveBag(); renderBag(); refresh();
 }));
@@ -3754,18 +3798,18 @@ function drawZoneLines(){
     const a = ch[i], b = ch[i+1], d = zDist(a, b);
     tot += d;
     L.polyline([[a[0], a[1]], [b[0], b[1]]], { color:"#ffffff", weight:2.5, opacity:.95, interactive:false }).addTo(zLineLayer);
-    L.marker([(a[0]+b[0])/2, (a[1]+b[1])/2], { icon:L.divIcon({ className:"stag", html:"<span>" + Math.round(d) + " m</span>" }),
+    L.marker([(a[0]+b[0])/2, (a[1]+b[1])/2], { icon:L.divIcon({ className:"stag", html:"<span>" + uR(d) + " " + UNITE + "</span>" }),
       interactive:false, zIndexOffset:900 }).addTo(zLineLayer);
   }
   /* Distance directe au green, affichée au-dessus de son nom. */
   if (S.pos){
     const gc = ch[ch.length-1];
-    L.marker([gc[0], gc[1]], { icon:L.divIcon({ className:"stag gd", html:"<span>" + esc(L_("Green {d} m", { d:Math.round(zDist(ch[0], gc)) })) + "</span>" }),
+    L.marker([gc[0], gc[1]], { icon:L.divIcon({ className:"stag gd", html:"<span>" + esc(L_("Green {d} m", { d:uR(zDist(ch[0], gc)) })) + "</span>" }),
       interactive:false, zIndexOffset:900 }).addTo(zLineLayer);
   }
   /* Sans position, le total ne part pas du joueur : on ne l'affiche pas. */
   if (S.pos){
-    $("zTot").innerHTML = "<small>" + esc(L_("Total")) + "</small>" + Math.round(tot) + "<i>m</i>";
+    $("zTot").innerHTML = "<small>" + esc(L_("Total")) + "</small>" + uR(tot) + "<i>" + UNITE + "</i>";
     $("zTot").classList.add("on");
   } else $("zTot").classList.remove("on");
 }
@@ -3852,9 +3896,9 @@ function openZctx(i){
   let apres = 0;
   for (let j = 0; j < suite.length - 1; j++) apres += zDist(suite[j], suite[j+1]);
   $("zctxName").textContent = L_("Zone {n}", { n:i+1 }) + " · " + g.name;
-  $("zctxSub").textContent = S.pos ? L_("{a} m depuis vous · {b} m jusqu'au green", { a:Math.round(avant), b:Math.round(apres) }) : "";
+  $("zctxSub").textContent = S.pos ? L_("{a} m depuis vous · {b} m jusqu'au green", { a:uR(avant), b:uR(apres) }) : "";
   $("zDelLbl").innerHTML = "<b>" + esc(L_("Supprimer")) + "</b><small>" + esc(L_("Retire cette zone du green")) + "</small>";
-  $("zSizeLbl").innerHTML = "<b>" + esc(L_("Modifier le diamètre")) + "</b><small>" + esc(L_("Ø actuel : {d} m", { d:zDia(zonesOf(g)[i]) })) + "</small>";
+  $("zSizeLbl").innerHTML = "<b>" + esc(L_("Modifier le diamètre")) + "</b><small>" + esc(L_("Ø actuel : {d} m", { d:uR(zDia(zonesOf(g)[i])) })) + "</small>";
   $("zDel").classList.remove("armed");
   fitModals();
   $("zctx").classList.remove("hidden");
@@ -3869,7 +3913,7 @@ $("zSize").addEventListener("click", () => {
   if (!g || !zonesOf(g)[i]) return;
   zSizeIdx = i;
   $("zsizeTitle").textContent = L_("Zone {n}", { n:i+1 }) + " · " + L_("Modifier le diamètre");
-  $("zsizeInput").value = zDia(zonesOf(g)[i]);
+  $("zsizeInput").max = uR(80); $("zsizeInput").value = uR(zDia(zonesOf(g)[i]));
   fitModals();
   $("zsize").classList.remove("hidden");
   setTimeout(() => { $("zsizeInput").focus(); $("zsizeInput").select(); fitModals(); }, 120);
@@ -3880,7 +3924,7 @@ $("zsize").addEventListener("click", e => { if (e.target === $("zsize")) closeZs
 $("zsizeInput").addEventListener("keydown", e => { if (e.key === "Enter") $("zsizeYes").click(); });
 $("zsizeYes").addEventListener("click", () => {
   const g = S.sel, i = zSizeIdx;
-  const d = Math.max(1, Math.min(80, Math.round(+$("zsizeInput").value || ZDIA)));
+  const d = Math.max(1, Math.min(80, Math.round(uInv(+$("zsizeInput").value || uR(ZDIA)))));
   closeZsize();
   if (!g || !zonesOf(g)[i]) return;
   const z = zonesOf(g).map(p => p.slice());
@@ -3959,6 +4003,23 @@ $("compet").addEventListener("click", () => {
   refresh();
 });
 if (Store.get("compet") === "1"){ $("compet").classList.add("on"); $("compet").setAttribute("aria-pressed","true"); }
+
+/* ---------- écran toujours allumé ----------
+   Pendant qu'on joue, l'écran ne doit pas s'éteindre au bout de 30 s.
+   Le navigateur relâche le verrou dès que l'appli passe en arrière-plan
+   (ou écran verrouillé) : on le reprend au retour. Sans support (vieux
+   navigateur) ou refus (économiseur de batterie), rien ne change. */
+let veilleLock = null;
+async function veilleOn(){
+  try{
+    if (!("wakeLock" in navigator) || document.visibilityState !== "visible" || veilleLock) return;
+    veilleLock = await navigator.wakeLock.request("screen");
+    veilleLock.addEventListener("release", () => { veilleLock = null; });
+  }catch(e){ veilleLock = null; }
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") veilleOn(); });
+["pointerdown","keydown"].forEach(ev => document.addEventListener(ev, veilleOn, { passive:true }));
+veilleOn();
 document.querySelectorAll("#seg button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll("#seg button").forEach(x => x.classList.remove("on"));
   b.classList.add("on"); S.target = b.dataset.tt; refresh();
@@ -4036,13 +4097,13 @@ function tutoSvgArea(){
     + '<line x1="146" y1="58" x2="262" y2="48" stroke="#fff" stroke-width="2.5"/>'
     + '<circle cx="146" cy="58" r="17" fill="#a6dfe9" fill-opacity=".3" stroke="#a6dfe9" stroke-width="3"/><circle cx="146" cy="58" r="3" fill="#fff"/>'
     + '<circle cx="28" cy="78" r="5" fill="#c9a227" stroke="#13361f" stroke-width="2"/>'
-    + tag(86, 82, "128 m") + tag(204, 68, "92 m")
-    + tag(258, 20, esc(L_("Green {d} m", { d:219 })), "#13361f", 74)
+    + tag(86, 82, uR(128) + " " + UNITE) + tag(204, 68, uR(92) + " " + UNITE)
+    + tag(258, 20, esc(L_("Green {d} m", { d:uR(219) })), "#13361f", 74)
     + '</svg>';
 }
 function tutoBag(){
   return '<div class="tbag">' + [["Fer 7",125],["Fer 9",105],["Pitching",92]].map(c =>
-    '<div><i>' + clubSvg(c[0]) + '</i><span>' + esc(L_(c[0])) + '</span><b>' + c[1] + '<small>m</small></b></div>').join("") + '</div>';
+    '<div><i>' + clubSvg(c[0]) + '</i><span>' + esc(L_(c[0])) + '</span><b>' + uR(c[1]) + '<small>' + UNITE + '</small></b></div>').join("") + '</div>';
 }
 const TUTO = [
   { k:null, t:"Bienvenue sur SwingUp Télémètre",
@@ -4050,7 +4111,7 @@ const TUTO = [
   { k:["#map"], img:tutoSvgGreen, t:"Sélectionner ou créer un green",
     p:"<b>Touchez un green</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher. Green absent ? Touchez <b>+ GREEN</b> puis <b>DÉTECT</b> (touchez le centre du green), <b>TRACER</b> (posez les points du contour) ou <b>POINTER</b> (le centre puis le rayon), et <b>Garder</b>. Appui long sur un green pour le renommer, le retracer ou le supprimer." },
   { k:["#cells"], demo:true, t:"Les distances",
-    p:"<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez. Ici, un green à 97 m, en contrebas de 6,8 m." },
+    p:"<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez. Ici, un green à {g} m, en contrebas de {e} m.", v:() => ({ g:uR(97), e:uF(6.8,1) }) },
   { k:["#clubRow","#sHead"], demo:true, t:"Le club conseillé",
     p:"Le club est choisi selon vos distances, <b>dénivelé compris</b>. Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition." },
   { k:["#bBag"], demo:true, img:tutoBag, t:"Le sac",
@@ -4066,16 +4127,16 @@ const TUTO = [
    sélectionné, il n'afficherait que des tirets. render() ne s'exécute pas
    tant que le tuto est ouvert ; tutoEnd() rend la main au vrai rendu. */
 function tutoDemo(){
-  const set = (id, v) => $(id).innerHTML = v + "<i>m</i>";
+  const set = (id, v) => $(id).innerHTML = v + "<i>" + UNITE + "</i>";
   $("gName").textContent = L_("Trou {n}", { n:2 });
-  $("gSub").textContent = L_("{w} m de large", { w:26 });
-  set("dFront", "97"); set("dBack", "105"); set("dLeft", "101"); set("dRight", "101");
-  $("dElev").innerHTML = "−6,8<i>m</i>"; $("cElev").className = "c down";
+  $("gSub").textContent = L_("{w} m de large", { w:uR(26) });
+  set("dFront", uR(97)); set("dBack", uR(105)); set("dLeft", uR(101)); set("dRight", uR(101));
+  $("dElev").innerHTML = "−" + uF(6.8, 1) + "<i>" + UNITE + "</i>"; $("cElev").className = "c down";
   $("blind").classList.remove("on");
   $("clubIcon").innerHTML = clubSvg("Fer 9");
   $("clubName").textContent = L_("Fer 9");
-  $("clubMeta").textContent = "94 m " + L_("au centre") + " " + L_("(dénivelé compris)") + " · " + L_("porte {d} m", { d:105 })
-    + " — " + L_("marge de {g} m", { g:11 });
+  $("clubMeta").textContent = uR(94) + " " + UNITE + " " + L_("au centre") + " " + L_("(dénivelé compris)") + " · " + L_("porte {d} m", { d:uR(105) })
+    + " — " + L_("marge de {g} m", { g:uR(11) });
 }
 let tutoI = 0;
 function tutoRect(sel){
@@ -4094,7 +4155,7 @@ function tutoShow(){
   const st = TUTO[tutoI], hole = $("tutoHole"), card = $("tutoCard");
   $("tutoK").textContent = L_("Étape {n} sur {m}", { n:tutoI+1, m:TUTO.length });
   $("tutoT").textContent = L_(st.t);
-  $("tutoP").innerHTML = L_(st.p);
+  $("tutoP").innerHTML = L_(st.p, st.v ? st.v() : undefined);
   $("tutoImg").innerHTML = st.img ? st.img() : "";
   if (st.demo) tutoDemo();
   $("tutoDots").innerHTML = TUTO.map((_, i) => "<i" + (i === tutoI ? ' class="on"' : "") + "></i>").join("");
