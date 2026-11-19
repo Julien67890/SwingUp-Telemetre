@@ -944,7 +944,7 @@ en:{
 '1500 tuiles gratuites par mois hors France, à volonté avec Premium.':'1,500 free tiles per month outside France, unlimited with Premium.',
 'Limite satellite gratuite du mois atteinte. Passe en Premium pour continuer en vue aérienne.':'Free monthly satellite limit reached. Go Premium to keep the aerial view.',
 'Mesure et création restent gratuites':'Measuring and mapping stay free',
-'Mesure et cartographie restent gratuites':'Measuring and mapping stay free',
+'Mesure et cartographie restent gratuites':'Measuring and mapping stay free','Un mois offert':'One month free','Il te suffit de te connecter avec ton adresse e-mail pour en profiter.':'Just sign in with your email address to enjoy it.',
 'L\'abonnement ne porte que sur la sauvegarde en ligne.':'The subscription only covers online backup.',
 'L\'abonnement ne porte que sur la conservation de tes tracés.':'The subscription only covers keeping your outlines.',
 'Accès complet offert':'Full access included','jusqu\'au':'until',
@@ -1073,7 +1073,7 @@ es:{
 '1500 tuiles gratuites par mois hors France, à volonté avec Premium.':'1500 tuiles gratuitas al mes fuera de Francia, ilimitadas con Premium.',
 'Limite satellite gratuite du mois atteinte. Passe en Premium pour continuer en vue aérienne.':'Límite satelital gratuito del mes alcanzado. Pasa a Premium para seguir con la vista aérea.',
 'Mesure et création restent gratuites':'Medir y crear siguen siendo gratis',
-'Mesure et cartographie restent gratuites':'Medir y cartografiar siguen siendo gratis',
+'Mesure et cartographie restent gratuites':'Medir y cartografiar siguen siendo gratis','Un mois offert':'Un mes gratis','Il te suffit de te connecter avec ton adresse e-mail pour en profiter.':'Solo tienes que iniciar sesión con tu correo electrónico para disfrutarlo.',
 'L\'abonnement ne porte que sur la sauvegarde en ligne.':'La suscripción solo cubre la copia de seguridad en línea.',
 'L\'abonnement ne porte que sur la conservation de tes tracés.':'La suscripción solo cubre la conservación de tus trazados.',
 'Accès complet offert':'Acceso completo incluido','jusqu\'au':'hasta el',
@@ -1206,7 +1206,7 @@ de:{
 '1500 tuiles gratuites par mois hors France, à volonté avec Premium.':'1500 kostenlose Kacheln pro Monat außerhalb Frankreichs, unbegrenzt mit Premium.',
 'Limite satellite gratuite du mois atteinte. Passe en Premium pour continuer en vue aérienne.':'Kostenloses Satelliten-Monatslimit erreicht. Wechsle zu Premium, um die Luftansicht zu behalten.',
 'Mesure et création restent gratuites':'Messen und Erstellen bleiben kostenlos',
-'Mesure et cartographie restent gratuites':'Messen und Kartieren bleiben kostenlos',
+'Mesure et cartographie restent gratuites':'Messen und Kartieren bleiben kostenlos','Un mois offert':'Ein Monat gratis','Il te suffit de te connecter avec ton adresse e-mail pour en profiter.':'Melde dich einfach mit deiner E-Mail-Adresse an, um ihn zu nutzen.',
 'L\'abonnement ne porte que sur la sauvegarde en ligne.':'Das Abo deckt nur die Online-Sicherung ab.',
 'L\'abonnement ne porte que sur la conservation de tes tracés.':'Das Abo deckt nur die Aufbewahrung deiner Konturen ab.',
 'Accès complet offert':'Voller Zugang inklusive','jusqu\'au':'bis zum',
@@ -1547,6 +1547,7 @@ function ecranPremium(origine){
     +'<div class="price" id="prixMois">'+esc(T(PREMIUM.price))+'</div><p class="pnote"><span id="prixAn">'+esc(T('ou {a}',{a:T(PREMIUM.priceYear)}))+'</span> · '+esc(T(PREMIUM.note))+'</p></div>'
     +(BETA.actif?'<div class="subline on"><b>'+esc(T('Version bêta'))+'</b><span>'+esc(T('Tout est ouvert jusqu\'au {d}.',{d:dateLoc(BETA.fin)}))+'</span></div>':'')
     +(!BETA.actif&&enEssai()&&!abonneActif()?'<div class="subline on"><b>'+esc(T('Essai gratuit'))+'</b><span>'+esc(T("Sauvegarde offerte jusqu'au {d}",{d:dateLoc(finEssai())}))+'</span></div>':'')
+    +(!BETA.actif&&invite?'<div class="subline on"><b>'+esc(T('Un mois offert'))+'</b><span>'+esc(T('Il te suffit de te connecter avec ton adresse e-mail pour en profiter.'))+'</span></div>':'')
     +(enGrace()?'<p class="warn">'+esc(T('Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.',{d:dateLoc(dateSuppression())}))+'</p>':'')
     +'<div class="row">'
     +'<button class="btn btn-ghost" id="mClose">'+esc(T('Fermer'))+'</button>'
