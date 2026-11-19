@@ -2218,7 +2218,24 @@ function setBase(fr, force){
   let tuileAvertie = false, erreurs = 0, tErr = null;
   if (!map.__ecouteZoom){ map.__ecouteZoom = true; map.on("zoomstart zoomend movestart", () => { map.__dernierZoom = Date.now(); }); }
   const calme = () => Date.now() - (map.__dernierZoom || 0) > 1500;
-  base.on("tileerror", () => {
+  /* Échecs passagers de l'IGN (404/400 en quelques ms, puis 200 au nouvel essai) :
+     une tuile en échec est réessayée 2 fois (après 1 s, puis 2 s de plus) avant
+     d'être comptée comme perdue. Seul le fond IGN est concerné. */
+  const retenter = e => {
+    const t = e && e.tile;
+    if (kind !== "fr" || !t) return false;
+    const n = t.__essais || 0;
+    if (n >= 2) return false;
+    t.__essais = n + 1;
+    if (!t.__src0) t.__src0 = t.src;
+    setTimeout(() => {
+      if (!t.isConnected || !map.hasLayer(base)) return;       /* tuile retirée entre-temps */
+      t.src = t.__src0 + (t.__src0.indexOf("?") < 0 ? "?" : "&") + "essai=" + t.__essais;
+    }, n === 0 ? 1000 : 2000);
+    return true;
+  };
+  base.on("tileerror", e => {
+    if (retenter(e)) return;
     if (tuileAvertie || !calme()) return;
     erreurs++;
     if (tErr) return;
