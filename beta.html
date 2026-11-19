@@ -2804,7 +2804,7 @@ async function loadCourse(){
   $("courseName").textContent = S.greens.length
     ? (L_("Parcours chargés") + (name ? " · " + name : ""))
     : L_("Aucun parcours trouvé");
-  if (!greens.length && !(cache && cache.greens.length)){ warn(L_("Parcours absent d'OpenStreetMap. Ajoutez les greens avec DÉTECT, TRACER ou POINTER.")); openCarto(); }
+  if (!greens.length && !(cache && cache.greens.length)) openCarto();   /* pas de bandeau : chaque joueur détecte ou trace ses propres greens */
   drawGreens(); refresh();
 }
 function drawGreens(){
