@@ -471,6 +471,9 @@ body.sc-vis #scFrame{visibility:visible}
 .sc-anim{transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .28s}
 body.tuto-on #scPeek{display:none}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+#bLoad{display:none!important}
+#mtools{max-height:calc(100% - 20px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#mtools::-webkit-scrollbar{display:none}
 </style>
 </head>
 <body>
@@ -2546,7 +2549,11 @@ function setPos(lat, lon, acc, manual){
   accRing.setLatLng([lat,lon]).setRadius(acc||0);
   majAccBadge(acc, manual);
   if (follow) map.panTo([lat,lon], { animate:false });
-  if (first) loadCourse();
+  if (first){ S.lastLoad = { lat, lon, t: Date.now() }; loadCourse(); }
+  else if (S.lastLoad && !$("bLoad").classList.contains("busy") && Date.now() - S.lastLoad.t > 60000){
+    const dy = (lat - S.lastLoad.lat) * 111320, dx = (lon - S.lastLoad.lon) * 111320 * Math.cos(lat * Math.PI / 180);
+    if (Math.hypot(dx, dy) > 600){ S.lastLoad = { lat, lon, t: Date.now() }; loadCourse(); }
+  }
   refresh();
 }
 /* ---------- mode démo (captures d'écran) ----------
