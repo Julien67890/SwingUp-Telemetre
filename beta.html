@@ -435,7 +435,7 @@ body.tuto-on #consent,body.tuto-on #freeBar{display:none!important}
 body.has-peek #app{height:calc(100dvh - var(--peek-h))}
 #scPeek,#scHead,#scFrame,#scBack{left:0;right:0;margin:0 auto;width:min(100%,560px)}
 #scPeek{position:fixed;bottom:0;height:var(--peek-h);z-index:700;padding:6px 14px env(safe-area-inset-bottom);
-  background:rgba(14,38,24,.97);border-top:1px solid rgba(116,198,157,.22);border-radius:18px 18px 0 0;
+  background:#1b4332;border-top:1px solid rgba(116,198,157,.22);border-radius:18px 18px 0 0;
   touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;box-sizing:border-box}
 #scPeek .grip,#scHead .grip{width:38px;height:4px;border-radius:2px;background:rgba(246,243,233,.35);margin:0 auto}
 #scPeek .prow{display:flex;align-items:center;gap:12px;height:44px;margin-top:6px}
@@ -445,7 +445,7 @@ body.has-peek #app{height:calc(100dvh - var(--peek-h))}
 #scPeek .pr{flex:0 0 auto;font-size:.95rem;font-weight:600;color:var(--green-glow);white-space:nowrap}
 #scBack{position:fixed;top:0;bottom:0;width:100%;max-width:none;z-index:860;background:rgba(0,0,0,.5);opacity:0;pointer-events:none}
 #scBack.on{pointer-events:auto}
-#scHead{position:fixed;bottom:calc(88dvh - 44px);height:44px;z-index:880;background:rgba(14,38,24,.99);box-sizing:border-box;
+#scHead{position:fixed;bottom:calc(88dvh - 44px);height:44px;z-index:880;background:#1b4332;box-sizing:border-box;
   border-radius:20px 20px 0 0;touch-action:none;padding:8px 14px 0;color:var(--cream);display:none}
 #scHead .t{display:flex;align-items:center;justify-content:space-between;margin-top:6px;font-weight:600;font-size:.95rem}
 #scHead button{background:none;border:0;color:var(--cream);font-size:1.5rem;line-height:1;padding:0 6px;cursor:pointer}

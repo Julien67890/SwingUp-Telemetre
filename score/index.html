@@ -753,6 +753,49 @@ html.su-embedded .hero .badge{margin-bottom:0}
 html.su-embedded .nrow{padding:3px 10px}
 html.su-embedded .nrow input{padding:4px 0}
 html.su-embedded .pickfield{padding:10px 12px}
+
+/* --- icônes à la place des cadres --- */
+.sc,.sc.birdie,.sc.eagle,.sc.bogey,.sc.dbl,.sc.empty{border:0;box-shadow:none;border-radius:0;width:auto;height:auto;display:block}
+.mk{position:relative;display:block;width:100%;min-width:36px;height:38px;color:#2c3a30}
+.mk.mk-e{display:grid;place-items:center;color:#c3bda7}
+.mk .si{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:26px;height:21px;display:block}
+.mk .si svg{width:100%;height:100%;display:block}
+.mk em{position:absolute;right:3px;bottom:1px;font-style:normal;font-weight:800;font-size:.68rem;line-height:1;color:#13361f}
+.mk u{position:absolute;left:3px;top:2px;text-decoration:none;font-weight:800;font-size:.8rem;line-height:1}
+.rgrid .rc{position:relative}
+.legend .lgi{display:inline-block;position:relative;width:26px;height:18px}
+.legend .lgi .si{position:absolute;inset:0}.legend .lgi .si svg{width:100%;height:100%;display:block}
+.legend{gap:12px 14px}
+.mk-alb{color:#4c2b82}.mk-alb em{color:#13361f}.mk-bir{color:#22894f}.mk-bir em{color:#13361f}.mk-par{color:#0b5726}.mk-par em{color:#13361f}.mk-bog{color:#22519e}.mk-bog em{color:#13361f}.mk-dbl{color:#ec8022}.mk-dbl em{color:#13361f}.mk-tri{color:#b92b27}.mk-tri em{color:#13361f}
+html.su-embedded .pstrip .si{width:26px;height:21px}
+html.su-embedded #r9,html.su-embedded .pstrip{justify-content:center}
+html.su-embedded .rgrid .rc{padding:0}
+/* --- 6 tuiles : 3 x 2 --- */
+html.su-embedded .quick{grid-template-columns:repeat(3,1fr)}
+html.su-embedded .quick button{background:#fff;color:#1d2a20;padding:8px 2px 7px;border-radius:14px}
+html.su-embedded .quick button svg{width:40px;height:27px}
+html.su-embedded .quick button span{font-weight:600}
+html.su-embedded .q-alb svg,html.su-embedded .q-alb span{color:#4c2b82}
+html.su-embedded .quick button.q-alb.on{background:#4c2b82;color:#fff;box-shadow:none}
+html.su-embedded .quick button.q-alb.on svg,html.su-embedded .quick button.q-alb.on span{color:#fff}
+html.su-embedded .q-bir svg,html.su-embedded .q-bir span{color:#22894f}
+html.su-embedded .quick button.q-bir.on{background:#22894f;color:#fff;box-shadow:none}
+html.su-embedded .quick button.q-bir.on svg,html.su-embedded .quick button.q-bir.on span{color:#fff}
+html.su-embedded .q-par svg,html.su-embedded .q-par span{color:#0b5726}
+html.su-embedded .quick button.q-par.on{background:#0b5726;color:#fff;box-shadow:none}
+html.su-embedded .quick button.q-par.on svg,html.su-embedded .quick button.q-par.on span{color:#fff}
+html.su-embedded .q-bog svg,html.su-embedded .q-bog span{color:#22519e}
+html.su-embedded .quick button.q-bog.on{background:#22519e;color:#fff;box-shadow:none}
+html.su-embedded .quick button.q-bog.on svg,html.su-embedded .quick button.q-bog.on span{color:#fff}
+html.su-embedded .q-dbl svg,html.su-embedded .q-dbl span{color:#ec8022}
+html.su-embedded .quick button.q-dbl.on{background:#ec8022;color:#fff;box-shadow:none}
+html.su-embedded .quick button.q-dbl.on svg,html.su-embedded .quick button.q-dbl.on span{color:#fff}
+html.su-embedded .q-tri svg,html.su-embedded .q-tri span{color:#b92b27}
+html.su-embedded .quick button.q-tri.on{background:#b92b27;color:#fff;box-shadow:none}
+html.su-embedded .quick button.q-tri.on svg,html.su-embedded .quick button.q-tri.on span{color:#fff}
+html.su-embedded .quick button.q-par.on svg path:first-child{fill:#9bd69c}
+/* --- même vert que le haut de la fiche --- */
+html.su-embedded,html.su-embedded body{background:#1b4332!important}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
@@ -955,12 +998,7 @@ html.su-embedded .pickfield{padding:10px 12px}
     <div id="stEvoWrap">
       <div id="stEvo">
         <div class="tscroll"><table class="score" id="stTable"></table></div>
-        <div class="legend">
-          <span><i class="lg birdie"></i>Birdie</span>
-          <span><i class="lg eagle"></i>Eagle +</span>
-          <span><i class="lg bogey"></i>Bogey</span>
-          <span><i class="lg dbl"></i>Double +</span>
-        </div>
+        <div class="legend"><span><i class="lgi mk-alb"><span class="si"><svg viewBox="0 0 108 57"><path d="M1.4 53.2Q1.0 54.1 1.2 54.6Q1.4 55.1 2.3 55.0Q3.2 55.0 10.8 51.6Q18.4 48.3 31.2 43.3Q44.0 38.3 47.1 37.3Q50.2 36.3 55.0 35.3Q59.8 34.4 64.8 34.3Q69.7 34.3 74.0 35.3Q78.3 36.3 81.5 37.8Q84.7 39.3 90.1 42.8Q95.4 46.2 100.2 50.5Q105.0 54.9 105.8 55.0Q106.5 55.1 106.7 54.8Q106.9 54.4 106.5 52.8Q106.0 51.2 104.5 48.5Q103.1 45.8 101.0 43.2Q99.0 40.7 97.0 38.8Q94.9 36.8 93.0 35.4Q91.0 34.0 86.5 31.6Q82.1 29.2 82.4 28.8Q82.8 28.3 84.8 27.8Q86.9 27.3 91.6 27.1Q96.2 27.0 96.4 26.6Q96.6 26.3 95.9 25.6Q95.3 25.0 94.2 24.4Q93.2 23.9 91.2 23.7Q89.3 23.5 87.2 22.2Q85.1 21.0 84.0 20.8Q83.0 20.6 81.0 20.7Q78.9 20.8 75.9 21.7Q72.9 22.6 67.6 22.5Q62.3 22.4 61.5 22.0Q60.6 21.6 58.7 19.8Q56.8 17.9 52.8 14.9Q48.9 12.0 45.7 10.0Q42.5 8.0 36.5 5.5Q30.6 2.9 28.6 2.4Q26.6 1.8 24.0 1.6Q21.4 1.3 20.0 1.4Q18.7 1.5 18.6 1.9Q18.5 2.3 18.9 2.6Q19.2 3.0 22.1 4.2Q25.0 5.5 28.1 7.5Q31.2 9.4 33.8 11.4Q36.3 13.3 38.0 15.1Q39.7 16.9 40.6 18.2Q41.5 19.6 42.0 21.1Q42.5 22.5 42.5 24.8Q42.4 27.1 41.8 28.1Q41.2 29.0 37.7 31.8Q34.2 34.5 26.7 39.0Q19.2 43.5 12.0 46.8Q4.8 50.0 3.3 51.1Q1.9 52.3 1.4 53.2Z" fill="currentColor"/></svg></span></i>Albatros</span><span><i class="lgi mk-bir"><span class="si"><svg viewBox="0 0 53 32"><path d="M51.3 3.5Q51.4 3.0 50.8 2.6Q50.3 2.2 49.5 2.0Q48.7 1.8 46.8 1.8Q44.8 1.7 41.8 2.3Q38.7 2.9 36.2 4.0Q33.6 5.1 31.2 6.6Q28.8 8.2 27.4 9.4Q25.9 10.7 24.0 13.2Q22.1 15.7 20.5 18.5Q18.8 21.3 16.4 19.1Q13.9 17.0 11.6 16.0Q9.3 15.0 6.1 14.8Q2.9 14.5 2.4 14.7Q1.9 14.9 1.9 15.3Q1.8 15.7 6.3 19.9Q10.8 24.0 12.7 25.4Q14.6 26.9 18.8 28.9Q22.9 31.0 25.5 31.0Q28.1 31.0 29.8 30.1Q31.5 29.1 32.7 27.7Q33.9 26.3 35.2 22.1Q36.5 17.8 37.5 15.7Q38.5 13.5 39.5 12.2Q40.5 10.8 42.4 9.1Q44.3 7.3 45.9 6.2Q47.5 5.2 49.4 4.5Q51.2 3.9 51.3 3.5Z" fill="currentColor"/></svg></span></i>Birdie</span><span><i class="lgi mk-par"><span class="si"><svg viewBox="0 0 42 48"><path d="M40.0 12.7Q40.1 12.4 35.5 11.0Q30.8 9.6 26.7 8.1Q22.6 6.5 21.6 5.9Q20.5 5.3 20.4 4.1Q20.2 2.9 19.9 2.5Q19.6 2.0 18.4 2.0Q17.2 2.0 16.8 2.9Q16.4 3.8 16.4 19.3Q16.4 34.9 15.9 35.3Q15.4 35.8 12.6 36.0Q9.7 36.3 6.8 37.2Q3.8 38.2 2.6 39.3Q1.5 40.4 1.6 41.3Q1.6 42.3 2.1 42.9Q2.6 43.5 3.7 44.1Q4.7 44.7 6.5 45.2Q8.3 45.8 10.8 46.0Q13.3 46.3 17.1 46.3Q21.0 46.3 23.4 46.0Q25.9 45.8 27.7 45.3Q29.5 44.9 30.6 44.3Q31.8 43.7 32.6 42.9Q33.4 42.0 33.5 41.2Q33.6 40.5 33.4 40.0Q33.2 39.6 31.7 38.5Q30.2 37.4 28.1 36.8Q26.0 36.1 23.2 35.7Q20.4 35.3 20.2 28.6Q20.1 21.9 20.4 21.5Q20.6 21.2 29.1 18.1Q37.6 15.1 38.2 14.6Q38.9 14.0 34.4 15.8Q29.9 17.7 27.4 18.4Q24.9 19.0 22.5 20.0Q20.1 21.0 20.1 31.1Q20.1 41.3 19.8 41.6Q19.4 42.0 18.2 42.0Q17.1 41.9 16.9 41.5Q16.6 41.1 16.9 37.8Q17.1 34.5 17.1 18.6Q17.0 2.8 17.3 2.5Q17.6 2.1 18.2 2.1Q18.9 2.1 19.3 2.4Q19.7 2.7 19.9 4.1Q20.0 5.5 21.1 6.2Q22.1 6.8 24.3 7.4Q26.5 8.1 27.1 8.5Q27.6 8.9 31.8 10.4Q35.9 11.9 36.9 11.9Q37.9 12.0 39.0 12.4Q40.0 12.9 40.0 12.7Z" fill="#6bb96c"/><path d="M18.1 2.0L17.2 2.4L16.9 3.3L17.0 35.1L16.6 41.2L17.2 42.0L19.0 42.1L20.1 41.4L20.0 21.2L21.8 20.1L29.9 17.7L37.3 14.8L38.6 13.9L40.1 13.7L40.3 13.2L39.0 12.3L36.0 11.9L21.9 6.7L20.1 5.6L19.5 2.4Z" fill="currentColor"/></svg></span></i>Par</span><span><i class="lgi mk-bog"><span class="si"><svg viewBox="0 0 44 39"><path d="M21.2 1.1L1.0 36.8L42.1 37.1L42.0 34.2L23.1 1.9Z" fill="currentColor"/></svg></span></i>Bogey</span><span><i class="lgi mk-dbl"><span class="si"><svg viewBox="0 0 57 37"><path d="M0.8 33.0L1.1 35.2L3.8 35.8L52.3 35.7L55.3 34.7L41.1 3.5L39.1 1.3L37.1 2.8L28.2 22.0L17.8 1.5L16.1 1.6Z" fill="currentColor"/></svg></span></i>Double</span><span><i class="lgi mk-tri"><span class="si"><svg viewBox="0 0 63 56"><path d="M14.2 30.6L1.9 51.6L1.7 54.1L28.4 54.5L28.8 52.8L16.9 31.8ZM47.2 30.2L33.9 54.1L60.6 54.6L61.1 52.0L49.0 30.8ZM31.2 1.2L18.9 21.6L17.8 25.3L44.6 25.9L44.9 22.9L34.0 3.8Z" fill="currentColor"/></svg></span></i>Triple</span></div>
         <div id="stAdvice"></div>
       </div>
       <div id="stTease" class="hidden"></div>
@@ -2422,7 +2460,7 @@ const played=p=>p.scores.reduce((a,s)=>a+(s??0),0);
 function vsPar(p){let d=0;p.scores.forEach((s,h)=>{if(s!==null)d+=s-S.pars[h];});return d;}
 const fmt=d=>d===0?'PAR':(d>0?'+'+d:''+d);
 function label(diff){
-  if(diff<=-3)return['Albatros','good'];if(diff===-2)return['Eagle','good'];if(diff===-1)return['Birdie','good'];
+  if(diff<=-2)return['Albatros','good'];if(diff===-1)return['Birdie','good'];
   if(diff===0)return['Par',''];if(diff===1)return['Bogey','bad'];if(diff===2)return['Double','bad'];
   return['+'+diff,'bad'];
 }
@@ -2441,7 +2479,7 @@ function buildTable(el,interactive){
     body+='<tr class="prow'+(interactive&&i===S.active?' act':'')+'" data-p="'+i+'"><th class="hcol"><span class="pip-name"><i style="background:'+p.color+'"></i><span>'+esc(p.name)+'</span></span></th>';
     for(let h=0;h<S.holes;h++){
       const s=p.scores[h];
-      body+='<td class="'+(interactive&&h===S.cur?'col-now':'')+'"><span class="sc '+cellClass(s,S.pars[h])+'">'+(s===null?'·':s)+'</span></td>';
+      body+='<td class="'+(interactive&&h===S.cur?'col-now':'')+'">'+markHTML(s,S.pars[h],s!==null)+'</td>';
     }
     body+='<td class="totcol">'+played(p)+'</td></tr>';
   });
@@ -2471,7 +2509,7 @@ function renderRecap9(){
   const g=$('#r9');if(!g)return;
   const from=Math.floor(S.cur/9)*9,to=Math.min(from+9,S.holes),n=to-from;
   const emb=document.documentElement.classList.contains('su-embedded');
-  g.style.gridTemplateColumns=emb?'84px repeat('+n+',42px) 58px':'minmax(0,3.4fr) repeat('+n+',minmax(0,1fr)) minmax(0,1.8fr)';
+  g.style.gridTemplateColumns=emb?'minmax(64px,84px) repeat('+n+',minmax(32px,42px)) minmax(50px,58px)':'minmax(0,3.4fr) repeat('+n+',minmax(0,1fr)) minmax(0,1.8fr)';
   let h='<div class="rh rn">'+esc(T('Trou'))+'</div>';
   for(let i=from;i<to;i++)h+='<div class="rh hn'+(i===S.cur?' now':'')+'" data-h="'+i+'">'+(i+1)+'</div>';
   h+='<div class="rt"><b>'+esc(T('Total'))+'</b></div>';
@@ -2482,7 +2520,7 @@ function renderRecap9(){
   }
   S.players.forEach((p,k)=>{
     h+='<div class="rn"><i style="--pc:'+COLORS[k%COLORS.length]+'"></i><span>'+esc(p.name||('J'+(k+1)))+'</span></div>';
-    for(let i=from;i<to;i++){const v=p.scores[i];h+='<div class="rc'+(i===S.cur?' now':'')+'">'+(v===null?'':v)+'</div>';}
+    for(let i=from;i<to;i++){const v=p.scores[i];h+='<div class="rc'+(i===S.cur?' now':'')+'">'+(v===null?'':markHTML(v,S.pars[i],true))+'</div>';}
     h+='<div class="rt"><b>'+(p.scores.some(x=>x!==null)?played(p):'—')+'</b></div>';
   });
   g.innerHTML=h;
@@ -2490,20 +2528,31 @@ function renderRecap9(){
   g.querySelectorAll('[data-h]').forEach(el=>el.onclick=()=>go(+el.dataset.h));
 }
 
-const ICO={
-  bir:'<svg viewBox="0 0 30 26"><path d="M1 11c4-.6 7.2.8 9.6 4C13 9 18 4.6 25 3.4l4 .6-3.4 2c-3 1.8-5.2 5-6 9.4-.6 3.4-3.4 5.2-6.6 4.4C9.6 19 5.6 16 1 11z" fill="currentColor"/></svg>',
-  par:'<svg viewBox="0 0 30 26" fill="none"><ellipse cx="13" cy="23" rx="8" ry="2" fill="#5cb85c" opacity=".8"/><path d="M13 23V3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M13.5 3.5l11 4.2-11 4.3z" fill="currentColor"/></svg>',
-  bog:'<svg viewBox="0 0 30 26"><path d="M15 3l12 20H3z" fill="currentColor"/></svg>',
-  dbl:'<svg viewBox="0 0 30 26"><path d="M9 4l8.5 19H.5zM21 4l8.5 19h-17z" fill="currentColor"/></svg>',
-  alb:'<svg viewBox="0 0 30 26"><g fill="currentColor"><path transform="translate(0,-1) scale(.7)" d="M1 11c4-.6 7.2.8 9.6 4C13 9 18 4.6 25 3.4l4 .6-3.4 2c-3 1.8-5.2 5-6 9.4-.6 3.4-3.4 5.2-6.6 4.4C9.6 19 5.6 16 1 11z"/><path transform="translate(9,8) scale(.7)" d="M1 11c4-.6 7.2.8 9.6 4C13 9 18 4.6 25 3.4l4 .6-3.4 2c-3 1.8-5.2 5-6 9.4-.6 3.4-3.4 5.2-6.6 4.4C9.6 19 5.6 16 1 11z"/></g></svg>',
-  tri:'<svg viewBox="0 0 38 26"><path d="M6.5 5l6.5 18H0zM19 5l6.5 18h-13zM31.5 5L38 23H25z" fill="currentColor"/></svg>'
-};
+const ICON_DATA={"alb":{"w":108,"h":57,"c":"#4c2b82","d":"M1.4 53.2Q1.0 54.1 1.2 54.6Q1.4 55.1 2.3 55.0Q3.2 55.0 10.8 51.6Q18.4 48.3 31.2 43.3Q44.0 38.3 47.1 37.3Q50.2 36.3 55.0 35.3Q59.8 34.4 64.8 34.3Q69.7 34.3 74.0 35.3Q78.3 36.3 81.5 37.8Q84.7 39.3 90.1 42.8Q95.4 46.2 100.2 50.5Q105.0 54.9 105.8 55.0Q106.5 55.1 106.7 54.8Q106.9 54.4 106.5 52.8Q106.0 51.2 104.5 48.5Q103.1 45.8 101.0 43.2Q99.0 40.7 97.0 38.8Q94.9 36.8 93.0 35.4Q91.0 34.0 86.5 31.6Q82.1 29.2 82.4 28.8Q82.8 28.3 84.8 27.8Q86.9 27.3 91.6 27.1Q96.2 27.0 96.4 26.6Q96.6 26.3 95.9 25.6Q95.3 25.0 94.2 24.4Q93.2 23.9 91.2 23.7Q89.3 23.5 87.2 22.2Q85.1 21.0 84.0 20.8Q83.0 20.6 81.0 20.7Q78.9 20.8 75.9 21.7Q72.9 22.6 67.6 22.5Q62.3 22.4 61.5 22.0Q60.6 21.6 58.7 19.8Q56.8 17.9 52.8 14.9Q48.9 12.0 45.7 10.0Q42.5 8.0 36.5 5.5Q30.6 2.9 28.6 2.4Q26.6 1.8 24.0 1.6Q21.4 1.3 20.0 1.4Q18.7 1.5 18.6 1.9Q18.5 2.3 18.9 2.6Q19.2 3.0 22.1 4.2Q25.0 5.5 28.1 7.5Q31.2 9.4 33.8 11.4Q36.3 13.3 38.0 15.1Q39.7 16.9 40.6 18.2Q41.5 19.6 42.0 21.1Q42.5 22.5 42.5 24.8Q42.4 27.1 41.8 28.1Q41.2 29.0 37.7 31.8Q34.2 34.5 26.7 39.0Q19.2 43.5 12.0 46.8Q4.8 50.0 3.3 51.1Q1.9 52.3 1.4 53.2Z"},"bir":{"w":53,"h":32,"c":"#22894f","d":"M51.3 3.5Q51.4 3.0 50.8 2.6Q50.3 2.2 49.5 2.0Q48.7 1.8 46.8 1.8Q44.8 1.7 41.8 2.3Q38.7 2.9 36.2 4.0Q33.6 5.1 31.2 6.6Q28.8 8.2 27.4 9.4Q25.9 10.7 24.0 13.2Q22.1 15.7 20.5 18.5Q18.8 21.3 16.4 19.1Q13.9 17.0 11.6 16.0Q9.3 15.0 6.1 14.8Q2.9 14.5 2.4 14.7Q1.9 14.9 1.9 15.3Q1.8 15.7 6.3 19.9Q10.8 24.0 12.7 25.4Q14.6 26.9 18.8 28.9Q22.9 31.0 25.5 31.0Q28.1 31.0 29.8 30.1Q31.5 29.1 32.7 27.7Q33.9 26.3 35.2 22.1Q36.5 17.8 37.5 15.7Q38.5 13.5 39.5 12.2Q40.5 10.8 42.4 9.1Q44.3 7.3 45.9 6.2Q47.5 5.2 49.4 4.5Q51.2 3.9 51.3 3.5Z"},"par":{"w":42,"h":48,"layers":[{"d":"M40.0 12.7Q40.1 12.4 35.5 11.0Q30.8 9.6 26.7 8.1Q22.6 6.5 21.6 5.9Q20.5 5.3 20.4 4.1Q20.2 2.9 19.9 2.5Q19.6 2.0 18.4 2.0Q17.2 2.0 16.8 2.9Q16.4 3.8 16.4 19.3Q16.4 34.9 15.9 35.3Q15.4 35.8 12.6 36.0Q9.7 36.3 6.8 37.2Q3.8 38.2 2.6 39.3Q1.5 40.4 1.6 41.3Q1.6 42.3 2.1 42.9Q2.6 43.5 3.7 44.1Q4.7 44.7 6.5 45.2Q8.3 45.8 10.8 46.0Q13.3 46.3 17.1 46.3Q21.0 46.3 23.4 46.0Q25.9 45.8 27.7 45.3Q29.5 44.9 30.6 44.3Q31.8 43.7 32.6 42.9Q33.4 42.0 33.5 41.2Q33.6 40.5 33.4 40.0Q33.2 39.6 31.7 38.5Q30.2 37.4 28.1 36.8Q26.0 36.1 23.2 35.7Q20.4 35.3 20.2 28.6Q20.1 21.9 20.4 21.5Q20.6 21.2 29.1 18.1Q37.6 15.1 38.2 14.6Q38.9 14.0 34.4 15.8Q29.9 17.7 27.4 18.4Q24.9 19.0 22.5 20.0Q20.1 21.0 20.1 31.1Q20.1 41.3 19.8 41.6Q19.4 42.0 18.2 42.0Q17.1 41.9 16.9 41.5Q16.6 41.1 16.9 37.8Q17.1 34.5 17.1 18.6Q17.0 2.8 17.3 2.5Q17.6 2.1 18.2 2.1Q18.9 2.1 19.3 2.4Q19.7 2.7 19.9 4.1Q20.0 5.5 21.1 6.2Q22.1 6.8 24.3 7.4Q26.5 8.1 27.1 8.5Q27.6 8.9 31.8 10.4Q35.9 11.9 36.9 11.9Q37.9 12.0 39.0 12.4Q40.0 12.9 40.0 12.7Z","c":"#6bb96c","fixed":true},{"d":"M18.1 2.0L17.2 2.4L16.9 3.3L17.0 35.1L16.6 41.2L17.2 42.0L19.0 42.1L20.1 41.4L20.0 21.2L21.8 20.1L29.9 17.7L37.3 14.8L38.6 13.9L40.1 13.7L40.3 13.2L39.0 12.3L36.0 11.9L21.9 6.7L20.1 5.6L19.5 2.4Z","c":"#0b5726"}]},"bog":{"w":44,"h":39,"c":"#22519e","d":"M21.2 1.1L1.0 36.8L42.1 37.1L42.0 34.2L23.1 1.9Z"},"dbl":{"w":57,"h":37,"c":"#ec8022","d":"M0.8 33.0L1.1 35.2L3.8 35.8L52.3 35.7L55.3 34.7L41.1 3.5L39.1 1.3L37.1 2.8L28.2 22.0L17.8 1.5L16.1 1.6Z"},"tri":{"w":63,"h":56,"c":"#b92b27","d":"M14.2 30.6L1.9 51.6L1.7 54.1L28.4 54.5L28.8 52.8L16.9 31.8ZM47.2 30.2L33.9 54.1L60.6 54.6L61.1 52.0L49.0 30.8ZM31.2 1.2L18.9 21.6L17.8 25.3L44.6 25.9L44.9 22.9L34.0 3.8Z"}};
+const KIND_COL={alb:'#4c2b82',bir:'#22894f',par:'#0b5726',bog:'#22519e',dbl:'#ec8022',tri:'#b92b27'};
+const ICO=(()=>{const o={};for(const k in ICON_DATA){const d=ICON_DATA[k];
+  const inner=k==='par'?d.layers.map(l=>'<path d="'+l.d+'" fill="'+(l.fixed?l.c:'currentColor')+'"/>').join(''):'<path d="'+d.d+'" fill="currentColor"/>';
+  o[k]='<svg viewBox="0 0 '+d.w+' '+d.h+'">'+inner+'</svg>';}return o;})();
+function kindOf(d){return d<=-2?'alb':d===-1?'bir':d===0?'par':d===1?'bog':d===2?'dbl':'tri';}
+function dlab(d){return d===0?'0':d<0?'\u2212'+(-d):'+'+d;}
+function markHTML(s,par,num){
+  if(!num||s===null||s===undefined)return '<span class="mk mk-e">\u00b7</span>';
+  const d=s-par,k=kindOf(d);
+  return '<span class="mk mk-'+k+'"><span class="si">'+ICO[k]+'</span>'+(d<=-3?'<u>\u2212</u>':d>=4?'<u>+</u>':'')+'<em>'+s+'</em></span>';
+}
+function drawIcon(ctx,k,cx,cy,maxW,maxH){
+  const d=ICON_DATA[k],sc=Math.min(maxW/d.w,maxH/d.h);
+  ctx.save();ctx.translate(cx-d.w*sc/2,cy-d.h*sc/2);ctx.scale(sc,sc);
+  if(k==='par')d.layers.forEach(l=>{ctx.fillStyle=l.fixed?l.c:KIND_COL.par;ctx.fill(new Path2D(l.d));});
+  else{ctx.fillStyle=KIND_COL[k];ctx.fill(new Path2D(d.d));}
+  ctx.restore();
+}
 function renderCards(){
   const t=$('#track');t.innerHTML='';
   S.players.forEach((p,i)=>{
     const par=S.pars[S.cur],s=p.scores[S.cur],shown=s===null?par:s;
     const card=document.createElement('div');card.className='pcard';
-    const q=[['bir',par-1,'Birdie'],['par',par,'Par'],['bog',par+1,'Bogey'],['dbl',par+2,'Double']];
+    const q=[['alb',par-2,'Albatros'],['bir',par-1,'Birdie'],['par',par,'Par'],['bog',par+1,'Bogey'],['dbl',par+2,'Double'],['tri',par+3,'Triple']];
     card.innerHTML=
       '<div class="counter">'+
         '<button class="big" data-act="-" data-p="'+i+'" aria-label="Un coup de moins"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button>'+
@@ -2511,7 +2560,7 @@ function renderCards(){
         '<button class="big" data-act="+" data-p="'+i+'" aria-label="Un coup de plus"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button>'+
       '</div>'+
       '<div class="quick">'+q.map(([k,v,l])=>
-        '<button data-set="'+v+'" data-p="'+i+'" class="q-'+k+(s===v?' on':'')+'"'+(v<1?' disabled':'')+'>'+ICO[k]+'<b>'+T(l)+'</b><span>('+(v<1?'–':v)+(k==='dbl'?'+':'')+')</span></button>'
+        '<button data-set="'+v+'" data-p="'+i+'" class="q-'+k+(s===v?' on':'')+'"'+(v<1?' disabled':'')+'>'+ICO[k]+'<b>'+T(l)+'</b><span>('+(v<1?'–':dlab(v-par))+')</span></button>'
       ).join('')+'</div>';
     t.appendChild(card);
   });
@@ -2563,17 +2612,13 @@ function renderStrip(){
   }
   const p=S.players[S.active]||S.players[0];if(!p)return;
   const from=Math.floor(S.cur/9)*9,to=Math.min(from+9,S.holes),n=to-from;
-  el.style.gridTemplateColumns='56px repeat('+n+',38px) 54px';
+  el.style.gridTemplateColumns='minmax(44px,56px) repeat('+n+',minmax(30px,38px)) minmax(46px,54px)';
   const kind=d=>d<=-2?'alb':d===-1?'bir':d===0?'par':d===1?'bog':d===2?'dbl':'tri';
   let h='<div class="rn">'+esc(p.name||('J'+(S.active+1)))+'</div>';
   for(let i=from;i<to;i++){
     const v=p.scores[i];
-    let inner='';
-    if(v!==null){
-      const d=v-S.pars[i],k=kind(d);
-      inner='<span class="si si-'+k+'">'+ICO[k]+'</span>'+(d<=-3?'<em>\u2212</em>':d>=4?'<em>+</em>':'');
-    }
-    h+='<div class="rc sc'+(i===S.cur?' now':'')+'" data-h="'+i+'">'+inner+'</div>';
+    const inner=v===null?'':markHTML(v,S.pars[i],true);
+    h+='<div class="rc'+(i===S.cur?' now':'')+'" data-h="'+i+'">'+inner+'</div>';
   }
   h+='<div class="rt"><b>'+(p.scores.some(x=>x!==null)?played(p):'—')+'</b></div>';
   el.innerHTML=h;
@@ -2930,7 +2975,7 @@ function renderStats(wantLayout){
       for(let h=0;h<H;h++){
         const s=x.p.scores[h];
         const num=typeof s==='number';
-        body+='<td><span class="sc '+cellClass(num?s:null,x.r.pars[h]||ref[h]||4)+'">'+(num?s:'·')+'</span></td>';
+        body+='<td>'+markHTML(s,x.r.pars[h]||ref[h]||4,num)+'</td>';
       }
       body+='<td class="totcol">'+x.tot+'</td></tr>';
     });
@@ -3412,10 +3457,11 @@ async function recapBlob(){
       const s=p.scores[h];
       if(s===null){ctx.font='600 17px '+F;ctx.fillStyle='#c3bda7';ctx.fillText('·',colX(h)+cellW/2,my);continue;}
       const diff=s-S.pars[h];
-      if(diff!==0)drawNote(ctx,colX(h)+cellW/2,my,Math.min(cellW-22,30),diff);
-      ctx.font='700 19px '+F;
-      ctx.fillStyle=diff<0?'#2d6a4f':(diff>0?'#d62828':'#2c3a30');
-      ctx.fillText(String(s),colX(h)+cellW/2,my);
+      const kk=kindOf(diff);
+      drawIcon(ctx,kk,colX(h)+cellW/2,my-3,cellW-16,26);
+      if(diff<=-3||diff>=4){ctx.font='800 19px '+F;ctx.fillStyle=KIND_COL[kk];ctx.textAlign='left';ctx.fillText(diff<0?'\u2212':'+',colX(h)+5,my-15);}
+      ctx.font='800 15px '+F;ctx.fillStyle='#13361f';ctx.textAlign='right';
+      ctx.fillText(String(s),colX(h)+cellW-5,my+16);ctx.textAlign='center';
     }
     const tot=played(p), vp=vsPar(p);
     const any=p.scores.some(x=>x!==null);
@@ -3430,16 +3476,16 @@ async function recapBlob(){
 
   /* Légende : la même que dans l'app, pour que la notation se lise
      sans connaître le code des cercles et des carrés. */
-  const leg=[[-1,'Birdie'],[-2,'Eagle +'],[1,'Bogey'],[2,'Double +']];
+  const leg=[['alb','Albatros'],['bir','Birdie'],['par','Par'],['bog','Bogey'],['dbl','Double'],['tri','Triple']];
   ctx.font='500 14px '+O;
-  const symb=19, ecart=9, entre=26;
+  const symb=26, ecart=7, entre=16;
   let total=0;
   leg.forEach(l=>{total+=symb+ecart+ctx.measureText(l[1]).width;});
   total+=entre*(leg.length-1);
   let lx=(W-total)/2;
   const ly=y0+rows*rowH+legH/2+2;
   leg.forEach(l=>{
-    drawNote(ctx,lx+symb/2,ly,l[0]<0?13:12,l[0]);
+    drawIcon(ctx,l[0],lx+symb/2,ly,symb,18);
     ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillStyle='#8b8770';
     ctx.fillText(l[1],lx+symb+ecart,ly+1);
     lx+=symb+ecart+ctx.measureText(l[1]).width+entre;
@@ -4219,5 +4265,6 @@ function consentBanner(){
   try{ parent.postMessage({ source:'swingup-pro', action:'request-state' }, location.origin); }catch(e){}
 })();
 </script>
+<script>try{Object.assign(LANGS.en,{'Albatros':'Albatross','Triple':'Triple bogey'});}catch(e){}</script>
 </body>
 </html>
