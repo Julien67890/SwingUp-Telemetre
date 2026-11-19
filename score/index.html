@@ -2654,7 +2654,7 @@ function bump(i,delta){
 function setScore(i,v){
   S.players[i].scores[S.cur]=Math.min(20,Math.max(1,v));
   vibrate();save();renderAll();
-  if(ownerComplete()&&!S.savedTo&&!S.asked){S.asked=true;save();setTimeout(askSave,650);}
+  if(isRoundComplete()&&!S.savedTo&&!S.asked){S.asked=true;save();setTimeout(askSave,650);}
 }
 function go(h){if(h<0||h>=S.holes)return;S.cur=h;save();renderAll();}
 $('#btnValid').onclick=()=>{
