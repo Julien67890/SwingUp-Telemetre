@@ -4,7 +4,7 @@
    la carte de score, même si les deux sont sur le même domaine.
    Incrémenter CACHE_VERSION à chaque mise en ligne.
    ========================================================= */
-const CACHE_VERSION = 'swingup-telemetre-v42';
+const CACHE_VERSION = 'swingup-telemetre-v43';
 
 /* Cache des tuiles d'imagerie : nom FIXE, volontairement en dehors de
    CACHE_VERSION, pour survivre aux mises à jour de l'appli (sinon chaque
@@ -138,6 +138,24 @@ self.addEventListener('fetch', event => {
 
   /* Domaines tiers non prévus : on ne s'en mêle pas. */
   if (url.origin !== self.location.origin && !RUNTIME_HOSTS.includes(url.hostname)) return;
+
+  /* Carte de score (page score/, chargée en iframe sous le Télémètre) : réseau
+     d'abord, copie gardée sous sa propre adresse pour le jeu hors couverture.
+     Elle ne doit surtout pas être rangée sous ./index.html comme une navigation du Télémètre. */
+  if (url.pathname.indexOf('/score/') !== -1 && (req.mode === 'navigate' || req.destination === 'iframe')) {
+    event.respondWith(
+      fetch(req)
+        .then(res => {
+          if (res && res.status === 200) {
+            const copy = res.clone();
+            caches.open(CACHE_VERSION).then(c => c.put(url.origin + url.pathname, copy));
+          }
+          return res;
+        })
+        .catch(() => caches.match(url.origin + url.pathname).then(hit => hit || Response.error()))
+    );
+    return;
+  }
 
   /* Navigation : réseau d'abord, cache en secours. */
   if (req.mode === 'navigate') {
