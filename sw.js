@@ -4,7 +4,7 @@
    la carte de score, même si les deux sont sur le même domaine.
    Incrémenter CACHE_VERSION à chaque mise en ligne.
    ========================================================= */
-const CACHE_VERSION = 'swingup-telemetre-v41';
+const CACHE_VERSION = 'swingup-telemetre-v42';
 
 /* Cache des tuiles d'imagerie : nom FIXE, volontairement en dehors de
    CACHE_VERSION, pour survivre aux mises à jour de l'appli (sinon chaque
@@ -73,10 +73,20 @@ self.addEventListener('activate', event => {
   );
 });
 
+/* Clé de cache d'une tuile. Quand l'IGN échoue (404/400 passagers),
+   l'appli réessaie la même tuile avec « &essai=N » : sans normalisation,
+   la tuile réussie était stockée sous cette URL-là, alors que la requête
+   suivante repart toujours de l'URL sans « essai » (qui n'était jamais en
+   cache et échouait de nouveau) : les carrés verts revenaient à chaque fois. */
+function cleTuile(u){
+  return u.replace(/([?&])essai=\d+&?/, '$1').replace(/[?&]$/, '');
+}
+
 /* Cache-first avec expiration pour les tuiles d'imagerie. */
 async function repondreTuile(req){
   const cache = await caches.open(TILE_CACHE);
-  const hit = await cache.match(req);
+  const cle = new Request(cleTuile(req.url));
+  const hit = await cache.match(cle, { ignoreVary: true });
   if (hit){
     const stamp = Number(hit.headers.get('sw-cached-at') || 0);
     if (Date.now() - stamp < TILE_MAX_AGE_MS) return hit;
@@ -87,7 +97,7 @@ async function repondreTuile(req){
       const blob = await res.clone().blob();
       const headers = new Headers(res.headers);
       headers.set('sw-cached-at', String(Date.now()));
-      cache.put(req, new Response(blob, { status: res.status, statusText: res.statusText, headers }));
+      cache.put(cle, new Response(blob, { status: res.status, statusText: res.statusText, headers }));
       trimTuiles(cache);
     }
     return res;
