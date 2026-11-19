@@ -770,10 +770,10 @@ html.su-embedded .pickfield{padding:10px 12px}
 html.su-embedded .pstrip .si{width:26px;height:21px}
 html.su-embedded #r9,html.su-embedded .pstrip{justify-content:center}
 html.su-embedded .rgrid .rc{padding:0}
-/* --- 6 tuiles : 3 x 2 --- */
-html.su-embedded .quick{grid-template-columns:repeat(3,1fr)}
+/* --- 4 tuiles de saisie (Albatros et Triple : récaps uniquement) --- */
+html.su-embedded .quick{grid-template-columns:repeat(4,1fr)}
 html.su-embedded .quick button{background:#fff;color:#1d2a20;padding:8px 2px 7px;border-radius:14px}
-html.su-embedded .quick button svg{width:40px;height:27px}
+html.su-embedded .quick button svg{width:34px;height:26px}
 html.su-embedded .quick button span{font-weight:600}
 html.su-embedded .q-alb svg,html.su-embedded .q-alb span{color:#4c2b82}
 html.su-embedded .quick button.q-alb.on{background:#4c2b82;color:#fff;box-shadow:none}
@@ -2552,7 +2552,7 @@ function renderCards(){
   S.players.forEach((p,i)=>{
     const par=S.pars[S.cur],s=p.scores[S.cur],shown=s===null?par:s;
     const card=document.createElement('div');card.className='pcard';
-    const q=[['alb',par-2,'Albatros'],['bir',par-1,'Birdie'],['par',par,'Par'],['bog',par+1,'Bogey'],['dbl',par+2,'Double'],['tri',par+3,'Triple']];
+    const q=[['bir',par-1,'Birdie'],['par',par,'Par'],['bog',par+1,'Bogey'],['dbl',par+2,'Double']];
     card.innerHTML=
       '<div class="counter">'+
         '<button class="big" data-act="-" data-p="'+i+'" aria-label="Un coup de moins"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button>'+

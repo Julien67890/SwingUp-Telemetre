@@ -440,6 +440,9 @@ body.has-peek #app{height:calc(100dvh - var(--peek-h))}
 #scPeek .grip,#scHead .grip{width:38px;height:4px;border-radius:2px;background:rgba(246,243,233,.35);margin:0 auto}
 #scPeek .prow{display:flex;align-items:center;gap:12px;height:44px;margin-top:6px}
 #scPeek svg{flex:0 0 auto}
+.scico{display:block;width:auto;object-fit:contain}
+#scPeek .scico{height:32px}
+#scHead .scico{height:26px}
 #scPeek .pl{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}
 #scPeek .pl b{font-size:.95rem;font-weight:600;color:var(--cream);white-space:nowrap}
 #scPeek .pr{flex:0 0 auto;font-size:.95rem;font-weight:600;color:var(--green-glow);white-space:nowrap}
@@ -733,14 +736,14 @@ body.tuto-on #scPeek{display:none}
 <div id="scPeek" class="hidden" role="button" tabindex="0" aria-label="Carte de score">
   <div class="grip"></div>
   <div class="prow">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f6f3e9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>
-    <div class="pl"><b id="scPeekT">Carte de score</b></div>
+    <img class="scico" src="icons/score-card.png" alt="" width="64" height="33">
+    <div class="pl"><b id="scPeekT" hidden>Carte de score</b></div>
     <div class="pr" id="scPeekHole">Démarrer</div>
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f6f3e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
   </div>
 </div>
 <div id="scBack"></div>
-<div id="scHead"><div class="grip"></div><div class="t"><span id="scHeadT">Carte de score</span><button type="button" id="scClose" aria-label="Fermer">&times;</button></div></div>
+<div id="scHead"><div class="grip"></div><div class="t"><img class="scico" src="icons/score-card.png" alt="Carte de score" width="52" height="27"><span id="scHeadT" hidden>Carte de score</span><button type="button" id="scClose" aria-label="Fermer">&times;</button></div></div>
 <iframe id="scFrame" title="SwingUp Carte de score" allow=""></iframe>
 <div id="consent" class="hidden">
   <div class="in">
