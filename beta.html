@@ -443,7 +443,7 @@ body.has-peek #app{height:calc(100dvh - var(--peek-h))}
 #scPeek .pl{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}
 #scPeek .pl b{font-size:.95rem;font-weight:600;color:var(--cream);white-space:nowrap}
 #scPeek .pr{flex:0 0 auto;font-size:.95rem;font-weight:600;color:var(--green-glow);white-space:nowrap}
-#scStrip{display:none;flex:1 1 auto;min-width:0;height:40px;align-items:stretch;background:#f3efe2;border-radius:9px;overflow:hidden;touch-action:none}
+#scStrip{position:relative;display:none;flex:1 1 auto;min-width:0;height:40px;align-items:stretch;background:#f3efe2;border-radius:9px;overflow:hidden;touch-action:none}
 #scPeek.live #scStrip{display:flex}
 #scPeek.live .tro,#scPeek.live .pl,#scPeek.live .pr{display:none}
 #scStrip .c{position:relative;flex:1 0 30px;border-left:1px solid #e3dcc3}
@@ -4384,7 +4384,7 @@ window.rafraichirCarte = () => { if (map) { drawGreens(); refresh(); } };
     if(stripCur!==m.cur||stripN!==m.holes){
       stripCur=m.cur; stripN=m.holes;
       var c=el.children[m.cur], tot=el.lastChild;
-      if(c) el.scrollLeft=Math.max(0,c.offsetLeft-(el.clientWidth-tot.offsetWidth)/2+c.offsetWidth/2);
+      if(c) el.scrollLeft=Math.max(0,c.offsetLeft+c.offsetWidth-(el.clientWidth-tot.offsetWidth));   /* trou en cours collé au total : le plus d'historique possible */
     }else el.scrollLeft=keep;
   }
   function sheetH(){ return window.innerHeight*0.88; }
