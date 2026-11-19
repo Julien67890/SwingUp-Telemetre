@@ -3657,10 +3657,21 @@ function refresh(){
     noteMesure(S.sel.id);
     const from = [S.pos.lat, S.pos.lon];
     const st = (c,w,dash) => ({ color:c, weight:w, opacity:.9, dashArray:dash, interactive:false });
-    L.polyline([from, m.ll(m.front)], st("#8FC0A1",2.5)).addTo(spokes);
-    L.polyline([from, m.ll(m.back)],  st("#F1EDE2",1.4,"5 6")).addTo(spokes);
-    L.polyline([from, m.ll(m.left)],  st("#C9A227",1.4,"3 5")).addTo(spokes);
-    L.polyline([from, m.ll(m.right)], st("#C9A227",1.4,"3 5")).addTo(spokes);
+    let pF = m.ll(m.front), pB = m.ll(m.back), pL = m.ll(m.left), pR = m.ll(m.right);
+    /* Zone visée : mêmes points que les chiffres du bandeau (cercle de diamètre connu). */
+    const zt0 = zPlan(S.sel).pts[0];
+    if (zt0){
+      const c = loc(zt0[0], zt0[1], S.pos.lat, S.pos.lon), d = Math.hypot(c[0], c[1]), r = zDia(zt0)/2;
+      if (d > 0.01){
+        const ux = c[0]/d, uy = c[1]/d, k = Math.max(0, d - r), U = (x,y) => unloc(x, y, S.pos.lat, S.pos.lon);
+        pF = U(ux*k, uy*k); pB = U(ux*(d+r), uy*(d+r));
+        pL = U(c[0] - uy*r, c[1] + ux*r); pR = U(c[0] + uy*r, c[1] - ux*r);
+      }
+    }
+    L.polyline([from, pF], st("#8FC0A1",2.5)).addTo(spokes);
+    L.polyline([from, pB], st("#F1EDE2",1.4,"5 6")).addTo(spokes);
+    L.polyline([from, pL], st("#C9A227",1.4,"3 5")).addTo(spokes);
+    L.polyline([from, pR], st("#C9A227",1.4,"3 5")).addTo(spokes);
     updateAlti(m);
   }
   drawMeas();
