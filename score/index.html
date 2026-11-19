@@ -4219,7 +4219,7 @@ function consentBanner(){
         var sc = p.scores[S.cur];
         m.hole = S.cur+1; m.par = S.pars[S.cur];
         m.score = (typeof sc === 'number') ? sc : null;
-        m.total = played(p); m.vsPar = vsPar(p); m.holes = S.holes;
+        m.total = played(p); m.vsPar = vsPar(p); m.holes = S.holes; m.scores = p.scores.slice(0,S.holes); m.pars = S.pars.slice(0,S.holes); m.cur = S.cur;
       }
       var j = JSON.stringify(m);
       if (j !== last){ last = j; parent.postMessage(m, location.origin); }

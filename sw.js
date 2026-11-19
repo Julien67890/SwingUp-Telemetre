@@ -4,7 +4,7 @@
    la carte de score, même si les deux sont sur le même domaine.
    Incrémenter CACHE_VERSION à chaque mise en ligne.
    ========================================================= */
-const CACHE_VERSION = 'swingup-telemetre-v44';
+const CACHE_VERSION = 'swingup-telemetre-v45';
 
 /* Cache des tuiles d'imagerie : nom FIXE, volontairement en dehors de
    CACHE_VERSION, pour survivre aux mises à jour de l'appli (sinon chaque
@@ -24,7 +24,6 @@ const APP_SHELL = [
   './leaflet/leaflet.css',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/score-card.png',
   './icons/icon-180.png',
   './icons/apple-touch-icon-180.png',
   './icons/icon-maskable-192.png',
