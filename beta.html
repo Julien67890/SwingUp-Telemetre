@@ -450,6 +450,8 @@ body.has-peek #app{height:calc(100dvh - var(--peek-h))}
 #scStrip .c:first-child{border-left:0}
 #scStrip .c.now{background:rgba(45,106,79,.2)}
 #scStrip .c svg{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:78%;max-width:24px;height:19px}
+#scStrip .c b{position:absolute;top:1px;right:2px;font-size:.5rem;font-weight:600;line-height:1;color:#9a9580}
+#scStrip .c.now b{color:#13361f}
 #scStrip .c i{position:absolute;right:2px;bottom:1px;font-style:normal;font-weight:800;font-size:.6rem;line-height:1;color:#13361f}
 #scStrip .c u{position:absolute;left:2px;top:1px;text-decoration:none;font-weight:800;font-size:.7rem;line-height:1}
 #scStrip .c.e{display:grid;place-items:center;color:#c3bda7;font-size:.9rem}
@@ -4372,9 +4374,9 @@ window.rafraichirCarte = () => { if (map) { drawGreens(); refresh(); } };
     var from=Math.floor(m.cur/9)*9, to=Math.min(from+9,m.holes), h='';
     for(var i=from;i<to;i++){
       var s=m.scores[i], now=i===m.cur?' now':'';
-      if(typeof s!=='number'){ h+='<div class="c e'+now+'">\u00b7</div>'; continue; }
+      if(typeof s!=='number'){ h+='<div class="c e'+now+'"><b>'+(i+1)+'</b>\u00b7</div>'; continue; }
       var d=s-m.pars[i];
-      h+='<div class="c'+now+'">'+icoSvg(kindOf(d))+(d<=-3?'<u style="color:'+KC.alb+'">\u2212</u>':d>=4?'<u style="color:'+KC.tri+'">+</u>':'')+'<i>'+s+'</i></div>';
+      h+='<div class="c'+now+'"><b>'+(i+1)+'</b>'+icoSvg(kindOf(d))+(d<=-3?'<u style="color:'+KC.alb+'">\u2212</u>':d>=4?'<u style="color:'+KC.tri+'">+</u>':'')+'<i>'+s+'</i></div>';
     }
     h+='<div class="tot">'+(m.total||'\u2014')+'</div>';
     el.innerHTML=h; peekEl.classList.add('live');

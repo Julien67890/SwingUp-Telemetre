@@ -768,7 +768,10 @@ html.su-embedded .pickfield{padding:10px 12px}
 .legend{gap:12px 14px}
 .mk-alb{color:#4c2b82}.mk-alb em{color:#13361f}.mk-bir{color:#22894f}.mk-bir em{color:#13361f}.mk-par{color:#0b5726}.mk-par em{color:#13361f}.mk-bog{color:#22519e}.mk-bog em{color:#13361f}.mk-dbl{color:#ec8022}.mk-dbl em{color:#13361f}.mk-tri{color:#b92b27}.mk-tri em{color:#13361f}
 html.su-embedded .pstrip .si{width:26px;height:21px}
-html.su-embedded #r9,html.su-embedded .pstrip{justify-content:center}
+html.su-embedded #r9{justify-content:safe center;overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x}
+html.su-embedded .pstrip .ho{position:absolute;top:2px;right:3px;font-size:.6rem;font-weight:600;line-height:1;color:#9a9580;z-index:1}
+html.su-embedded .pstrip .rc.now .ho{color:#13361f;font-weight:800}
+html.su-embedded .pstrip{justify-content:safe center;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x}
 html.su-embedded .rgrid .rc{padding:0}
 /* --- 4 tuiles de saisie (Albatros et Triple : récaps uniquement) --- */
 html.su-embedded .quick{grid-template-columns:repeat(4,1fr)}
@@ -2450,6 +2453,7 @@ window.addEventListener('popstate',()=>{
 function openGame(){show('game');renderAll();keepAwake();}
 $('#btnBack').onclick=()=>{refreshResume();show('setup');};
 $('#btnEnd').onclick=()=>openRecap();
+{const rh=document.querySelector('.rhead');if(rh){rh.setAttribute('role','button');rh.tabIndex=0;rh.style.cursor='pointer';rh.onclick=()=>openRecap();rh.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openRecap();}};}}
 $('#btnRecapBack').onclick=()=>show('game');
 $('#btnEdit').onclick=()=>show('game');
 $('#btnNew').onclick=()=>{if(confirm(T('Effacer la partie en cours et en démarrer une nouvelle ?')+'\n\n'+T('Les parties déjà enregistrées sur un golf sont conservées.'))){Store.del(gameKey());S=null;show('setup');refreshResume();}};
@@ -2507,9 +2511,9 @@ function renderAll(){
    total sur toute la partie. Un appui sur un numéro ouvre ce trou. */
 function renderRecap9(){
   const g=$('#r9');if(!g)return;
-  const from=Math.floor(S.cur/9)*9,to=Math.min(from+9,S.holes),n=to-from;
+  const from=0,to=S.holes,n=to-from,prevL=g.scrollLeft;
   const emb=document.documentElement.classList.contains('su-embedded');
-  g.style.gridTemplateColumns=emb?'minmax(64px,84px) repeat('+n+',minmax(32px,42px)) minmax(50px,58px)':'minmax(0,3.4fr) repeat('+n+',minmax(0,1fr)) minmax(0,1.8fr)';
+  g.style.gridTemplateColumns=emb?(n>9?'84px repeat('+n+',42px) 58px':'minmax(64px,84px) repeat('+n+',minmax(32px,42px)) minmax(50px,58px)'):'minmax(0,3.4fr) repeat('+n+',minmax(0,1fr)) minmax(0,1.8fr)';
   let h='<div class="rh rn">'+esc(T('Trou'))+'</div>';
   for(let i=from;i<to;i++)h+='<div class="rh hn'+(i===S.cur?' now':'')+'" data-h="'+i+'">'+(i+1)+'</div>';
   h+='<div class="rt"><b>'+esc(T('Total'))+'</b></div>';
@@ -2524,7 +2528,7 @@ function renderRecap9(){
     h+='<div class="rt"><b>'+(p.scores.some(x=>x!==null)?played(p):'—')+'</b></div>';
   });
   g.innerHTML=h;
-  if(emb){const c=g.querySelector('.rh.hn.now');if(c)g.scrollLeft=Math.max(0,c.offsetLeft-120);}
+  if(emb){if(window.__r9Cur!==S.cur||g.__n!==n){window.__r9Cur=S.cur;g.__n=n;const c=g.querySelector('.rh.hn.now');if(c)g.scrollLeft=Math.max(0,c.offsetLeft-g.clientWidth/2+21);}else g.scrollLeft=prevL;}
   g.querySelectorAll('[data-h]').forEach(el=>el.onclick=()=>go(+el.dataset.h));
 }
 
@@ -2611,18 +2615,18 @@ function renderStrip(){
     sc.parentNode.insertBefore(el,sc);
   }
   const p=S.players[S.active]||S.players[0];if(!p)return;
-  const from=Math.floor(S.cur/9)*9,to=Math.min(from+9,S.holes),n=to-from;
-  el.style.gridTemplateColumns='minmax(44px,56px) repeat('+n+',minmax(30px,38px)) minmax(46px,54px)';
+  const from=0,to=S.holes,n=to-from,prevL=el.scrollLeft;
+  el.style.gridTemplateColumns='56px repeat('+n+',38px) 54px';
   const kind=d=>d<=-2?'alb':d===-1?'bir':d===0?'par':d===1?'bog':d===2?'dbl':'tri';
   let h='<div class="rn">'+esc(p.name||('J'+(S.active+1)))+'</div>';
   for(let i=from;i<to;i++){
     const v=p.scores[i];
-    const inner=v===null?'':markHTML(v,S.pars[i],true);
+    const inner='<b class="ho">'+(i+1)+'</b>'+(v===null?'':markHTML(v,S.pars[i],true));
     h+='<div class="rc'+(i===S.cur?' now':'')+'" data-h="'+i+'">'+inner+'</div>';
   }
   h+='<div class="rt"><b>'+(p.scores.some(x=>x!==null)?played(p):'—')+'</b></div>';
   el.innerHTML=h;
-  const c=el.querySelector('.rh.hn.now');if(c)el.scrollLeft=Math.max(0,c.offsetLeft-120);
+  if(window.__pstripCur!==S.cur||el.__n!==n){window.__pstripCur=S.cur;el.__n=n;el.scrollLeft=Math.max(0,56+S.cur*38+19-el.clientWidth/2);}else el.scrollLeft=prevL;
   el.querySelectorAll('[data-h]').forEach(x=>x.onclick=()=>go(+x.dataset.h));
 }
 function renderDots(){
@@ -3519,7 +3523,7 @@ async function shareRecap(){
     if(navigator.canShare&&navigator.canShare({files:[file]})){
       /* L'image se suffit à elle-même : elle porte déjà le nom de l'app
          et le lien. Pas de texte joint, qui alourdit le message. */
-      await navigator.share({files:[file],title:'SwingUp'});
+      await navigator.share({files:[file],title:'SwingUp',text:T('Ma carte de score golf, faite avec SwingUp :')+' https://swingup-pro.com/?utm_source=partage&utm_medium=score'});
     }else{
       const url=URL.createObjectURL(blob);
       const a=document.createElement('a');a.href=url;a.download='carte-golf.png';document.body.appendChild(a);a.click();a.remove();
@@ -4265,6 +4269,6 @@ function consentBanner(){
   try{ parent.postMessage({ source:'swingup-pro', action:'request-state' }, location.origin); }catch(e){}
 })();
 </script>
-<script>try{Object.assign(LANGS.en,{'Albatros':'Albatross','Triple':'Triple bogey'});}catch(e){}</script>
+<script>try{Object.assign(LANGS.en,{'Albatros':'Albatross','Triple':'Triple bogey','Ma carte de score golf, faite avec SwingUp :':'My golf scorecard, made with SwingUp:'});Object.assign(LANGS.es,{'Ma carte de score golf, faite avec SwingUp :':'Mi tarjeta de golf, hecha con SwingUp:'});Object.assign(LANGS.de,{'Ma carte de score golf, faite avec SwingUp :':'Meine Golf-Scorekarte, erstellt mit SwingUp:'});}catch(e){}</script>
 </body>
 </html>
