@@ -3259,8 +3259,8 @@ function contour(px, reg, ll){
    le milieu du premier palier où la surface se stabilise (le green est
    alors « isolé » de son voisinage), en écartant les contours qui
    débordent ou sont absurdement petits/grands. Le curseur reste libre :
-   toucher le curseur reprend la main, DÉTECT relancé repart en auto. */
-const DETECT_AUTO = !/[?&]detect=manual\b/.test(location.search);
+   désactivé par défaut (beta.html?detect=auto pour l'essayer) : sur des greens à collerette de même teinte, il choisit une zone bien trop grande. */
+const DETECT_AUTO = /[?&]detect=auto\b/.test(location.search);   /* EXPÉRIMENTAL, désactivé par défaut : ne sépare pas un green de sa collerette de même teinte */
 const AUTO_TOLS = [8,12,16,20,24,28,34,40,48,56,64];
 function autoTol(px, ll){
   const A = AUTO_TOLS.map(t => {
