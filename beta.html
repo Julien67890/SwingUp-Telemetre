@@ -3064,6 +3064,52 @@ function seedColor(data, size){
   const med = a => { a.sort((x,y)=>x-y); return a[a.length>>1]; };
   return [med(R), med(G), med(B)];
 }
+/* ---- DÉTECT : comparaison des couleurs dans l'espace Lab ----
+   L'ancienne distance RGB (|ΔR|+|ΔG|+|ΔB|) traite une ombre, un dégradé de soleil
+   ou un reflet comme un vrai changement de terrain : le remplissage s'arrête au
+   milieu du green. En Lab, la luminosité (L) est séparée de la teinte (a, b) et on
+   lui donne un poids réduit (DETECT_WL) : l'ombre passe mieux, le sable, un chemin ou un
+   arbre restent refusés. Les pixels sont d'abord lissés (1-2-1) pour effacer le grain
+   de tonte et la compression JPEG. Seuil Lab = tolérance × DETECT_K.
+   EXPÉRIMENTAL : désactivé par défaut (la méthode RGB reste active). Ouvrir beta.html?detect=lab
+   pour l'essayer sur de vrais greens et comparer. Limite connue : un fairway plus sombre
+   que le green mais de même teinte est plus difficile à distinguer d'une ombre. */
+const DETECT_WL = 0.8, DETECT_K = 0.5;
+const DETECT_LAB = /[?&]detect=lab\b/.test(location.search);
+const SRGB_LIN = (() => { const t = new Float32Array(256); for (let i=0;i<256;i++){ const c=i/255; t[i] = c<=0.04045 ? c/12.92 : Math.pow((c+0.055)/1.055,2.4); } return t; })();
+function labPixels(px){
+  if (px.lab) return px.lab;
+  const { data, size } = px, n = size*size;
+  let A = new Float32Array(n*3), B = new Float32Array(n*3);
+  for (let i=0;i<n;i++){ A[i*3]=data[i*4]; A[i*3+1]=data[i*4+1]; A[i*3+2]=data[i*4+2]; }
+  for (let y=0;y<size;y++) for (let x=0;x<size;x++){          /* horizontal */
+    const xm = x>0?x-1:0, xp = x<size-1?x+1:size-1, o=(y*size+x)*3, m=(y*size+xm)*3, p=(y*size+xp)*3;
+    B[o]=(A[m]+2*A[o]+A[p])/4; B[o+1]=(A[m+1]+2*A[o+1]+A[p+1])/4; B[o+2]=(A[m+2]+2*A[o+2]+A[p+2])/4;
+  }
+  for (let y=0;y<size;y++) for (let x=0;x<size;x++){          /* vertical */
+    const ym = y>0?y-1:0, yp = y<size-1?y+1:size-1, o=(y*size+x)*3, m=(ym*size+x)*3, p=(yp*size+x)*3;
+    A[o]=(B[m]+2*B[o]+B[p])/4; A[o+1]=(B[m+1]+2*B[o+1]+B[p+1])/4; A[o+2]=(B[m+2]+2*B[o+2]+B[p+2])/4;
+  }
+  const f = t => t>0.008856 ? Math.cbrt(t) : 7.787*t + 16/116;
+  const lab = new Float32Array(n*3);
+  for (let i=0;i<n;i++){
+    const R=SRGB_LIN[Math.round(A[i*3])], G=SRGB_LIN[Math.round(A[i*3+1])], Bl=SRGB_LIN[Math.round(A[i*3+2])];
+    const fx=f((0.4124564*R+0.3575761*G+0.1804375*Bl)/0.95047), fy=f(0.2126729*R+0.7151522*G+0.072175*Bl), fz=f((0.0193339*R+0.119192*G+0.9503041*Bl)/1.08883);
+    lab[i*3]=116*fy-16; lab[i*3+1]=500*(fx-fy); lab[i*3+2]=200*(fy-fz);
+  }
+  px.lab = lab;
+  return lab;
+}
+function seedLab(lab, size){
+  const c = size/2|0, rad = Math.max(5, Math.min(14, Math.round(size*0.045)));
+  const L=[], a=[], b=[];
+  for (let dy=-rad;dy<=rad;dy++) for (let dx=-rad;dx<=rad;dx++){
+    const y=c+dy, x=c+dx; if (y<0||x<0||y>=size||x>=size) continue;
+    const i=(y*size+x)*3; L.push(lab[i]); a.push(lab[i+1]); b.push(lab[i+2]);
+  }
+  const med = v => { v.sort((p,q)=>p-q); return v[v.length>>1]; };
+  return [med(L), med(a), med(b)];
+}
 /* Érosion 4-connexe d'une passe : un pixel ne survit que si ses 4 voisins
    directs appartiennent aussi au masque. Répétée k fois, elle efface tout
    corridor plus étroit qu'environ 2k pixels sur toute sa longueur — pas
@@ -3118,7 +3164,10 @@ function compProcheSeed(mask, size, seed){
 }
 function grow(px, tol){
   const { data, size } = px;
-  const [r0,g0,b0] = seedColor(data, size);
+  const useLab = DETECT_LAB;
+  let r0=0,g0=0,b0=0, lab=null, L0=0,a0=0,bb0=0, thr2=0;
+  if (useLab){ lab = labPixels(px); [L0,a0,bb0] = seedLab(lab, size); thr2 = (tol*DETECT_K)*(tol*DETECT_K); }
+  else [r0,g0,b0] = seedColor(data, size);
   const seed = (size/2|0)*size + (size/2|0);
   const raw = new Uint8Array(size*size), q = [seed]; raw[seed] = 1;
   let n = 1;
@@ -3133,8 +3182,13 @@ function grow(px, tol){
       if (nx<1||ny<1||nx>=size-1||ny>=size-1) continue;
       const ni = ny*size+nx;
       if (raw[ni] || Math.hypot(nx-size/2, ny-size/2) > lim) continue;
-      const j = ni*4;
-      if (Math.abs(data[j]-r0)+Math.abs(data[j+1]-g0)+Math.abs(data[j+2]-b0) > thr) continue;
+      if (useLab){
+        const j = ni*3, dL = (lab[j]-L0)*DETECT_WL, da = lab[j+1]-a0, db = lab[j+2]-bb0;
+        if (dL*dL + da*da + db*db > thr2) continue;
+      } else {
+        const j = ni*4;
+        if (Math.abs(data[j]-r0)+Math.abs(data[j+1]-g0)+Math.abs(data[j+2]-b0) > thr) continue;
+      }
       raw[ni]=1; n++; q.push(ni);
     }
   }
