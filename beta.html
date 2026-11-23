@@ -1394,9 +1394,9 @@ Object.assign(LANGS.de,{
  "{p} % de puissance":"{p} % Kraft"
 });
 
-Object.assign(LANGS.en,{"Puissance nécessaire":"Power needed"});
-Object.assign(LANGS.es,{"Puissance nécessaire":"Potencia necesaria"});
-Object.assign(LANGS.de,{"Puissance nécessaire":"Nötige Kraft"});
+Object.assign(LANGS.en,{"Tolérance auto : {t}.":"Auto tolerance: {t}.","Puissance nécessaire":"Power needed"});
+Object.assign(LANGS.es,{"Tolérance auto : {t}.":"Tolerancia automática: {t}.","Puissance nécessaire":"Potencia necesaria"});
+Object.assign(LANGS.de,{"Tolérance auto : {t}.":"Automatische Toleranz: {t}.","Puissance nécessaire":"Nötige Kraft"});
 
 const LANGUES=['en','fr','es','de'];
 const LANGUE_DEFAUT='en';
@@ -3255,6 +3255,42 @@ function contour(px, reg, ll){
   for (let k=0;k<N;k++) area += 0.5*sm[k]*sm[(k+1)%N]*Math.sin(2*Math.PI/N);
   return { ring, area: area*m*m, leak: leak/N > 0.25 };
 }
+/* Tolérance automatique (beta) : on balaie plusieurs tolérances et on garde
+   le milieu du premier palier où la surface se stabilise (le green est
+   alors « isolé » de son voisinage), en écartant les contours qui
+   débordent ou sont absurdement petits/grands. Le curseur reste libre :
+   toucher le curseur reprend la main, DÉTECT relancé repart en auto. */
+const DETECT_AUTO = !/[?&]detect=manual\b/.test(location.search);
+const AUTO_TOLS = [8,12,16,20,24,28,34,40,48,56,64];
+function autoTol(px, ll){
+  const A = AUTO_TOLS.map(t => {
+    const c = contour(px, grow(px, t), ll);
+    return c && !c.leak && c.area >= 80 && c.area <= 3000 ? c.area : 0;
+  });
+  const ok = A.map(a => a > 0);
+  /* paliers : suites de tolérances valides dont la surface varie de moins de 15 % d'un pas au suivant */
+  let best = null, runStart = -1;
+  for (let i=0;i<=A.length;i++){
+    const stable = i < A.length && ok[i] && (runStart < 0 || (ok[i-1] && Math.abs(A[i]-A[i-1])/A[i-1] <= .15));
+    if (stable){ if (runStart < 0) runStart = i; }
+    else {
+      if (runStart >= 0){
+        const len = i - runStart;
+        if (len >= 2 && !best) best = { a:runStart, len };
+      }
+      runStart = (i < A.length && ok[i]) ? i : -1;
+    }
+  }
+  if (best && best.len >= 2) return AUTO_TOLS[best.a + (best.len-1>>1)];
+  /* pas de palier net : la tolérance valide dont la surface bouge le moins vers la suivante */
+  let bi = -1, bg = 9;
+  for (let i=0;i<A.length;i++){
+    if (!ok[i]) continue;
+    const g = i+1 < A.length && ok[i+1] ? Math.abs(A[i+1]-A[i])/A[i] : 1;
+    if (g < bg){ bg = g; bi = i; }
+  }
+  return bi >= 0 ? AUTO_TOLS[bi] : null;
+}
 function runDetect(ll){
   if (map.getZoom() < 18.5){ msg(L_("Zoomez davantage : la détection demande le niveau 19.")); return; }
   /* Fenêtre de recherche resserrée sur la zone tapée : au-delà d'une
@@ -3265,7 +3301,12 @@ function runDetect(ll){
   const px = grab(ll, 32);
   if (!px){ msg(L_("Image satellite pas encore chargée à cet endroit. Attendez une seconde et retouchez.")); return; }
   if (px.tainted){ msg(L_("Ce fond interdit la lecture des pixels. Utilisez TRACER ou POINTER.")); return; }
-  S.detect = { px, ll }; applyDetect();
+  S.detect = { px, ll, auto:null };
+  if (DETECT_AUTO){
+    const t = autoTol(px, ll);
+    if (t != null){ $("tol").value = t; $("tolLab").textContent = t; S.detect.auto = t; }
+  }
+  applyDetect();
 }
 /* Un contour à 72 points (une par angle de rayon) est trop dense pour être
    corrigé au doigt un par un ; on le ramène à quelques poignées
@@ -3375,7 +3416,8 @@ function applyDetect(){
   S.editDirty = false;
   drawEditPoly();
   drawEditHandles();
-  editMsg(c.leak ? L_("Le contour déborde — baissez la tolérance ou glissez les points dorés vers l'intérieur.") : null);
+  editMsg(c.leak ? L_("Le contour déborde — baissez la tolérance ou glissez les points dorés vers l'intérieur.")
+    : (S.detect.auto != null && +$("tol").value === S.detect.auto ? L_("Tolérance auto : {t}.",{t:S.detect.auto}) : null));
 }
 
 /* ---------- pointer ---------- */
@@ -4296,7 +4338,7 @@ $("bKeep").addEventListener("click", async () => {
   } else { msg(L_("Rien à garder pour l'instant.")); return; }
   if (ok) closeBar();
 });
-$("tol").addEventListener("input", () => { $("tolLab").textContent = $("tol").value; applyDetect(); });
+$("tol").addEventListener("input", () => { $("tolLab").textContent = $("tol").value; if (S.detect) S.detect.auto = null; applyDetect(); });
 $("rad").addEventListener("input", applyPoint);
 $("compet").addEventListener("click", () => {
   const on = $("compet").classList.toggle("on");
