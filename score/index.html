@@ -2479,7 +2479,7 @@ function buildTable(el,interactive){
   head+='<th class="totcol">'+T('Vs par')+'</th></tr></thead>';
   let body='<tbody><tr class="parrow"><th class="hcol">'+T('Par')+'</th>';
   for(let h=0;h<S.holes;h++)body+='<td class="'+(interactive&&h===S.cur?'col-now':'')+'">'+S.pars[h]+'</td>';
-  body+='<td class="totcol"></td></tr>';
+  body+='<td class="totcol">'+parTot()+'</td></tr>';
   S.players.forEach((p,i)=>{
     body+='<tr class="prow'+(interactive&&i===S.active?' act':'')+'" data-p="'+i+'"><th class="hcol"><span class="pip-name"><i style="background:'+p.color+'"></i><span>'+esc(p.name)+'</span></span></th>';
     for(let h=0;h<S.holes;h++){
@@ -2521,7 +2521,7 @@ function renderRecap9(){
   if(emb){
     h+='<div class="rn rp">Par</div>';
     for(let i=from;i<to;i++)h+='<div class="rc rp'+(i===S.cur?' now':'')+'">'+S.pars[i]+'</div>';
-    h+='<div class="rt rp"><b></b></div>';
+    h+='<div class="rt rp"><b>'+parTot()+'</b></div>';
   }
   S.players.forEach((p,k)=>{
     h+='<div class="rn"><i style="--pc:'+COLORS[k%COLORS.length]+'"></i><span>'+esc(p.name||('J'+(k+1)))+'</span></div>';
@@ -2965,7 +2965,7 @@ function renderStats(wantLayout){
     head+='<th class="totcol">'+T('Vs par')+'</th></tr></thead>';
     let body='<tbody><tr class="parrow"><th class="hcol">'+T('Par')+'</th>';
     for(let h=0;h<H;h++)body+='<td>'+(ref[h]||4)+'</td>';
-    body+='<td class="totcol"></td></tr>';
+    body+='<td class="totcol">'+ref.reduce((a,b)=>a+b,0)+'</td></tr>';
     const avgDiff=rows.reduce((a,x)=>a+x.diff,0)/rows.length;
     body+='<tr class="parrow"><th class="hcol">'+T('Moyenne')+'</th>';
     for(let h=0;h<H;h++){
