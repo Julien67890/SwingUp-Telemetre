@@ -3983,9 +3983,17 @@ function renderBag(){
     box.appendChild(row);
   });
 }
-$("bBag").addEventListener("click", () => { renderBag(); $("bag").classList.add("on"); });
-$("bagClose").addEventListener("click", () => $("bag").classList.remove("on"));
-$("bagDone").addEventListener("click", () => $("bag").classList.remove("on"));
+/* Le bouton retour du téléphone ferme le sac (et ramène à l'accueil) au lieu de quitter l'app. */
+function openBagView(){ renderBag(); $("bag").classList.add("on"); try{ history.pushState({bag:1},""); }catch(e){} }
+function closeBagView(fromPop){
+  if (!$("bag").classList.contains("on")) return;
+  $("bag").classList.remove("on");
+  if (!fromPop && history.state && history.state.bag){ try{ history.back(); }catch(e){} }
+}
+window.addEventListener("popstate", () => { if ($("bag").classList.contains("on")) closeBagView(true); });
+$("bBag").addEventListener("click", openBagView);
+$("bagClose").addEventListener("click", () => closeBagView(false));
+$("bagDone").addEventListener("click", () => closeBagView(false));
 /* Unité : mémorisée sur l'appareil, appliquée partout sans recharger. */
 function majUnite(){
   document.querySelectorAll("#unitSeg button").forEach(b => b.classList.toggle("on", b.dataset.u === UNITE));
