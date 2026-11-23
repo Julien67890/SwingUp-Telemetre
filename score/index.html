@@ -2476,17 +2476,17 @@ function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;',
 function buildTable(el,interactive){
   let head='<thead><tr><th class="hcol">'+T('Trou')+'</th>';
   for(let h=0;h<S.holes;h++)head+='<th class="'+(interactive&&h===S.cur?'col-now':'')+'">'+(h+1)+'</th>';
-  head+='<th class="totcol">'+T('Tot')+'</th></tr></thead>';
+  head+='<th class="totcol">'+T('Vs par')+'</th></tr></thead>';
   let body='<tbody><tr class="parrow"><th class="hcol">'+T('Par')+'</th>';
   for(let h=0;h<S.holes;h++)body+='<td class="'+(interactive&&h===S.cur?'col-now':'')+'">'+S.pars[h]+'</td>';
-  body+='<td class="totcol">'+parTot()+'</td></tr>';
+  body+='<td class="totcol"></td></tr>';
   S.players.forEach((p,i)=>{
     body+='<tr class="prow'+(interactive&&i===S.active?' act':'')+'" data-p="'+i+'"><th class="hcol"><span class="pip-name"><i style="background:'+p.color+'"></i><span>'+esc(p.name)+'</span></span></th>';
     for(let h=0;h<S.holes;h++){
       const s=p.scores[h];
       body+='<td class="'+(interactive&&h===S.cur?'col-now':'')+'">'+markHTML(s,S.pars[h],s!==null)+'</td>';
     }
-    body+='<td class="totcol">'+played(p)+'</td></tr>';
+    body+='<td class="totcol">'+(p.scores.some(x=>x!==null)?dlab(vsPar(p)):'\u2014')+'</td></tr>';
   });
   body+='</tbody>';
   el.innerHTML=head+body;
@@ -2517,16 +2517,16 @@ function renderRecap9(){
   g.style.gridTemplateColumns=emb?(n>9?'84px repeat('+n+',42px) 58px':'minmax(64px,84px) repeat('+n+',minmax(32px,42px)) minmax(50px,58px)'):'minmax(0,3.4fr) repeat('+n+',minmax(0,1fr)) minmax(0,1.8fr)';
   let h='<div class="rh rn">'+esc(T('Trou'))+'</div>';
   for(let i=from;i<to;i++)h+='<div class="rh hn'+(i===S.cur?' now':'')+'" data-h="'+i+'">'+(i+1)+'</div>';
-  h+='<div class="rt"><b>'+esc(T('Total'))+'</b></div>';
+  h+='<div class="rt"><b>'+esc(T('Vs par'))+'</b></div>';
   if(emb){
     h+='<div class="rn rp">Par</div>';
     for(let i=from;i<to;i++)h+='<div class="rc rp'+(i===S.cur?' now':'')+'">'+S.pars[i]+'</div>';
-    h+='<div class="rt rp"><b>'+parTot()+'</b></div>';
+    h+='<div class="rt rp"><b></b></div>';
   }
   S.players.forEach((p,k)=>{
     h+='<div class="rn"><i style="--pc:'+COLORS[k%COLORS.length]+'"></i><span>'+esc(p.name||('J'+(k+1)))+'</span></div>';
     for(let i=from;i<to;i++){const v=p.scores[i];h+='<div class="rc'+(i===S.cur?' now':'')+'">'+(v===null?'':markHTML(v,S.pars[i],true))+'</div>';}
-    h+='<div class="rt"><b>'+(p.scores.some(x=>x!==null)?played(p):'—')+'</b></div>';
+    h+='<div class="rt"><b>'+(p.scores.some(x=>x!==null)?dlab(vsPar(p)):'—')+'</b></div>';
   });
   g.innerHTML=h;
   if(emb){if(window.__r9Cur!==S.cur||g.__n!==n){window.__r9Cur=S.cur;g.__n=n;const c=g.querySelector('.rh.hn.now');if(c)g.scrollLeft=Math.max(0,c.offsetLeft-g.clientWidth/2+21);}else g.scrollLeft=prevL;}
@@ -2625,7 +2625,7 @@ function renderStrip(){
     const inner='<b class="ho">'+(i+1)+'</b>'+(v===null?'':markHTML(v,S.pars[i],true));
     h+='<div class="rc'+(i===S.cur?' now':'')+'" data-h="'+i+'">'+inner+'</div>';
   }
-  h+='<div class="rt"><b>'+(p.scores.some(x=>x!==null)?played(p):'—')+'</b></div>';
+  h+='<div class="rt"><b>'+(p.scores.some(x=>x!==null)?dlab(vsPar(p)):'—')+'</b></div>';
   el.innerHTML=h;
   if(window.__pstripCur!==S.cur||el.__n!==n){window.__pstripCur=S.cur;el.__n=n;el.scrollLeft=Math.max(0,56+S.cur*38+19-el.clientWidth/2);}else el.scrollLeft=prevL;
   el.querySelectorAll('[data-h]').forEach(x=>x.onclick=()=>go(+x.dataset.h));
@@ -2962,11 +2962,11 @@ function renderStats(wantLayout){
     const ref=rows[0].L&&Array.isArray(rows[0].L.pars)&&rows[0].L.pars.length===H?rows[0].L.pars:rows[rows.length-1].r.pars;
     let head='<thead><tr><th class="hcol">'+T('Date')+'</th>';
     for(let h=0;h<H;h++)head+='<th>'+(h+1)+'</th>';
-    head+='<th class="totcol">'+T('Tot')+'</th></tr></thead>';
+    head+='<th class="totcol">'+T('Vs par')+'</th></tr></thead>';
     let body='<tbody><tr class="parrow"><th class="hcol">'+T('Par')+'</th>';
     for(let h=0;h<H;h++)body+='<td>'+(ref[h]||4)+'</td>';
-    body+='<td class="totcol">'+ref.reduce((a,b)=>a+b,0)+'</td></tr>';
-    const avgTot=rows.reduce((a,x)=>a+x.tot,0)/rows.length;
+    body+='<td class="totcol"></td></tr>';
+    const avgDiff=rows.reduce((a,x)=>a+x.diff,0)/rows.length;
     body+='<tr class="parrow"><th class="hcol">'+T('Moyenne')+'</th>';
     for(let h=0;h<H;h++){
       const vals=rows.map(x=>x.p.scores[h]).filter(s=>typeof s==='number');
@@ -2974,7 +2974,7 @@ function renderStats(wantLayout){
       const cls=a===null?'no':(a<(ref[h]||4)-.05?'dn':(a>(ref[h]||4)+.05?'up':''));
       body+='<td><span class="av '+cls+'">'+(a===null?'·':a.toFixed(1))+'</span></td>';
     }
-    body+='<td class="totcol">'+avgTot.toFixed(0)+'</td></tr>';
+    body+='<td class="totcol">'+dlab(Math.round(avgDiff))+'</td></tr>';
     rows.slice().reverse().forEach(x=>{
       body+='<tr class="prow"><th class="hcol">'+dmy(x.date)+'</th>';
       for(let h=0;h<H;h++){
@@ -2982,7 +2982,7 @@ function renderStats(wantLayout){
         const num=typeof s==='number';
         body+='<td>'+markHTML(s,x.r.pars[h]||ref[h]||4,num)+'</td>';
       }
-      body+='<td class="totcol">'+x.tot+'</td></tr>';
+      body+='<td class="totcol">'+dlab(x.diff)+'</td></tr>';
     });
     $('#stTable').innerHTML=head+body+'</tbody>';
 
