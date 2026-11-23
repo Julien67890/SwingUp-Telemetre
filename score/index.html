@@ -2543,7 +2543,7 @@ function dlab(d){return d===0?'0':d<0?'\u2212'+(-d):'+'+d;}
 function markHTML(s,par,num){
   if(!num||s===null||s===undefined)return '<span class="mk mk-e">\u00b7</span>';
   const d=s-par,k=kindOf(d);
-  return '<span class="mk mk-'+k+'"><span class="si">'+ICO[k]+'</span>'+(d<=-3?'<u>\u2212</u>':d>=4?'<u>+</u>':'')+'<em>'+s+'</em></span>';
+  return '<span class="mk mk-'+k+'"><span class="si">'+ICO[k]+'</span>'+'<em>'+dlab(d)+'</em></span>';
 }
 function drawIcon(ctx,k,cx,cy,maxW,maxH){
   const d=ICON_DATA[k],sc=Math.min(maxW/d.w,maxH/d.h);
@@ -2972,7 +2972,8 @@ function renderStats(wantLayout){
       const vals=rows.map(x=>x.p.scores[h]).filter(s=>typeof s==='number');
       const a=vals.length?vals.reduce((u,v)=>u+v,0)/vals.length:null;
       const cls=a===null?'no':(a<(ref[h]||4)-.05?'dn':(a>(ref[h]||4)+.05?'up':''));
-      body+='<td><span class="av '+cls+'">'+(a===null?'·':a.toFixed(1))+'</span></td>';
+      const ad=a===null?null:a-(ref[h]||4);
+      body+='<td><span class="av '+cls+'">'+(a===null?'·':(ad>.049?'+'+ad.toFixed(1):ad<-.049?'\u2212'+(-ad).toFixed(1):'0'))+'</span></td>';
     }
     body+='<td class="totcol">'+dlab(Math.round(avgDiff))+'</td></tr>';
     rows.slice().reverse().forEach(x=>{
