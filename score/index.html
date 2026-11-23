@@ -1938,6 +1938,7 @@ function T(fr,vars){
   if(vars)for(const k in vars)s=s.split('{'+k+'}').join(vars[k]);
   return s;
 }
+function cptParties(n){return T(n>1?'{n} parties':'{n} partie',{n:n});}
 
 /* Parcourt le document et traduit les textes déjà en place.
    On ignore les scripts, les styles et les zones que le JS remplit
@@ -2298,7 +2299,7 @@ $('#fGolf').onclick=()=>{
   });
   html+='</div>';
   if(db.courses.length>=MAXC)html+='<p class="warn">'+T('Limite de {n} golfs atteinte.',{n:MAXC})+'</p><div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Fermer')+'</button></div>';
-  else html+='<div class="sep">ou</div><input id="mName" type="text" maxlength="30" placeholder="Nom d\'un nouveau golf">'+
+  else html+='<div class="sep">ou</div><input id="mName" type="text" maxlength="30" placeholder="'+esc(T("Nom d'un nouveau golf"))+'">'+
     '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mCreate">'+T('Créer')+'</button></div>';
   openModal(html);
   $('#mCancel').onclick=closeModal;
@@ -2328,7 +2329,7 @@ function openLayoutPicker(){
     html+='<div class="list">'+list.map(l=>{
       const known=Array.isArray(l.pars)&&l.pars.length===l.holes;
       return '<button data-l="'+l.id+'"><span style="flex:1;min-width:0"><b>'+esc(l.name)+'</b><span>'+T('{n} trous',{n:l.holes})+' · '+
-        (known?'par '+l.pars.reduce((a,b)=>a+b,0):'pars non enregistrés')+'</span></span><span style="color:#b7b29c">›</span></button>';
+        (known?'par '+l.pars.reduce((a,b)=>a+b,0):T('pars non enregistrés'))+'</span></span><span style="color:#b7b29c">›</span></button>';
     }).join('')+'</div><div class="sep">ou</div>';
   }
   html+='<input id="mName" type="text" maxlength="24" placeholder="'+T('Nom du parcours (ex. Rouge)')+'">'+
@@ -2389,7 +2390,7 @@ function pickKnownPlayer(i){
     const dup=used.includes(p.key)&&used[i]!==p.key;
     html+='<button data-k="'+esc(p.key)+'" data-n="'+esc(p.name)+'"'+(dup?' disabled style="opacity:.4"':'')+'>'+
       '<span style="flex:1;min-width:0"><b>'+esc(p.name)+'</b><span>'+T('{n} parties',{n:p.n})+
-      (dup?' · déjà choisi':'')+'</span></span><span style="color:#b7b29c">›</span></button>';
+      (dup?T(' · déjà choisi'):'')+'</span></span><span style="color:#b7b29c">›</span></button>';
   });
   html+='</div><div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Fermer')+'</button></div>';
   openModal(html);
@@ -2759,7 +2760,7 @@ function startSave(){
 }
 function pickCourse(){
   const db=loadDB();
-  let html='<h3>'+T('Sur quel golf ?')+'</h3><p class="txt">Choisis un golf déjà enregistré, ou crée-le. Ta partie y sera ajoutée en '+S.holes+' trous.</p>';
+  let html='<h3>'+T('Sur quel golf ?')+'</h3><p class="txt">'+T('Choisis un golf déjà enregistré, ou crée-le. Ta partie y sera ajoutée en {n} trous.',{n:S.holes})+'</p>';
   if(db.courses.length)html+='<div class="list">'+db.courses.map(c=>{
     const fmts=[...new Set(c.rounds.map(r=>roundHoles(c,r)))].sort((a,b)=>a-b);
     return '<button data-c="'+c.id+'"><span style="flex:1;min-width:0"><b>'+esc(c.name)+'</b>'+
@@ -2813,7 +2814,7 @@ function storeRound(courseId,newName,list){
   });
   saveDB(db);
   S.savedTo=c.id;S.courseId=c.id;S.courseName=c.name;S.layoutId=L.id;S.layoutName=L.name;save();
-  openModal('<h3>'+T('Partie enregistrée')+'</h3><p class="txt">Ajoutée à <b>'+esc(c.name)+'</b> · '+esc(L.name)+', qui compte maintenant '+c.rounds.length+(c.rounds.length>1?' parties':' partie')+'.</p>'+
+  openModal('<h3>'+T('Partie enregistrée')+'</h3><p class="txt">'+T('Ajoutée à <b>{c}</b> · {l}, qui compte maintenant {r}.',{c:esc(c.name),l:esc(L.name),r:cptParties(c.rounds.length)})+'</p>'+
     '<div class="row"><button class="btn btn-ghost" id="mClose">'+T('Fermer')+'</button><button class="btn btn-primary" id="mStats">'+T('Voir les stats')+'</button></div>');
   $('#mClose').onclick=()=>{closeModal();refreshRecapButtons();};
   $('#mStats').onclick=()=>{closeModal();openStats(c.id,L.id);};
@@ -2850,7 +2851,7 @@ function openStats(courseId,layoutId){
   $('#stEmpty').classList.toggle('hidden',has);
   if(!has){$('#stSub').textContent=T('aucune partie enregistrée');return;}
   const cS=$('#stCourse');
-  cS.innerHTML='<option value="all">Choisir un golf</option>'+db.courses.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('');
+  cS.innerHTML='<option value="all">'+T('Choisir un golf')+'</option>'+db.courses.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('');
   cS.value=courseId&&db.courses.some(c=>c.id===courseId)?courseId:'all';
   cS.onchange=()=>{$('#stLayout').value='all';renderStats();};
   $('#stLayout').onchange=()=>renderStats();
@@ -2881,7 +2882,7 @@ function renderStats(wantLayout){
   const seen=[];
   base.forEach(x=>{if(x.L&&!seen.some(l=>l.id===x.L.id))seen.push(x.L);});
   const keep=typeof wantLayout==='string'?wantLayout:lS.value;
-  lS.innerHTML='<option value="all">Choisir un parcours</option>'+seen.map(l=>'<option value="'+l.id+'">'+esc(l.name)+' · '+l.holes+'t</option>').join('');
+  lS.innerHTML='<option value="all">'+T('Choisir un parcours')+'</option>'+seen.map(l=>'<option value="'+l.id+'">'+esc(l.name)+' · '+l.holes+T('t')+'</option>').join('');
   lS.value=seen.some(l=>l.id===keep)?keep:'all';
   lS.disabled=cid==='all';
   const lid=lS.value;
@@ -3016,10 +3017,10 @@ function renderAdvice(rows,ref,H){
   gaps.sort((a,b)=>b.d-a.d);
 
   const pill=t=>t===null?'':'<span class="trend '+(t<=-.15?'dn':(t>=.15?'up':'eq'))+'">'+
-    (t<=-.15?'▼ '+Math.abs(t).toFixed(1):(t>=.15?'▲ +'+t.toFixed(1):'stable'))+'</span>';
+    (t<=-.15?'▼ '+Math.abs(t).toFixed(1):(t>=.15?'▲ +'+t.toFixed(1):T('stable')))+'</span>';
   const gainLine=fixed.length?'<div class="gain">'+T('Réglé récemment')+' : '+
     fixed.sort((a,b)=>a.trend-b.trend).map(g=>'<b>'+T('trou {n}',{n:g.h})+'</b> ('+T('{a} de moyenne, {b} sur tes dernières sorties',{a:g.avg.toFixed(1),b:g.rec.toFixed(1)})+')').join(', ')+
-    '. Continue comme ça.</div>':'';
+    '. '+T('Continue comme ça.')+'</div>':'';
 
   if(!gaps.length){
     adv.innerHTML='<div class="advice"><div class="ok"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
@@ -3114,9 +3115,9 @@ function askMergeCourses(fromId,toId,name){
   if(!A||!B){closeModal();return;}
   const nA=A.rounds.length,nB=B.rounds.length;
   openModal('<h3>'+T('Ce golf existe déjà')+'</h3>'+
-    '<p class="txt">Un golf <b>'+esc(B.name)+'</b> est déjà enregistré ('+nB+(nB>1?' parties':' partie')+').</p>'+
-    '<p class="txt">Tu peux regrouper les deux : les '+nA+(nA>1?' parties':' partie')+' de « '+esc(A.name)+' » seront déplacées dedans. '+
-    'Les parcours qui portent le même nom, le même nombre de trous et les mêmes pars sont réunis ; les autres sont conservés à part, tu pourras les fusionner ensuite.</p>'+
+    '<p class="txt">'+T('Un golf <b>{b}</b> est déjà enregistré ({c}).',{b:esc(B.name),c:cptParties(nB)})+'</p>'+
+    '<p class="txt">'+T('Tu peux regrouper les deux : les {c} de « {a} » seront déplacées dedans.',{c:cptParties(nA),a:esc(A.name)})+' '+
+    T('Les parcours qui portent le même nom, le même nombre de trous et les mêmes pars sont réunis ; les autres sont conservés à part, tu pourras les fusionner ensuite.')+'</p>'+
     '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Choisir un autre nom')+'</button><button class="btn btn-primary" id="mOk">'+T('Regrouper')+'</button></div>');
   $('#mCancel').onclick=()=>askRenameCourse(fromId,name);
   $('#mOk').onclick=()=>mergeCourses(fromId,toId);
@@ -3152,8 +3153,8 @@ function mergeCourses(fromId,toId){
 $('#btnDelCourse2').onclick=()=>{
   const cid=$('#stCourse').value;if(cid==='all')return;
   const c=loadDB().courses.find(x=>x.id===cid);if(!c)return;
-  openModal('<h3>Supprimer '+esc(c.name)+' ?</h3>'+
-    '<p class="warn">Ce golf, ses '+(c.layouts||[]).length+' parcours et ses '+c.rounds.length+(c.rounds.length>1?' parties':' partie')+' seront effacés. Action définitive.</p>'+
+  openModal('<h3>'+T('Supprimer {n} ?',{n:esc(c.name)})+'</h3>'+
+    '<p class="warn">'+T('Ce golf, ses {l} parcours et ses {r} seront effacés. Action définitive.',{l:(c.layouts||[]).length,r:cptParties(c.rounds.length)})+'</p>'+
     '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mOk">'+T('Supprimer')+'</button></div>');
   $('#mCancel').onclick=closeModal;
   $('#mOk').onclick=()=>{
@@ -3195,8 +3196,8 @@ function askMergeLayouts(cid,fromId,toId,name){
 
   if(A.holes!==B.holes){
     openModal('<h3>'+T('Ce nom est déjà pris')+'</h3>'+
-      '<p class="txt">« '+esc(B.name)+' » existe déjà sur '+esc(c.name)+', mais en <b>'+B.holes+' trous</b> alors que celui-ci en compte <b>'+A.holes+'</b>.</p>'+
-      '<p class="warn">Impossible de les regrouper : choisis un autre nom pour les distinguer.</p>'+
+      '<p class="txt">'+T('« {b} » existe déjà sur {c}, mais en <b>{h} trous</b> alors que celui-ci en compte <b>{g}</b>.',{b:esc(B.name),c:esc(c.name),h:B.holes,g:A.holes})+'</p>'+
+      '<p class="warn">'+T('Impossible de les regrouper : choisis un autre nom pour les distinguer.')+'</p>'+
       '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mOk">'+T('Choisir un autre nom')+'</button></div>');
     $('#mCancel').onclick=closeModal;
     $('#mOk').onclick=()=>askRenameLayout(cid,fromId,name);
@@ -3204,12 +3205,12 @@ function askMergeLayouts(cid,fromId,toId,name){
   }
 
   const pA=layoutPars(c,A),pB=layoutPars(c,B);
-  const compte=n=>n+(n>1?' parties':' partie');
+  const compte=n=>cptParties(n);
 
   if(sameArr(pA,pB)){
     openModal('<h3>'+T('Ce parcours existe déjà')+'</h3>'+
-      '<p class="txt">« '+esc(B.name)+' » est déjà enregistré sur '+esc(c.name)+' en '+B.holes+' trous, <b>avec exactement les mêmes pars</b>.</p>'+
-      '<p class="txt">Les '+compte(nA)+' de ce parcours seront ajoutées aux '+compte(nB)+' de « '+esc(B.name)+' ».</p>'+
+      '<p class="txt">'+T('« {b} » est déjà enregistré sur {c} en {h} trous, <b>avec exactement les mêmes pars</b>.',{b:esc(B.name),c:esc(c.name),h:B.holes})+'</p>'+
+      '<p class="txt">'+T('Les {a} de ce parcours seront ajoutées aux {b} de « {n} ».',{a:compte(nA),b:compte(nB),n:esc(B.name)})+'</p>'+
       '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Choisir un autre nom')+'</button><button class="btn btn-primary" id="mOk">'+T('Regrouper')+'</button></div>');
     $('#mCancel').onclick=()=>askRenameLayout(cid,fromId,name);
     $('#mOk').onclick=()=>mergeLayouts(cid,fromId,toId,null);
@@ -3218,7 +3219,7 @@ function askMergeLayouts(cid,fromId,toId,name){
 
   const nDiff=pA.reduce((a,v,i)=>a+(v===pB[i]?0:1),0);
   openModal('<h3>'+T('Pars différents')+'</h3>'+
-    '<p class="txt">« '+esc(B.name)+' » existe déjà sur '+esc(c.name)+' ('+compte(nB)+'), mais <b>'+nDiff+(nDiff>1?' trous ont':' trou a')+' un par différent</b>.</p>'+
+    '<p class="txt">'+T(nDiff>1?'« {b} » existe déjà sur {c} ({p}), mais <b>{d} trous ont un par différent</b>.':'« {b} » existe déjà sur {c} ({p}), mais <b>{d} trou a un par différent</b>.',{b:esc(B.name),c:esc(c.name),p:compte(nB),d:nDiff})+'</p>'+
     '<p class="txt">'+T('Vérifie les pars ci-dessous : ce sont ceux qui seront conservés pour le parcours regroupé. Les cases en rouge sont celles où les deux versions divergent.')+'</p>'+
     parsGridHTML(pA,pB)+
     '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Choisir un autre nom')+'</button><button class="btn btn-primary" id="mOk">'+T('Regrouper avec ces pars')+'</button></div>');
@@ -3250,7 +3251,7 @@ function openEditRound(courseId,rid){
 
   openModal('<h3>'+T('Modifier la partie')+'</h3>'+
     '<p class="txt">'+esc(c.name)+(L?' · '+esc(L.name):'')+' · '+H+' trous.</p>'+
-    '<p class="note" style="font-size:.72rem;color:#8b8770;margin-top:8px;line-height:1.4">Pour chaque trou : le par à gauche, ton score à droite. Laisse le score vide si le trou n\'a pas été joué.</p>'+
+    '<p class="note" style="font-size:.72rem;color:#8b8770;margin-top:8px;line-height:1.4">'+T("Pour chaque trou : le par à gauche, ton score à droite. Laisse le score vide si le trou n'a pas été joué.")+'</p>'+
     '<input id="eDate" type="date" value="'+isoDay(r.date)+'">'+
     '<div class="holegrid">'+pars.map((pv,i)=>
       '<div class="hcell"><div class="t">'+T('Trou {n}',{n:i+1})+'</div><div class="fields">'+
@@ -3300,8 +3301,8 @@ $('#btnDelLayout').onclick=()=>{
   const cid=$('#stCourse').value,lid=$('#stLayout').value;if(cid==='all'||lid==='all')return;
   const c=loadDB().courses.find(x=>x.id===cid);const L=c&&(c.layouts||[]).find(l=>l.id===lid);if(!L)return;
   const nb=c.rounds.filter(r=>r.layoutId===lid).length;
-  openModal('<h3>Supprimer '+esc(L.name)+' ?</h3>'+
-    '<p class="warn">Ce parcours'+(nb?' et ses '+nb+(nb>1?' parties':' partie'):'')+' seront effacés. Action définitive.</p>'+
+  openModal('<h3>'+T('Supprimer {n} ?',{n:esc(L.name)})+'</h3>'+
+    '<p class="warn">'+(nb?T('Ce parcours et ses {r} seront effacés. Action définitive.',{r:cptParties(nb)}):T('Ce parcours sera effacé. Action définitive.'))+'</p>'+
     '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mOk">'+T('Supprimer')+'</button></div>');
   $('#mCancel').onclick=closeModal;
   $('#mOk').onclick=()=>{
@@ -4279,6 +4280,6 @@ function consentBanner(){
   try{ parent.postMessage({ source:'swingup-pro', action:'request-state' }, location.origin); }catch(e){}
 })();
 </script>
-<script>try{Object.assign(LANGS.en,{'Égalité à {t} coups.':'Tie at {t} strokes.',"{n} l'emporte avec {t} coups.":'{n} wins with {t} strokes.','Total : {t} coups en {d}.':'Total: {t} strokes, {d}.','Albatros':'Albatross','Triple':'Triple bogey','Ma carte de score golf, faite avec SwingUp :':'My golf scorecard, made with SwingUp:'});Object.assign(LANGS.es,{'Égalité à {t} coups.':'Empate a {t} golpes.',"{n} l'emporte avec {t} coups.":'{n} gana con {t} golpes.','Total : {t} coups en {d}.':'Total: {t} golpes, {d}.','Triple':'Triple bogey','Ma carte de score golf, faite avec SwingUp :':'Mi tarjeta de golf, hecha con SwingUp:'});Object.assign(LANGS.de,{'Égalité à {t} coups.':'Gleichstand bei {t} Schlägen.',"{n} l'emporte avec {t} coups.":'{n} gewinnt mit {t} Schlägen.','Total : {t} coups en {d}.':'Gesamt: {t} Schläge, {d}.','Triple':'Triple-Bogey','Ma carte de score golf, faite avec SwingUp :':'Meine Golf-Scorekarte, erstellt mit SwingUp:'});}catch(e){}</script>
+<script>try{Object.assign(LANGS.en,{'Égalité à {t} coups.':'Tie at {t} strokes.',"{n} l'emporte avec {t} coups.":'{n} wins with {t} strokes.','Total : {t} coups en {d}.':'Total: {t} strokes, {d}.','Albatros':'Albatross','Triple':'Triple bogey','Ma carte de score golf, faite avec SwingUp :':'My golf scorecard, made with SwingUp:'});Object.assign(LANGS.es,{'Égalité à {t} coups.':'Empate a {t} golpes.',"{n} l'emporte avec {t} coups.":'{n} gana con {t} golpes.','Total : {t} coups en {d}.':'Total: {t} golpes, {d}.','Triple':'Triple bogey','Ma carte de score golf, faite avec SwingUp :':'Mi tarjeta de golf, hecha con SwingUp:'});Object.assign(LANGS.de,{'Égalité à {t} coups.':'Gleichstand bei {t} Schlägen.',"{n} l'emporte avec {t} coups.":'{n} gewinnt mit {t} Schlägen.','Total : {t} coups en {d}.':'Gesamt: {t} Schläge, {d}.','Triple':'Triple-Bogey','Ma carte de score golf, faite avec SwingUp :':'Meine Golf-Scorekarte, erstellt mit SwingUp:'});Object.assign(LANGS.en,{"Choisir un golf":"Pick a course","Choisir un parcours":"Pick a layout","t":"h","Nom d'un nouveau golf":"New course name","pars non enregistrés":"pars not saved"," · déjà choisi":" · already picked","Choisis un golf déjà enregistré, ou crée-le. Ta partie y sera ajoutée en {n} trous.":"Pick a saved course, or create it. Your round will be added as {n} holes."});Object.assign(LANGS.es,{"Choisir un golf":"Elegir un campo","Choisir un parcours":"Elegir un recorrido","t":"h","Nom d'un nouveau golf":"Nombre del nuevo campo","pars non enregistrés":"pares sin guardar"," · déjà choisi":" · ya elegido","Choisis un golf déjà enregistré, ou crée-le. Ta partie y sera ajoutée en {n} trous.":"Elige un campo ya guardado, o créalo. Tu partida se añadirá con {n} hoyos."});Object.assign(LANGS.de,{"Choisir un golf":"Golfplatz wählen","Choisir un parcours":"Platz wählen","t":"L","Nom d'un nouveau golf":"Name des neuen Golfplatzes","pars non enregistrés":"Par nicht gespeichert"," · déjà choisi":" · bereits gewählt","Choisis un golf déjà enregistré, ou crée-le. Ta partie y sera ajoutée en {n} trous.":"Wähle einen gespeicherten Golfplatz oder lege ihn an. Deine Runde wird mit {n} Löchern hinzugefügt."});Object.assign(LANGS.en,{"{n} partie":"{n} round","{n} parties":"{n} rounds","Un golf <b>{b}</b> est déjà enregistré ({c}).":"A course named <b>{b}</b> is already saved ({c}).","Tu peux regrouper les deux : les {c} de « {a} » seront déplacées dedans.":"You can merge the two: the {c} from “{a}” will be moved into it.","Les parcours qui portent le même nom, le même nombre de trous et les mêmes pars sont réunis ; les autres sont conservés à part, tu pourras les fusionner ensuite.":"Layouts with the same name, number of holes and pars are combined; the others are kept separate, and you can merge them afterwards.","Supprimer {n} ?":"Delete {n}?","Ce golf, ses {l} parcours et ses {r} seront effacés. Action définitive.":"This course, its {l} layout(s) and its {r} will be deleted. This cannot be undone.","« {b} » existe déjà sur {c}, mais en <b>{h} trous</b> alors que celui-ci en compte <b>{g}</b>.":"“{b}” already exists on {c}, but with <b>{h} holes</b> while this one has <b>{g}</b>.","Impossible de les regrouper : choisis un autre nom pour les distinguer.":"They can’t be merged: pick another name to tell them apart.","« {b} » est déjà enregistré sur {c} en {h} trous, <b>avec exactement les mêmes pars</b>.":"“{b}” is already saved on {c} with {h} holes, <b>with exactly the same pars</b>.","Les {a} de ce parcours seront ajoutées aux {b} de « {n} ».":"The {a} from this layout will be added to the {b} of “{n}”.","« {b} » existe déjà sur {c} ({p}), mais <b>{d} trous ont un par différent</b>.":"“{b}” already exists on {c} ({p}), but <b>{d} holes have a different par</b>.","« {b} » existe déjà sur {c} ({p}), mais <b>{d} trou a un par différent</b>.":"“{b}” already exists on {c} ({p}), but <b>{d} hole has a different par</b>.","Pour chaque trou : le par à gauche, ton score à droite. Laisse le score vide si le trou n'a pas été joué.":"For each hole: par on the left, your score on the right. Leave the score empty if the hole wasn't played.","Ce parcours et ses {r} seront effacés. Action définitive.":"This layout and its {r} will be deleted. This cannot be undone.","Ce parcours sera effacé. Action définitive.":"This layout will be deleted. This cannot be undone.","Ajoutée à <b>{c}</b> · {l}, qui compte maintenant {r}.":"Added to <b>{c}</b> · {l}, which now has {r}.","Continue comme ça.":"Keep it up.","stable":"steady"});Object.assign(LANGS.es,{"{n} partie":"{n} partida","{n} parties":"{n} partidas","Un golf <b>{b}</b> est déjà enregistré ({c}).":"Ya hay un campo <b>{b}</b> guardado ({c}).","Tu peux regrouper les deux : les {c} de « {a} » seront déplacées dedans.":"Puedes unir los dos: las {c} de «{a}» se moverán a él.","Les parcours qui portent le même nom, le même nombre de trous et les mêmes pars sont réunis ; les autres sont conservés à part, tu pourras les fusionner ensuite.":"Los recorridos con el mismo nombre, el mismo número de hoyos y los mismos pares se unen; los demás se conservan aparte y podrás fusionarlos después.","Supprimer {n} ?":"¿Eliminar {n}?","Ce golf, ses {l} parcours et ses {r} seront effacés. Action définitive.":"Este campo, sus {l} recorrido(s) y sus {r} se eliminarán. Acción definitiva.","« {b} » existe déjà sur {c}, mais en <b>{h} trous</b> alors que celui-ci en compte <b>{g}</b>.":"«{b}» ya existe en {c}, pero con <b>{h} hoyos</b> mientras que este tiene <b>{g}</b>.","Impossible de les regrouper : choisis un autre nom pour les distinguer.":"No se pueden unir: elige otro nombre para distinguirlos.","« {b} » est déjà enregistré sur {c} en {h} trous, <b>avec exactement les mêmes pars</b>.":"«{b}» ya está guardado en {c} con {h} hoyos, <b>con exactamente los mismos pares</b>.","Les {a} de ce parcours seront ajoutées aux {b} de « {n} ».":"Las {a} de este recorrido se añadirán a las {b} de «{n}».","« {b} » existe déjà sur {c} ({p}), mais <b>{d} trous ont un par différent</b>.":"«{b}» ya existe en {c} ({p}), pero <b>{d} hoyos tienen un par distinto</b>.","« {b} » existe déjà sur {c} ({p}), mais <b>{d} trou a un par différent</b>.":"«{b}» ya existe en {c} ({p}), pero <b>{d} hoyo tiene un par distinto</b>.","Pour chaque trou : le par à gauche, ton score à droite. Laisse le score vide si le trou n'a pas été joué.":"Para cada hoyo: el par a la izquierda, tu resultado a la derecha. Deja el resultado vacío si no se jugó el hoyo.","Ce parcours et ses {r} seront effacés. Action définitive.":"Este recorrido y sus {r} se eliminarán. Acción definitiva.","Ce parcours sera effacé. Action définitive.":"Este recorrido se eliminará. Acción definitiva.","Ajoutée à <b>{c}</b> · {l}, qui compte maintenant {r}.":"Añadida a <b>{c}</b> · {l}, que ahora tiene {r}.","Continue comme ça.":"Sigue así.","stable":"estable"});Object.assign(LANGS.de,{"{n} partie":"{n} Runde","{n} parties":"{n} Runden","Un golf <b>{b}</b> est déjà enregistré ({c}).":"Ein Golfplatz <b>{b}</b> ist bereits gespeichert ({c}).","Tu peux regrouper les deux : les {c} de « {a} » seront déplacées dedans.":"Du kannst beide zusammenführen: die {c} von „{a}“ werden dorthin verschoben.","Les parcours qui portent le même nom, le même nombre de trous et les mêmes pars sont réunis ; les autres sont conservés à part, tu pourras les fusionner ensuite.":"Plätze mit gleichem Namen, gleicher Lochzahl und gleichem Par werden zusammengelegt; die anderen bleiben getrennt, du kannst sie danach zusammenführen.","Supprimer {n} ?":"{n} löschen?","Ce golf, ses {l} parcours et ses {r} seront effacés. Action définitive.":"Dieser Golfplatz, seine {l} Platz/Plätze und seine {r} werden gelöscht. Das kann nicht rückgängig gemacht werden.","« {b} » existe déjà sur {c}, mais en <b>{h} trous</b> alors que celui-ci en compte <b>{g}</b>.":"„{b}“ gibt es bereits bei {c}, aber mit <b>{h} Löchern</b>, während dieser <b>{g}</b> hat.","Impossible de les regrouper : choisis un autre nom pour les distinguer.":"Sie können nicht zusammengeführt werden: Wähle einen anderen Namen, um sie zu unterscheiden.","« {b} » est déjà enregistré sur {c} en {h} trous, <b>avec exactement les mêmes pars</b>.":"„{b}“ ist bei {c} bereits mit {h} Löchern gespeichert, <b>mit genau denselben Par-Werten</b>.","Les {a} de ce parcours seront ajoutées aux {b} de « {n} ».":"Die {a} dieses Platzes werden zu den {b} von „{n}“ hinzugefügt.","« {b} » existe déjà sur {c} ({p}), mais <b>{d} trous ont un par différent</b>.":"„{b}“ gibt es bereits bei {c} ({p}), aber <b>{d} Löcher haben ein anderes Par</b>.","« {b} » existe déjà sur {c} ({p}), mais <b>{d} trou a un par différent</b>.":"„{b}“ gibt es bereits bei {c} ({p}), aber <b>{d} Loch hat ein anderes Par</b>.","Pour chaque trou : le par à gauche, ton score à droite. Laisse le score vide si le trou n'a pas été joué.":"Für jedes Loch: Par links, dein Ergebnis rechts. Lass das Ergebnis leer, wenn das Loch nicht gespielt wurde.","Ce parcours et ses {r} seront effacés. Action définitive.":"Dieser Platz und seine {r} werden gelöscht. Das kann nicht rückgängig gemacht werden.","Ce parcours sera effacé. Action définitive.":"Dieser Platz wird gelöscht. Das kann nicht rückgängig gemacht werden.","Ajoutée à <b>{c}</b> · {l}, qui compte maintenant {r}.":"Hinzugefügt zu <b>{c}</b> · {l}, mit jetzt {r}.","Continue comme ça.":"Weiter so.","stable":"stabil"});}catch(e){}</script>
 </body>
 </html>
