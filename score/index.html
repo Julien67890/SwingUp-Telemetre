@@ -2641,7 +2641,7 @@ function renderDots(){
     b.style.setProperty('--pt',PASTELS[i%PASTELS.length]);
     b.setAttribute('aria-current',i===S.active?'true':'false');
     b.innerHTML='<i style="--pc:'+COLORS[i%COLORS.length]+'"></i>'+
-      '<div class="pt"><span>'+esc(p.name||('J'+(i+1)))+'</span><small>'+(any?played(p)+' ('+fmt(vsPar(p))+')':'—')+'</small></div>';
+      '<div class="pt"><span>'+esc(p.name||('J'+(i+1)))+'</span><small>'+(any?dlab(vsPar(p)):'—')+'</small></div>';
     b.onclick=()=>{if(i!==S.active)setActive(i);else if(!(i===0&&document.documentElement.classList.contains('su-embedded')))rename(i,b.querySelector('.pt span'));};
     d.appendChild(b);
   });
@@ -3445,7 +3445,7 @@ async function recapBlob(){
   ctx.fillText('TROU',x0+16,cy);
   ctx.textAlign='center';ctx.font='700 16px '+O;
   for(let h=0;h<NH;h++)ctx.fillText(String(h+1),colX(h)+cellW/2,cy);
-  ctx.font='700 13px '+O;ctx.fillText('TOT',totX+TOTW/2,cy);
+  ctx.font='700 13px '+O;ctx.fillText('VS PAR',totX+TOTW/2,cy);
 
   cy=y0+rowH+rowH/2;
   ctx.textAlign='left';ctx.font='700 13px '+O;ctx.fillStyle='#2d6a4f';
@@ -3465,19 +3465,14 @@ async function recapBlob(){
       const diff=s-S.pars[h];
       const kk=kindOf(diff);
       drawIcon(ctx,kk,colX(h)+cellW/2,my-3,cellW-16,26);
-      if(diff<=-3||diff>=4){ctx.font='800 19px '+F;ctx.fillStyle=KIND_COL[kk];ctx.textAlign='left';ctx.fillText(diff<0?'\u2212':'+',colX(h)+5,my-15);}
       ctx.font='800 15px '+F;ctx.fillStyle='#13361f';ctx.textAlign='right';
-      ctx.fillText(String(s),colX(h)+cellW-5,my+16);ctx.textAlign='center';
+      ctx.fillText(dlab(diff),colX(h)+cellW-5,my+16);ctx.textAlign='center';
     }
-    const tot=played(p), vp=vsPar(p);
+    const vp=vsPar(p);
     const any=p.scores.some(x=>x!==null);
-    ctx.font='700 21px '+O;ctx.fillStyle='#13361f';
-    ctx.fillText(String(tot),totX+TOTW/2-(any?16:0),my);
-    if(any){
-      ctx.font='700 14px '+O;
-      ctx.fillStyle=vp<0?'#2d6a4f':(vp>0?'#d62828':'#8b8770');
-      ctx.fillText(vp===0?'PAR':(vp>0?'+'+vp:String(vp)),totX+TOTW/2+22,my+1);
-    }
+    ctx.font='700 21px '+O;
+    ctx.fillStyle=!any?'#8b8770':(vp<0?'#2d6a4f':(vp>0?'#d62828':'#13361f'));
+    ctx.fillText(any?dlab(vp):'\u2014',totX+TOTW/2,my);
   });
 
   /* Légende : la même que dans l'app, pour que la notation se lise
