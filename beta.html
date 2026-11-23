@@ -4568,7 +4568,8 @@ window.rafraichirCarte = () => { if (map) { drawGreens(); refresh(); } };
       var d=s-m.pars[i];
       h+='<div class="c'+now+'"><b>'+(i+1)+'</b>'+icoSvg(kindOf(d))+(d<=-3?'<u style="color:'+KC.alb+'">\u2212</u>':d>=4?'<u style="color:'+KC.tri+'">+</u>':'')+'</div>';
     }
-    h+='<div class="tot">'+(m.total||'\u2014')+'</div>';
+    var vp=m.vsPar;
+    h+='<div class="tot">'+(!m.total?'\u2014':typeof vp==='number'?(vp===0?'0':vp<0?'\u2212'+(-vp):'+'+vp):m.total)+'</div>';
     el.innerHTML=h; peekEl.classList.add('live');
     if(stripCur!==m.cur||stripN!==m.holes){
       stripCur=m.cur; stripN=m.holes;
