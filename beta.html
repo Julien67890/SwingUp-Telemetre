@@ -328,6 +328,9 @@ body.tuto-on #consent,body.tuto-on #freeBar{display:none!important}
 .mlab{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--green-glow)}
 #line1{display:flex;align-items:center;gap:7px;margin-top:3px}
 #clubName{flex:1;min-width:0;font-family:var(--serif);font-weight:900;font-size:1.25rem;color:var(--cream);line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mrow{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:15px}
+#clubPct{flex:0 0 auto;font-family:'Outfit',sans-serif;font-weight:800;font-size:.68rem;color:#3a2c00;background:var(--gold);border-radius:20px;padding:1px 8px;line-height:1.3;white-space:nowrap}
+#clubPct:empty{display:none}
 #seg{display:flex;background:rgba(246,243,233,.1);border-radius:6px;padding:2px;flex:0 0 auto}
 #seg button{border:none;background:none;color:rgba(246,243,233,.6);cursor:pointer;font-family:'Outfit',sans-serif;
   font-weight:700;font-size:.6rem;letter-spacing:.06em;padding:8px 7px;border-radius:6px}
@@ -483,7 +486,7 @@ body.tuto-on #scPeek{display:none}
   <div class="bootin">
     <div class="bootmark"><img src="icons/icon-192.png" alt="SwingUp Golf Rangefinder" width="112" height="112"></div>
     <h1 class="bootword">Swing<em>Up</em></h1>
-    <p class="boottag">Télémètre</p>
+    <p class="boottag" data-t>Télémètre</p>
     <div class="bootbar"><i></i></div>
   </div>
 </div>
@@ -619,7 +622,7 @@ body.tuto-on #scPeek{display:none}
     <div id="clubRow">
       <div id="clubIcon" aria-hidden="true"></div>
       <div id="clubMain">
-        <span class="mlab" data-t>Club conseillé</span>
+        <div id="mrow"><span class="mlab" data-t>Club conseillé</span><span id="clubPct" title="Puissance nécessaire"></span></div>
         <div id="line1">
           <span id="clubName">—</span>
           <div id="seg" role="group">
@@ -1295,6 +1298,106 @@ de:{
 
 };
 
+/* ---------- compléments et corrections de traduction (23/11/2026) ---------- */
+Object.assign(LANGS.en,{
+ "<b>Touchez un green</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher. Green absent ? Touchez <b>+ GREEN</b> puis <b>DÉTECT</b> (touchez le centre du green), <b>TRACER</b> (posez les points du contour) ou <b>POINTER</b> (le centre puis le rayon), et <b>Garder</b>. Appui long sur un green pour le renommer, le retracer ou le supprimer.":"<b>Tap a green</b> to select it, tap an empty spot to release it. Green missing? Tap <b>+ GREEN</b>, then <b>DETECT</b> (tap the center of the green), <b>DRAW</b> (place the outline points) or <b>POINT</b> (the center, then the radius), and <b>Keep</b>. Long-press a green to rename, redraw or delete it.",
+ "Le club est choisi selon vos distances, <b>dénivelé compris</b>. Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"The club is picked from your distances, <b>elevation included</b>. Aim at the front, center or back with <b>FRT · CTR · BCK</b>. <b>COMP.</b> removes elevation, which is not allowed in competition.",
+ "Touchez <b>SAC</b> pour indiquer la distance que vous atteignez <b>régulièrement</b> avec chaque club, pas votre meilleur coup. Décochez les clubs que vous n'avez pas. Les préréglages <b>homme, femme, senior</b> donnent un point de départ.":"Tap <b>BAG</b> to enter the distance you <b>regularly</b> reach with each club, not your best shot. Uncheck the clubs you don't carry. The <b>men, women, senior</b> presets give you a starting point.",
+ "Visez l'avant, le centre ou l'arrière avec <b>AV · CEN · ARR</b>. Réglez vos distances dans <b>SAC</b> pour un conseil juste. <b>COMPÉT.</b> retire le dénivelé, interdit en compétition.":"Aim at the front, center or back with <b>FRT · CTR · BCK</b>. Set your distances in <b>BAG</b> for accurate advice. <b>COMP.</b> removes elevation, which is not allowed in competition.",
+ "Green absent ou mal tracé ? <b>DÉTECT</b> le repère par sa couleur, <b>TRACER</b> le dessine point par point, <b>POINTER</b> le pose en cercle. <b>Appui long</b> sur un green pour le renommer, le retracer ou le supprimer.":"Green missing or badly drawn? <b>DETECT</b> finds it by color, <b>DRAW</b> outlines it point by point, <b>POINT</b> drops it as a circle. <b>Long-press</b> a green to rename, redraw or delete it.",
+ "<b>NORD</b> change le sens de la carte : nord en haut, rotation libre à deux doigts, ou boussole. <b>MOI</b> recentre la carte sur vous.":"<b>NORTH</b> changes the map orientation: north up, free two-finger rotation, or compass. <b>ME</b> centers the map on you.",
+ "{m} zones maximum":"Max {m} zones",
+ "Adresse e-mail invalide.":"Invalid email address.",
+ "Aucun compte avec cette adresse.":"No account with this address.",
+ "Mot de passe incorrect.":"Wrong password.",
+ "Adresse ou mot de passe incorrect.":"Wrong email or password.",
+ "Cette adresse est déjà utilisée.":"This address is already in use.",
+ "Mot de passe trop court : 6 caractères minimum.":"Password too short: 6 characters minimum.",
+ "Réseau indisponible.":"Network unavailable.",
+ "Connexion annulée.":"Sign-in cancelled.",
+ "Fenêtre bloquée par le navigateur.":"Window blocked by the browser.",
+ "Ce domaine n'est pas autorisé dans Firebase Authentication.":"This domain is not authorized in Firebase Authentication.",
+ "Un compte existe déjà avec cette adresse, connecte-toi par e-mail.":"An account already exists with this address, sign in with your email.",
+ "Connexion impossible pour le moment.":"Unable to sign in right now.",
+ "Plein écran":"Full screen",
+ "Zone intermédiaire":"Layup zone",
+ "Recharger les greens":"Reload greens",
+ "Mode compétition":"Competition mode",
+ "Me recentrer":"Recenter on me",
+ "{p} % de puissance":"{p}% power"
+});
+Object.assign(LANGS.es,{
+ "1500 tuiles gratuites par mois hors France, à volonté avec Premium.":"1500 teselas gratuitas al mes fuera de Francia, ilimitadas con Premium.",
+ "Adresse e-mail invalide.":"Correo electrónico no válido.",
+ "Aucun compte avec cette adresse.":"No hay ninguna cuenta con este correo.",
+ "Mot de passe incorrect.":"Contraseña incorrecta.",
+ "Adresse ou mot de passe incorrect.":"Correo o contraseña incorrectos.",
+ "Cette adresse est déjà utilisée.":"Este correo ya está en uso.",
+ "Mot de passe trop court : 6 caractères minimum.":"Contraseña demasiado corta: mínimo 6 caracteres.",
+ "Réseau indisponible.":"Red no disponible.",
+ "Connexion annulée.":"Inicio de sesión cancelado.",
+ "Fenêtre bloquée par le navigateur.":"Ventana bloqueada por el navegador.",
+ "Ce domaine n'est pas autorisé dans Firebase Authentication.":"Este dominio no está autorizado en Firebase Authentication.",
+ "Un compte existe déjà avec cette adresse, connecte-toi par e-mail.":"Ya existe una cuenta con este correo, inicia sesión con tu correo electrónico.",
+ "Connexion impossible pour le moment.":"No se puede iniciar sesión ahora mismo.",
+ "Plein écran":"Pantalla completa",
+ "Zone intermédiaire":"Zona intermedia",
+ "Recharger les greens":"Recargar los greens",
+ "Mode compétition":"Modo competición",
+ "Me recentrer":"Centrarme",
+ "{p} % de puissance":"{p} % de potencia"
+});
+Object.assign(LANGS.de,{
+ "Sauvegarde de tes greens offerte pendant 1 mois. Ensuite, {m} ou {a}, sans engagement. La mesure reste gratuite.":"Das Speichern deiner Greens ist 1 Monat kostenlos. Danach {m} oder {a}, ohne Bindung. Messen bleibt kostenlos.",
+ "Tes greens en ligne seront supprimés le {d}. Abonne-toi pour les garder.":"Deine Online-Greens werden am {d} gelöscht. Abonniere, um sie zu behalten.",
+ "Greens bientôt supprimés":"Greens werden bald gelöscht",
+ "Sélectionnez d'abord un green":"Wähle zuerst ein Green",
+ "Touchez un green sur la carte, puis + AREA pour placer une zone intermédiaire.":"Tippe auf ein Green und dann auf + AREA, um eine Zwischenzone zu setzen.",
+ "Glissez les cercles pour les placer. Ensuite, touchez une zone ou le green pour choisir la cible.":"Ziehe die Kreise, um sie zu setzen. Tippe dann auf eine Zone oder das Green, um dein Ziel zu wählen.",
+ "Cible : green":"Ziel: Green",
+ "Green {d} m":"Green {d} m",
+ "Sélectionner ou créer un green":"Ein Green wählen oder erstellen",
+ "<b>Touchez un green</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher. Green absent ? Touchez <b>+ GREEN</b> puis <b>DÉTECT</b> (touchez le centre du green), <b>TRACER</b> (posez les points du contour) ou <b>POINTER</b> (le centre puis le rayon), et <b>Garder</b>. Appui long sur un green pour le renommer, le retracer ou le supprimer.":"<b>Tippe auf ein Green</b>, um es auszuwählen, und auf eine leere Stelle, um es freizugeben. Green fehlt? Tippe auf <b>+ GREEN</b>, dann <b>ERKENN</b> (Mitte des Greens antippen), <b>ZEICHN</b> (Konturpunkte setzen) oder <b>PUNKT</b> (Mitte, dann Radius) und <b>Behalten</b>. Lange drücken auf ein Green, um es umzubenennen, neu zu zeichnen oder zu löschen.",
+ "<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez. Ici, un green à {g} m, en contrebas de {e} m.":"<b>Vorne, hinten, links, rechts</b> und <b>Höhenunterschied</b> zum gewählten Green, aktualisiert während du gehst. Hier ein Green in {g} m, {e} m tiefer.",
+ "Sans compte, tes greens ne sont pas gardés":"Ohne Konto werden deine Greens nicht gespeichert",
+ "Les greens et les zones que tu traces disparaissent à la fermeture de l'app. Crée un compte gratuit : ils seront sauvegardés sur tous tes appareils.":"Die Greens und Zonen, die du erfasst, verschwinden beim Schließen der App. Erstelle ein kostenloses Konto: Sie werden auf all deinen Geräten gespeichert.",
+ "Sans compte, tes greens ne seront pas sauvegardés":"Ohne Konto werden deine Greens nicht gespeichert",
+ "Sans Premium, tes greens seront supprimés le {d}.":"Ohne Premium werden deine Greens am {d} gelöscht.",
+ "Tes greens et tes zones sont sauvegardés gratuitement jusqu'au {d}, sur tous tes appareils. Ensuite, {m} ou {a}, sans engagement.":"Deine Greens und Zonen werden bis zum {d} kostenlos gespeichert, auf all deinen Geräten. Danach {m} oder {a}, ohne Bindung.",
+ "Distances au green, dénivelé et club conseillé, calculés depuis votre <b>position GPS</b> sur l'imagerie satellite. Voici l'essentiel en quelques étapes.":"Entfernungen zum Green, Höhenunterschied und empfohlener Schläger, berechnet aus deiner <b>GPS-Position</b> auf Satellitenbildern. Hier das Wichtigste in wenigen Schritten.",
+ "Les greens du parcours s'affichent sur la carte. <b>Touchez-en un</b> pour le sélectionner, touchez la carte dans le vide pour le relâcher.":"Die Greens des Platzes erscheinen auf der Karte. <b>Tippe auf eines</b>, um es auszuwählen, und auf eine leere Stelle, um es freizugeben.",
+ "<b>Avant, arrière, gauche, droite</b> et <b>dénivelé</b> jusqu'au green sélectionné, mis à jour pendant que vous marchez.":"<b>Vorne, hinten, links, rechts</b> und <b>Höhenunterschied</b> zum gewählten Green, aktualisiert während du gehst.",
+ "Green sélectionné, touchez <b>+ AREA</b> pour placer une zone intermédiaire (jusqu'à 6) et glissez-la là où vous voulez jouer. <b>Touchez une zone ou le green</b> pour choisir la cible. <b>Appui long</b> sur une zone : la déplacer, changer son diamètre ou la supprimer.":"Bei ausgewähltem Green tippe auf <b>+ AREA</b>, um eine Zwischenzone zu setzen (bis zu 6), und ziehe sie dorthin, wo du spielen willst. <b>Tippe auf eine Zone oder das Green</b>, um dein Ziel zu wählen. <b>Lange drücken</b> auf eine Zone: verschieben, Durchmesser ändern oder löschen.",
+ "+ GREEN : ajouter un green":"+ GREEN: ein Green hinzufügen",
+ "Green absent ou mal tracé ? <b>DÉTECT</b> le repère par sa couleur, <b>TRACER</b> le dessine point par point, <b>POINTER</b> le pose en cercle. <b>Appui long</b> sur un green pour le renommer, le retracer ou le supprimer.":"Green fehlt oder ist falsch? <b>ERKENN</b> findet es über die Farbe, <b>ZEICHN</b> zeichnet es Punkt für Punkt, <b>PUNKT</b> setzt es als Kreis. <b>Lange drücken</b> auf ein Green, um es umzubenennen, neu zu zeichnen oder zu löschen.",
+ "Un compte permet de <b>sauvegarder vos greens et vos zones</b>. Ce tutoriel reste accessible depuis ce menu.":"Mit einem Konto kannst du <b>deine Greens und Zonen speichern</b>. Dieses Tutorial bleibt über dieses Menü erreichbar.",
+ "Retire cette zone du green":"Entfernt diese Zone vom Green",
+ "{a} m depuis vous · {b} m jusqu'au green":"{a} m von dir · {b} m bis zum Green",
+ "Green {n}":"Green {n}",
+ "Adresse e-mail invalide.":"Ungültige E-Mail-Adresse.",
+ "Aucun compte avec cette adresse.":"Kein Konto mit dieser Adresse.",
+ "Mot de passe incorrect.":"Falsches Passwort.",
+ "Adresse ou mot de passe incorrect.":"E-Mail oder Passwort falsch.",
+ "Cette adresse est déjà utilisée.":"Diese Adresse wird bereits verwendet.",
+ "Mot de passe trop court : 6 caractères minimum.":"Passwort zu kurz: mindestens 6 Zeichen.",
+ "Réseau indisponible.":"Netzwerk nicht verfügbar.",
+ "Connexion annulée.":"Anmeldung abgebrochen.",
+ "Fenêtre bloquée par le navigateur.":"Fenster vom Browser blockiert.",
+ "Ce domaine n'est pas autorisé dans Firebase Authentication.":"Diese Domain ist in Firebase Authentication nicht autorisiert.",
+ "Un compte existe déjà avec cette adresse, connecte-toi par e-mail.":"Mit dieser Adresse existiert bereits ein Konto, melde dich per E-Mail an.",
+ "Connexion impossible pour le moment.":"Anmeldung derzeit nicht möglich.",
+ "Plein écran":"Vollbild",
+ "Zone intermédiaire":"Zwischenzone",
+ "Recharger les greens":"Greens neu laden",
+ "Mode compétition":"Turniermodus",
+ "Me recentrer":"Auf mich zentrieren",
+ "{p} % de puissance":"{p} % Kraft"
+});
+
+Object.assign(LANGS.en,{"Puissance nécessaire":"Power needed"});
+Object.assign(LANGS.es,{"Puissance nécessaire":"Potencia necesaria"});
+Object.assign(LANGS.de,{"Puissance nécessaire":"Nötige Kraft"});
+
 const LANGUES=['en','fr','es','de'];
 const LANGUE_DEFAUT='en';
 const NOMS_LANGUES={fr:'Français',en:'English',es:'Español',de:'Deutsch'};
@@ -1330,9 +1433,18 @@ function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;',
    texte français d'origine pour pouvoir changer de langue à chaud. */
 function appliquerLangue(){
   document.documentElement.lang=LANG;
+  const TITRES={en:'SwingUp Rangefinder | Free golf GPS, distances to the green',es:'SwingUp Telémetro | GPS de golf gratis, distancias al green',de:'SwingUp Entfernungsmesser | Golf-GPS kostenlos, Entfernungen zum Green'};
+  if(TITRES[LANG])document.title=TITRES[LANG];
   document.querySelectorAll('[data-t]').forEach(el=>{
     if(!el.dataset.src)el.dataset.src=el.textContent.trim();
     el.textContent=T(el.dataset.src);
+  });
+  document.querySelectorAll('[title]:not(iframe),[aria-label]:not(#auEye):not(#scPeek)').forEach(el=>{
+    [['title','srcTitle'],['aria-label','srcAria']].forEach(([a,k])=>{
+      const v=el.getAttribute(a); if(!v)return;
+      if(!el.dataset[k])el.dataset[k]=v;
+      el.setAttribute(a,T(el.dataset[k]));
+    });
   });
   $id('auName').placeholder=T("Comment on t'appelle ?");
   $id('auEmail').placeholder=T('toi@exemple.fr');
@@ -2012,14 +2124,16 @@ const $ = id => document.getElementById(id);
 const YD_PAR_M = 1.0936133;
 function uniteParDefaut(){
   const l = ((navigator.languages && navigator.languages[0]) || navigator.language || "").toLowerCase().split("-");
-  return (l[0] === "en" && ["us","gb","ca"].indexOf(l[1]) >= 0) ? "yd" : "m";
+  /* « en » sans région : presque toujours des États-Unis. fr-CA : le Québec joue en yards. */
+  if (l[0] === "en") return (!l[1] || ["us","gb","ca"].indexOf(l[1]) >= 0) ? "yd" : "m";
+  return (l[0] === "fr" && l[1] === "ca") ? "yd" : "m";
 }
 let UNITE = (Store.get("unite") === "yd" || Store.get("unite") === "m") ? Store.get("unite") : uniteParDefaut();
 const uV = m => UNITE === "yd" ? m * YD_PAR_M : m;              /* mètres -> unité affichée */
 const uInv = v => UNITE === "yd" ? v / YD_PAR_M : v;            /* unité affichée -> mètres */
 const uR = m => Math.round(uV(m));
 const uA = a => UNITE === "yd" ? a * YD_PAR_M * YD_PAR_M : a;   /* m² -> yd² */
-const uF = (m, n = 0) => uV(m).toFixed(n).replace(".", ",");
+const uF = (m, n = 0) => { const t = uV(m).toFixed(n); return (typeof LANG !== "undefined" && (LANG === "en")) ? t : t.replace(".", ","); };
 /* Les textes traduits contiennent « m » et « m² » : on ne convertit que
    l'étiquette, les nombres sont convertis à l'appel. */
 const uTxt = t => UNITE === "yd" ? t.replace(/(\d) m²/g, "$1 yd²").replace(/(\d) m(?![A-Za-zÀ-ÿ²])/g, "$1 yd") : t;
@@ -2036,7 +2150,9 @@ const BASE = [
   ["Pitching",92],["Approche",78],["Sand",62],["Lob",48]
 ];
 const FACTOR = { men:1, women:0.80, senior:0.88 };
-const preset = k => BASE.map(([n,d]) => ({ n, d:Math.round(d*FACTOR[k]), on:true }));
+/* En yards, on arrondit les distances par défaut aux 5 yards (220, 200, 185…) plutôt que 219, 202, 186. */
+const dParDefaut = m => UNITE === "yd" ? Math.round(Math.round(m * YD_PAR_M / 5) * 5 / YD_PAR_M * 100) / 100 : Math.round(m);
+const preset = k => BASE.map(([n,d]) => ({ n, d:dParDefaut(d*FACTOR[k]), on:true }));
 
 function clubShape(name){
   const n = (name||"").toLowerCase();
@@ -3699,7 +3815,7 @@ function render(m){
     $("gSub").textContent = "";
     ["dFront","dBack","dLeft","dRight","dElev"].forEach(i => set(i,"—"));
     $("blind").classList.remove("on"); $("cElev").className = "c";
-    $("clubName").textContent = "—"; $("clubMeta").textContent = L_("Choisissez un green");
+    $("clubName").textContent = "—"; $("clubPct").textContent = ""; $("clubMeta").textContent = L_("Choisissez un green");
     $("clubIcon").innerHTML = ""; return;
   }
   /* Zone visée : les cinq cases et le conseil portent sur elle (cercle de
@@ -3768,15 +3884,18 @@ async function updateZoneAlti(zt){
 function zRender(target, where, dz){
   const p = pickClub(target);
   if (!p){
-    $("clubIcon").innerHTML = ""; $("clubName").textContent = L_("Sac vide");
+    $("clubIcon").innerHTML = ""; $("clubName").textContent = L_("Sac vide"); $("clubPct").textContent = "";
     $("clubMeta").textContent = L_("Réglez vos distances dans SAC"); return;
   }
   $("clubIcon").innerHTML = clubSvg(p.club.n);
   $("clubName").textContent = L_(p.club.n);
+  /* Puissance nécessaire : distance visée rapportée à la portée du club (100 % = coup plein). */
+  const pct = p.short ? null : Math.min(100, Math.max(1, Math.round(target / p.club.d * 100)));
+  $("clubPct").textContent = pct === null ? "" : pct + (LANG === "en" ? "%" : " %");
   if (p.short){
     $("clubMeta").textContent = L_("Hors de portée : {d} m {w}, il manque {g} m",{d:uR(target),w:where,g:uR(p.gap)});
   } else {
-    const head = uR(target) + " " + UNITE + " " + where + (dz ? " " + L_("(dénivelé compris)") : "") + " · " + L_("porte {d} m",{d:uR(p.club.d)});
+    const head = uR(target) + " " + UNITE + " " + where + (dz ? " " + L_("(dénivelé compris)") : "") + " · " + L_("porte {d} m",{d:uR(p.club.d)}) + " · " + L_("{p} % de puissance",{p:pct});
     $("clubMeta").textContent = p.gap <= 4 && p.alt
       ? head + " — " + L_("limite, {c} si vous frappez long",{c:L_(p.alt.n).toLowerCase()})
       : head + " — " + (p.gap >= 1 ? L_("marge de {g} m",{g:uR(p.gap)}) : L_("pile la distance"));
@@ -4255,8 +4374,8 @@ function tutoDemo(){
   $("dElev").innerHTML = "−" + uF(6.8, 1) + "<i>" + UNITE + "</i>"; $("cElev").className = "c down";
   $("blind").classList.remove("on");
   $("clubIcon").innerHTML = clubSvg("Fer 9");
-  $("clubName").textContent = L_("Fer 9");
-  $("clubMeta").textContent = uR(94) + " " + UNITE + " " + L_("au centre") + " " + L_("(dénivelé compris)") + " · " + L_("porte {d} m", { d:uR(105) })
+  $("clubName").textContent = L_("Fer 9"); $("clubPct").textContent = LANG === "en" ? "90%" : "90 %";
+  $("clubMeta").textContent = uR(94) + " " + UNITE + " " + L_("au centre") + " " + L_("(dénivelé compris)") + " · " + L_("porte {d} m", { d:uR(105) }) + " · " + L_("{p} % de puissance", { p:90 })
     + " — " + L_("marge de {g} m", { g:uR(11) });
 }
 let tutoI = 0;

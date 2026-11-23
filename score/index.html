@@ -2707,7 +2707,7 @@ function openRecap(){
   const done=S.pars.map((_,h)=>S.players.every(p=>typeof p.scores[h]==='number')).filter(Boolean).length;
   $('#rcTitle').textContent=done===S.holes?T('Parcours bouclé'):T('Carte en cours');
   $('#rcMsg').textContent=done===S.holes
-    ? (order.length>1?(order[1].t===order[0].t?T('Égalité à {t} coups.',{t:order[0].t}):order[0].p.name+" l'emporte avec "+order[0].t+' coups.'):'Total : '+order[0].t+' coups en '+fmt(order[0].d)+'.')
+    ? (order.length>1?(order[1].t===order[0].t?T('Égalité à {t} coups.',{t:order[0].t}):T("{n} l'emporte avec {t} coups.",{n:order[0].p.name,t:order[0].t})):T('Total : {t} coups en {d}.',{t:order[0].t,d:fmt(order[0].d)}))
     : T('{a} trous sur {b} saisis pour l\'instant.',{a:done,b:S.holes});
   const r=$('#rank');r.innerHTML='';
   const medals=['#c9a227','#9a9a9a','#a9743f'];
@@ -4246,6 +4246,16 @@ function consentBanner(){
       var ov = document.getElementById('overlay');
       var handled = !!(ov && !ov.classList.contains('hidden'));
       if (handled){ try{ closeModal(); }catch(_){ } }
+      else {
+        /* Pas de fenêtre ouverte : on remonte d'un écran (stats -> partie/accueil, récap -> partie,
+           partie -> accueil). Sur l'accueil de la carte de score, le retour ferme la feuille. */
+        var au = document.getElementById('auth');
+        var vis = function(id){ var el = document.getElementById(id); return !!(el && !el.classList.contains('hidden')); };
+        if (!(au && !au.classList.contains('hidden'))){
+          var btn = vis('stats') ? 'btnStatsBack' : vis('recap') ? 'btnRecapBack' : vis('game') ? 'btnBack' : null;
+          if (btn){ var b = document.getElementById(btn); if (b){ b.click(); handled = true; } }
+        }
+      }
       parent.postMessage({ source:'swingup-pro', action:'back-result', handled:handled }, location.origin);
     }
   });
@@ -4269,6 +4279,6 @@ function consentBanner(){
   try{ parent.postMessage({ source:'swingup-pro', action:'request-state' }, location.origin); }catch(e){}
 })();
 </script>
-<script>try{Object.assign(LANGS.en,{'Albatros':'Albatross','Triple':'Triple bogey','Ma carte de score golf, faite avec SwingUp :':'My golf scorecard, made with SwingUp:'});Object.assign(LANGS.es,{'Ma carte de score golf, faite avec SwingUp :':'Mi tarjeta de golf, hecha con SwingUp:'});Object.assign(LANGS.de,{'Ma carte de score golf, faite avec SwingUp :':'Meine Golf-Scorekarte, erstellt mit SwingUp:'});}catch(e){}</script>
+<script>try{Object.assign(LANGS.en,{'Égalité à {t} coups.':'Tie at {t} strokes.',"{n} l'emporte avec {t} coups.":'{n} wins with {t} strokes.','Total : {t} coups en {d}.':'Total: {t} strokes, {d}.','Albatros':'Albatross','Triple':'Triple bogey','Ma carte de score golf, faite avec SwingUp :':'My golf scorecard, made with SwingUp:'});Object.assign(LANGS.es,{'Égalité à {t} coups.':'Empate a {t} golpes.',"{n} l'emporte avec {t} coups.":'{n} gana con {t} golpes.','Total : {t} coups en {d}.':'Total: {t} golpes, {d}.','Triple':'Triple bogey','Ma carte de score golf, faite avec SwingUp :':'Mi tarjeta de golf, hecha con SwingUp:'});Object.assign(LANGS.de,{'Égalité à {t} coups.':'Gleichstand bei {t} Schlägen.',"{n} l'emporte avec {t} coups.":'{n} gewinnt mit {t} Schlägen.','Total : {t} coups en {d}.':'Gesamt: {t} Schläge, {d}.','Triple':'Triple-Bogey','Ma carte de score golf, faite avec SwingUp :':'Meine Golf-Scorekarte, erstellt mit SwingUp:'});}catch(e){}</script>
 </body>
 </html>
